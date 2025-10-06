@@ -47,9 +47,9 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+        <h1 className="text-2xl md:text-4xl font-bold mb-8">Admin Dashboard</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Destinations Management */}
           <Link href="/admin/destinations">
             <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer">
