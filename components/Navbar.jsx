@@ -11,7 +11,7 @@ export default function Navbar() {
     <nav className="bg-white text-black p-4 shadow-md">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <Image
-          src={"/Hitrex-Logo.jpg"}
+          src={"/Hitrex-logo.jpg"}
           alt="HITREX Logo"
           width={150}
           height={30}
