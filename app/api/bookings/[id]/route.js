@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Booking from "@/models/Booking";
+import Destination from "@/models/Destination";
+import User from "@/models/User";
 
 // GET single booking
 export async function GET(request, { params }) {

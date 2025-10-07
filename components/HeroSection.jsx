@@ -10,21 +10,21 @@ export default function HeroSection() {
 
   const slides = [
     {
-      video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      video: "https://youtu.be/z2Q-U9q5tvI?si=RJWVIx7kBH3dsQD6",
       poster: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop",
       title: "Explore the Mountains",
       subtitle: "Discover breathtaking mountain peaks and pristine valleys",
       cta: "Start Your Journey"
     },
     {
-      video: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      video: "https://youtu.be/z2Q-U9q5tvI?si=RJWVIx7kBH3dsQD6",
       poster: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=1920&h=1080&fit=crop",
       title: "Adventure Awaits",
       subtitle: "Experience the thrill of trekking through untouched wilderness",
       cta: "Book Your Trek"
     },
     {
-      video: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+      video: "https://youtu.be/z2Q-U9q5tvI?si=RJWVIx7kBH3dsQD6",
       poster: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       title: "Connect with Nature",
       subtitle: "Find peace and adventure in the world's most beautiful landscapes",
@@ -48,7 +48,7 @@ export default function HeroSection() {
   }, [slides.length]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden rounded-2xl">
       {/* Video Background */}
       <div className="absolute inset-0">
         {slides.map((slide, index) => (

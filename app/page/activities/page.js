@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { PageTransition, FadeInUp, SlideInLeft, SlideInRight, StaggerContainer, StaggerItem, ScaleIn } from "@/components/animations";
 
 const trips = [
   {
@@ -42,44 +43,53 @@ const trips = [
 
 export default function TripsPage() {
   return (
-    <div>
-      {/* Hero */}
-      <div className="relative h-80 w-full p-10">
-        <Image
-          src="/images/trip-hero.avif"
-          alt="Trips banner"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="text-4xl font-bold text-white">Our Trips</h1>
+    <PageTransition>
+      <div>
+        {/* Hero */}
+        <div className="relative h-80 w-full p-10">
+          <Image
+            src="/images/trip-hero.avif"
+            alt="Trips banner"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <FadeInUp>
+              <h1 className="text-4xl font-bold text-white">Our Trips</h1>
+            </FadeInUp>
+          </div>
+        </div>
+
+        {/* Sections */}
+        <div className="max-w-6xl mx-auto px-6 py-16 space-y-16">
+          {trips.map((trip, index) => (
+            <div key={trip.id}>
+              <SlideInLeft delay={index * 0.2}>
+                <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide mb-4">
+                  {trip.subtitle}
+                </h3>
+                <h2 className="text-4xl font-bold mb-4">{trip.title}</h2>
+                <p className="text-gray-600 mb-6">{trip.description}</p>
+              </SlideInLeft>
+              
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {trip.images.map((src, idx) => (
+                  <StaggerItem key={idx}>
+                    <ScaleIn whileHover={true} className="relative h-64 w-full rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                      <Image
+                        src={src}
+                        alt={`${trip.title} ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </ScaleIn>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* Sections */}
-      <div className="max-w-6xl mx-auto px-6 py-16 space-y-16">
-        {trips.map((trip) => (
-          <div key={trip.id}>
-            <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide mb-4">
-              {trip.subtitle}
-            </h3>
-            <h2 className="text-4xl font-bold mb-4">{trip.title}</h2>
-            <p className="text-gray-600 mb-6">{trip.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {trip.images.map((src, idx) => (
-                <div key={idx} className="relative h-64 w-full rounded-lg overflow-hidden">
-                  <Image
-                    src={src}
-                    alt={`${trip.title} ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </PageTransition>
   );
 }
