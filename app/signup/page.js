@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { PageTransition, FadeInUp, ScaleIn, StaggerContainer, StaggerItem } from "@/components/animations";
+import { FaCompass, FaMountain, FaHiking, FaCampground, FaRoute } from "react-icons/fa";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -86,113 +87,149 @@ export default function SignupPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-        <ScaleIn className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-          <FadeInUp>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Create your account
-            </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              Or{" "}
-              <Link
-                href="/login"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
-                sign in to existing account
-              </Link>
-            </p>
-          </FadeInUp>
-          
-          <FadeInUp delay={0.2}>
-            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-              {error && (
-                <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                  {error}
-                </div>
-              )}
-              <StaggerContainer className="rounded-md shadow-sm space-y-4">
-                <StaggerItem>
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all"
-                      placeholder="Full Name"
-                    />
-                  </div>
-                </StaggerItem>
-                <StaggerItem>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email address
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all"
-                      placeholder="Email address"
-                    />
-                  </div>
-                </StaggerItem>
-                <StaggerItem>
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all"
-                      placeholder="Password (min 6 characters)"
-                    />
-                  </div>
-                </StaggerItem>
-                <StaggerItem>
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Confirm Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all"
-                      placeholder="Confirm Password"
-                    />
-                  </div>
-                </StaggerItem>
-              </StaggerContainer>
+      <div
+        className="relative min-h-screen w-full bg-cover bg-center bg-fixed text-white -mt-24 pt-24"
+        style={{
+          backgroundImage:
+            "linear-gradient(135deg, rgba(6,24,38,0.65), rgba(12,38,52,0.75)), url('/abooutBg.jpg')",
+        }}
+      >
+        <div className="absolute inset-0 pointer-events-none">
+          <FaMountain className="absolute left-6 top-10 text-6xl opacity-20" />
+          <FaCompass className="absolute right-10 top-16 text-5xl opacity-20" />
+          <FaHiking className="absolute left-1/3 bottom-10 text-6xl opacity-20" />
+        </div>
 
-              <FadeInUp delay={0.4}>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
-                >
-                  {loading ? "Creating account..." : "Sign up"}
-                </button>
-              </FadeInUp>
-            </form>
+        <div className="relative z-10 max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center py-16 px-6">
+          <FadeInUp>
+            <div className="space-y-4">
+              <p className="inline-flex items-center gap-2 text-emerald-300 font-semibold">
+                <FaCampground className="text-lg" /> Join the trail community
+              </p>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-xl leading-tight">
+                Create your account and start exploring
+              </h1>
+              <p className="text-gray-100 max-w-xl leading-relaxed">
+                Save your favorite routes, book guided treks, and sync gear lists. Your next summit
+                is just a sign-up away.
+              </p>
+            </div>
           </FadeInUp>
-        </ScaleIn>
+
+          <ScaleIn className="backdrop-blur-md bg-white/10 border border-white/15 rounded-2xl shadow-2xl p-8 md:p-10 space-y-6">
+            <FadeInUp>
+              <h2 className="text-3xl font-extrabold text-white text-center">Create account</h2>
+              <p className="text-sm text-gray-100 text-center">
+                Already a member?{" "}
+                <Link
+                  href="/login"
+                  className="font-semibold text-emerald-200 hover:text-emerald-100 transition-colors"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </FadeInUp>
+
+            <FadeInUp delay={0.2}>
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                {error && (
+                  <div className="bg-red-50/90 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    {error}
+                  </div>
+                )}
+                <StaggerContainer className="space-y-4">
+                  <StaggerItem>
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-100 mb-1">
+                        Full Name
+                      </label>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
+                        placeholder="Full Name"
+                      />
+                    </div>
+                  </StaggerItem>
+                  <StaggerItem>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-100 mb-1"
+                      >
+                        Email address
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                  </StaggerItem>
+                  <StaggerItem>
+                    <div>
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-100 mb-1"
+                      >
+                        Password
+                      </label>
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
+                        placeholder="Password (min 6 characters)"
+                      />
+                    </div>
+                  </StaggerItem>
+                  <StaggerItem>
+                    <div>
+                      <label
+                        htmlFor="confirmPassword"
+                        className="block text-sm font-medium text-gray-100 mb-1"
+                      >
+                        Confirm Password
+                      </label>
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
+                        placeholder="Re-enter your password"
+                      />
+                    </div>
+                  </StaggerItem>
+                </StaggerContainer>
+
+                <FadeInUp delay={0.4}>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="group relative w-full flex justify-center py-2.5 px-4 text-sm font-semibold rounded-lg text-slate-900 bg-emerald-300 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-200 focus:ring-offset-slate-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 shadow-lg"
+                  >
+                    {loading ? "Creating account..." : "Sign up"}
+                  </button>
+                </FadeInUp>
+              </form>
+            </FadeInUp>
+          </ScaleIn>
+        </div>
       </div>
     </PageTransition>
   );
