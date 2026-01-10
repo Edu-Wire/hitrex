@@ -149,7 +149,7 @@ export default function TripsPage() {
     <PageTransition>
       <div>
         {/* Hero */}
-        <div className="relative h-[80vh] w-full p-10">
+        <div className="relative h-screen w-full p-10 -mt-24 md:-mt-28">
           <Image
             src="/images/trip-hero.avif"
             alt="Trips banner"
@@ -160,7 +160,7 @@ export default function TripsPage() {
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <h1 
               ref={titleRef}
-              className="text-5xl md:text-7xl font-bold text-white flex items-center justify-center"
+              className="text-6xl md:text-8xl font-bold text-white flex items-center justify-center"
             >
               {"OUR TRIPS".split("").map((letter, index) => (
                 <span
