@@ -9,7 +9,14 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const dropdownRef = useRef(null);
+  const lastScrollY = useRef(0);
+  const containerRef = useRef(null);
+  const linkRefs = useRef([]);
+  const [highlight, setHighlight] = useState({ width: 0, left: 0 });
+  const [activeIdx, setActiveIdx] = useState(0);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -22,182 +29,161 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Change navbar background on scroll
+  useEffect(() => {
+    const onScroll = () => {
+      const current = window.scrollY;
+      setScrolled(current > 80);
+
+      // Hide on scroll down, show on scroll up
+      if (current < 12) {
+        setHidden(false);
+      } else if (current > lastScrollY.current + 4) {
+        setHidden(true);
+      } else if (current < lastScrollY.current - 4) {
+        setHidden(false);
+      }
+
+      lastScrollY.current = current;
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Keep nav visible when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) setHidden(false);
+  }, [isMenuOpen]);
+
+  const menuLinks = [
+    { href: "/", label: "Home" },
+    { href: "/page/activities", label: "Activities" },
+    { href: "/page/destination", label: "Destination" },
+    { href: "/page/blog", label: "Blog" },
+    { href: "/page/about", label: "About Us" },
+    { href: "/login", label: "Login" },
+  ];
+
+  const updateHighlight = (index) => {
+    const container = containerRef.current;
+    const el = linkRefs.current[index];
+    if (!container || !el) return;
+    const containerRect = container.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
+    setHighlight({
+      width: rect.width,
+      left: rect.left - containerRect.left,
+    });
+    setActiveIdx(index);
+  };
+
+  useEffect(() => {
+    // set initial highlight to first link after layout
+    const id = requestAnimationFrame(() => updateHighlight(0));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return (
-    <nav className="bg-white text-black p-4 shadow-md">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center">
-          <Link href="/">
-            <Image
-              src={"/Hitrex-logo.png"}
-              alt="HITREX Logo"
-              width={100}
-              height={20}
-              priority={true}
-              className="object-cover"
-            />
-          </Link>
-
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-md hover:bg-gray-100"
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 p-4 transition-all duration-300 will-change-transform ${
+        hidden ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"
+      } bg-transparent text-white`}
+    >
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-center">
+          <div
+            ref={containerRef}
+            className="relative flex w-full items-center justify-between rounded-full bg-white/10 text-white shadow-xl border border-white/20 px-4 sm:px-6 py-3 gap-3 backdrop-blur-md overflow-hidden"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {isMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
-
-          {/* Desktop menu */}
-          <div className="hidden lg:flex items-center space-x-4 font-semibold text-sm">
-            <Link href="/" className="hover:text-blue-600 transition">
-              Home
-            </Link>
-            <Link href="/page/activities" className="hover:text-blue-600 transition">
-              Activities
-            </Link>
-            <Link href="/page/destination" className="hover:text-blue-600 transition">
-              Destinations
-            </Link>
-            <Link href="/page/blog" className="hover:text-blue-600 transition">
-              Blog
-            </Link>
-            <Link href="/page/about" className="hover:text-blue-600 transition">
-              About Us
-            </Link>
-            <Link href="/page/contact" className="hover:text-blue-600 transition">
-              Contact Us
-            </Link>
-
-            {status === "loading" ? (
-              <div className="px-4 py-2 text-gray-500 text-xs">Loading...</div>
-            ) : session ? (
-              <div className="flex items-center space-x-2">
-                {/* User Dropdown */}
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                    className="flex items-center space-x-2 text-sm text-gray-700 hover:text-blue-600 transition-all duration-200 px-3 py-2 rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-200"
+            <div className="flex items-center gap-3 flex-1">
+              <div className="relative hidden lg:flex items-center justify-evenly gap-4 w-full text-sm font-semibold">
+                {menuLinks.map((link, idx) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    ref={(el) => (linkRefs.current[idx] = el)}
+                    onMouseEnter={() => updateHighlight(idx)}
+                    onFocus={() => updateHighlight(idx)}
+                    className="relative px-3 py-1 z-10 group/link"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                      {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <span className="font-medium">{session.user.name ? session.user.name.split(' ')[0] : 'User'}</span>
-                    <svg 
-                      className={`w-4 h-4 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
+                    <span
+                      className={`
+                        absolute inset-0 mx-auto h-full w-0
+                        bg-gray-200/90 rounded-lg
+                        transition-all duration-200 ease-out
+                        group-hover/link:w-full
+                        ${activeIdx === idx ? "w-full" : "w-0"}
+                      `}
+                      aria-hidden="true"
+                    />
+                    <span
+                      className={`
+                        relative transition-colors duration-200 ease-out
+                        ${activeIdx === idx ? "text-gray-800" : "text-white"}
+                        group-hover/link:text-gray-800
+                      `}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Dropdown Menu */}
-                  {isUserDropdownOpen && (
-                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-                      {/* User Info Header */}
-                      <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
-                        <div className="flex items-center space-x-3">
-                          {/* <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                            {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
-                          </div> */}
-                          <div>
-                            <p className="font-semibold text-gray-800">{session.user.name || 'User'}</p>
-                            <p className="text-xs text-gray-500">{session.user.email || 'No email'}</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Menu Items */}
-                      <div className="py-2">
-                        {session.user.role === "admin" && (
-                          <Link
-                            href="/admin"
-                            className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200 group"
-                            onClick={() => setIsUserDropdownOpen(false)}
-                          >
-                            <svg className="w-5 h-5 mr-3 text-purple-500 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span>Admin Panel</span>
-                          </Link>
-                        )}
-                        
-                        <Link
-                          href="/my-bookings"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 group"
-                          onClick={() => setIsUserDropdownOpen(false)}
-                        >
-                          <svg className="w-5 h-5 mr-3 text-blue-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                          </svg>
-                          <span>My Bookings</span>
-                        </Link>
-                        
-                        <Link
-                          href="/profile"
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200 group"
-                          onClick={() => setIsUserDropdownOpen(false)}
-                        >
-                          <svg className="w-5 h-5 mr-3 text-green-500 group-hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          <span>Profile</span>
-                        </Link>
-                        
-                        <hr className="my-2 border-gray-100" />
-                        
-                        <button
-                          onClick={() => {
-                            signOut({ callbackUrl: "/" });
-                            setIsUserDropdownOpen(false);
-                          }}
-                          className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all duration-200 group"
-                        >
-                          <svg className="w-5 h-5 mr-3 text-red-500 group-hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                          </svg>
-                          <span>Logout</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                      {link.label}
+                    </span>
+                  </Link>
+                ))}
               </div>
-            ) : (
-              <Link
-                href="/login"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-xs"
-              >
-                Login
-              </Link>
-            )}
+
+              <div className="flex items-center gap-3">
+                {status === "loading" ? (
+                  <div className="px-4 py-2 text-gray-500 text-xs">Loading...</div>
+                ) : session ? (
+                  <div className="flex items-center gap-2">
+                    <div className="text-sm font-semibold text-gray-700">
+                      {session.user?.name || "User"}
+                    </div>
+                    <button
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="text-sm text-gray-600 hover:text-red-600 transition"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : null}
+
+                {/* Mobile menu toggle */}
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="lg:hidden p-2 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    {isMenuOpen ? (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    ) : (
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    )}
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="lg:hidden mt-4 pb-4 space-y-2">
+          <div className="lg:hidden mt-4 pb-4 space-y-2 bg-white text-gray-900 rounded-xl shadow-lg">
             <Link
               href="/"
               className="block py-2 px-4 hover:bg-gray-100 rounded"
@@ -217,7 +203,7 @@ export default function Navbar() {
               className="block py-2 px-4 hover:bg-gray-100 rounded"
               onClick={() => setIsMenuOpen(false)}
             >
-              Destinations
+              Destination
             </Link>
             <Link
               href="/page/blog"
@@ -234,11 +220,19 @@ export default function Navbar() {
               About Us
             </Link>
             <Link
-              href="/page/contact"
+              href="/login"
               className="block py-2 px-4 hover:bg-gray-100 rounded"
               onClick={() => setIsMenuOpen(false)}
             >
-              Contact Us
+              Login
+            </Link>
+
+            <Link
+              href="/page/destination"
+              className="block bg-green-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:bg-green-600 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Explore ↗
             </Link>
 
             <div className="border-t pt-2 mt-2">
@@ -269,13 +263,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link
-                  href="/login"
-                  className="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-center"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </Link>
+                <></>
               )}
             </div>
           </div>

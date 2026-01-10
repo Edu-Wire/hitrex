@@ -1,10 +1,13 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { FaCompass, FaMountain, FaHiking, FaCampground } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import Link from "next/link";
 import {
   PageTransition,
   FadeInUp,
@@ -40,18 +43,90 @@ const blogs = [
 ];
 
 export default function BlogPage() {
+  const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
+
+  useEffect(() => {
+    const onMove = (e) => setCursor({ x: e.clientX, y: e.clientY, visible: true });
+    const onLeave = () => setCursor((c) => ({ ...c, visible: false }));
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   return (
     <PageTransition>
-      <div className="w-full">
+      <div
+        className="relative w-full min-h-screen overflow-hidden -mt-24 pt-24"
+        style={{
+          backgroundImage: "url('/blogbg.jpg')",
+          backgroundSize: "cover",
+          backgroundAttachment: "fixed",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Cursor ring */}
+        <motion.div
+          className="pointer-events-none fixed z-50 rounded-full"
+          style={{
+            width: 72,
+            height: 72,
+            background: "rgba(255,255,255,0.8)",
+            boxShadow: "0 0 24px 8px rgba(255,255,255,0.3)",
+            border: "2px solid rgba(0,0,0,0.08)",
+          }}
+          animate={{
+            x: cursor.x - 36,
+            y: cursor.y - 36,
+            opacity: cursor.visible ? 0.9 : 0,
+            scale: cursor.visible ? 1 : 0.7,
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 18, mass: 0.4 }}
+        />
+
+        {/* Floating adventure icons */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <motion.div
+            className="absolute left-10 top-24 text-6xl opacity-10"
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <FaMountain />
+          </motion.div>
+          <motion.div
+            className="absolute right-16 top-48 text-5xl opacity-10"
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+          >
+            <FaCompass />
+          </motion.div>
+          <motion.div
+            className="absolute left-1/3 bottom-24 text-6xl opacity-10"
+            animate={{ y: [0, -14, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+          >
+            <FaHiking />
+          </motion.div>
+          <motion.div
+            className="absolute right-1/3 bottom-10 text-5xl opacity-10"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+          >
+            <FaCampground />
+          </motion.div>
+        </div>
+
         {/* Hero Banner */}
         <div className="relative h-[50vh] sm:h-[60vh] w-full">
-          <Image
+          {/* <Image
             src="/images/blog-hero.avif"
             alt="Blogs Banner"
             fill
             priority
             className="object-cover"
-          />
+          /> */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30 flex flex-col items-center justify-center text-center px-4">
             <FadeInUp>
               <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 sm:mb-4">
@@ -64,8 +139,19 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Blog Sections */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20">
+        {/* Blog Sections with world map background */}
+        <div
+          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20 overflow-hidden"
+          style={{
+            backgroundImage:
+              "url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "contain",
+          }}
+        >
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/85 via-white/90 to-white/95" />
+          <div className="relative space-y-20">
           {blogs.map((blog, index) => (
             <div
               key={blog.id}
@@ -188,6 +274,7 @@ export default function BlogPage() {
               </div>
             </div>
           ))}
+          </div>
         </div>
       </div>
     </PageTransition>
