@@ -149,7 +149,7 @@ export default function TripsPage() {
     <PageTransition>
       <div>
         {/* Hero */}
-        <div className="relative h-[80vh] w-full p-10">
+        <div className="relative h-screen w-full p-10 -mt-24 md:-mt-28">
           <Image
             src="/images/trip-hero.avif"
             alt="Trips banner"
@@ -160,7 +160,7 @@ export default function TripsPage() {
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <h1 
               ref={titleRef}
-              className="text-5xl md:text-7xl font-bold text-white flex items-center justify-center"
+              className="text-6xl md:text-8xl font-bold text-white flex items-center justify-center"
             >
               {"OUR TRIPS".split("").map((letter, index) => (
                 <span
@@ -186,6 +186,9 @@ export default function TripsPage() {
                 className="relative overflow-hidden w-full"
               >
                 <div
+                  className={`section-bar-secondary absolute -inset-y-40 inset-x-0 -z-20 ${isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-purple-400/20 via-purple-300/12 to-transparent`}
+                />
+                <div
                   className={`section-bar absolute -inset-y-32 inset-x-0 -z-10 ${isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-blue-500/30 via-blue-400/15 to-transparent`}
                   style={{
                     transformOrigin: isEven ? "left center" : "right center",
@@ -208,8 +211,8 @@ export default function TripsPage() {
                 </div>
 
                 {/* Content Section */}
-                <div className="section-content flex-1 w-full">
-                  <p className="text-gray-600 mb-6 text-lg">{trip.description}</p>
+                <div className="section-content flex-1 w-full rounded-2xl bg-black/40 backdrop-blur-xl border border-white/40 shadow-xl px-6 md:px-8 py-6 md:py-8">
+                  <p className="text-white/90 mb-6 text-lg">{trip.description}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {trip.images.map((src, idx) => (
                       <div

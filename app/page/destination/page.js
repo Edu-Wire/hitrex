@@ -274,7 +274,7 @@ export default function DestinationsPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative w-full h-[70vh] flex items-center justify-center text-white">
+      <section className="relative w-full h-screen -mt-24 md:-mt-28 flex items-center justify-center text-white">
         <Image
           src="/images/samrat-khadka-wrfl3DeoTIw-unsplash.jpg"
           alt="Trekking Hero"
