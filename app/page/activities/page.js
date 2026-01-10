@@ -186,6 +186,9 @@ export default function TripsPage() {
                 className="relative overflow-hidden w-full"
               >
                 <div
+                  className={`section-bar-secondary absolute -inset-y-40 inset-x-0 -z-20 ${isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-purple-400/20 via-purple-300/12 to-transparent`}
+                />
+                <div
                   className={`section-bar absolute -inset-y-32 inset-x-0 -z-10 ${isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"} from-blue-500/30 via-blue-400/15 to-transparent`}
                   style={{
                     transformOrigin: isEven ? "left center" : "right center",
@@ -208,8 +211,8 @@ export default function TripsPage() {
                 </div>
 
                 {/* Content Section */}
-                <div className="section-content flex-1 w-full">
-                  <p className="text-gray-600 mb-6 text-lg">{trip.description}</p>
+                <div className="section-content flex-1 w-full rounded-2xl bg-black/40 backdrop-blur-xl border border-white/40 shadow-xl px-6 md:px-8 py-6 md:py-8">
+                  <p className="text-white/90 mb-6 text-lg">{trip.description}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {trip.images.map((src, idx) => (
                       <div
