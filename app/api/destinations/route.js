@@ -22,12 +22,18 @@ export async function GET(request) {
       query.tags = activity;
     }
     
-    const destinations = await Destination.find(query).sort({ createdAt: -1 });
+    const destinations = await Destination.find(query).sort({ createdAt: -1 }).lean();
     
-    return NextResponse.json({ destinations }, { status: 200 });
+    return NextResponse.json({ 
+      destinations: Array.isArray(destinations) ? destinations : []
+    }, { status: 200 });
   } catch (error) {
+    console.error("Error fetching destinations:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to fetch destinations" },
+      { 
+        error: error.message || "Failed to fetch destinations",
+        destinations: []
+      },
       { status: 500 }
     );
   }
