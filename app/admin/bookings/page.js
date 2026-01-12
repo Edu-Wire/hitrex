@@ -141,14 +141,14 @@ export default function AdminBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pt-0 pb-24 -mt-24 md:-mt-28 -mb-24 md:-mb-28">
+      <div className="max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4">Manage Bookings</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white">Manage Bookings</h1>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter("all")}
-              className={`px-3 md:px-4 py-2 rounded text-sm ${
+              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
                 filter === "all"
                   ? "bg-blue-600 text-white"
                   : "bg-white text-gray-700"
@@ -158,7 +158,7 @@ export default function AdminBookings() {
             </button>
             <button
               onClick={() => setFilter("pending")}
-              className={`px-3 md:px-4 py-2 rounded text-sm ${
+              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
                 filter === "pending"
                   ? "bg-yellow-600 text-white"
                   : "bg-white text-gray-700"
@@ -168,7 +168,7 @@ export default function AdminBookings() {
             </button>
             <button
               onClick={() => setFilter("confirmed")}
-              className={`px-3 md:px-4 py-2 rounded text-sm ${
+              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
                 filter === "confirmed"
                   ? "bg-green-600 text-white"
                   : "bg-white text-gray-700"
@@ -178,7 +178,7 @@ export default function AdminBookings() {
             </button>
             <button
               onClick={() => setFilter("completed")}
-              className={`px-3 md:px-4 py-2 rounded text-sm ${
+              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
                 filter === "completed"
                   ? "bg-blue-600 text-white"
                   : "bg-white text-gray-700"

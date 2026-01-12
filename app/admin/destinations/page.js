@@ -144,17 +144,17 @@ export default function AdminDestinations() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pt-0 pb-24 -mt-24 md:-mt-28 -mb-24 md:-mb-28">
+      <div className="max-w-7xl mx-auto px-4 pt-28 md:pt-32">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4">Manage Destinations</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white">Manage Destinations</h1>
           <button
             onClick={() => {
               setShowForm(!showForm);
               setEditingId(null);
               resetForm();
             }}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-6 py-2 rounded-3xl hover:bg-blue-700 transition"
           >
             {showForm ? "Cancel" : "Add New Destination"}
           </button>
@@ -162,8 +162,8 @@ export default function AdminDestinations() {
 
         {/* Add/Edit Form */}
         {showForm && (
-          <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-            <h2 className="text-2xl font-bold mb-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg mb-8 text-gray-900">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">
               {editingId ? "Edit Destination" : "Add New Destination"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">

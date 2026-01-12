@@ -59,7 +59,7 @@ export default function BlogPage() {
   return (
     <PageTransition>
       <div
-        className="relative w-full min-h-screen overflow-hidden -mt-24 pt-24"
+        className="relative w-full min-h-screen overflow-hidden  "
         style={{
           backgroundImage: "url('/blogbg.jpg')",
           backgroundSize: "cover",
@@ -127,7 +127,7 @@ export default function BlogPage() {
             priority
             className="object-cover"
           /> */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30 flex flex-col items-center justify-center text-center px-4">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30 flex flex-col items-center justify-center text-center px-4 pt-24 sm:pt-28">
             <FadeInUp>
               <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 sm:mb-4">
                 Blogs

@@ -4,13 +4,27 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { PageTransition, FadeInUp, StaggerContainer, StaggerItem, ScaleIn } from "@/components/animations";
+import {
+  PageTransition,
+  FadeInUp,
+  StaggerContainer,
+  StaggerItem,
+  ScaleIn,
+} from "@/components/animations";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statValues, setStatValues] = useState({
+    destinations: 0,
+    users: 0,
+    bookings: 0,
+    pending: 0,
+  });
 
   useEffect(() => {
     if (status === "loading") return;
@@ -20,12 +34,55 @@ export default function AdminDashboard() {
       return;
     }
 
-    // Check if user is admin (you'll need to add this check)
-    // For now, we'll assume logged in users can access
     setIsAdmin(true);
     setLoading(false);
   }, [session, status, router]);
 
+  useEffect(() => {
+    if (status !== "authenticated" || !session) return;
+
+    const controller = new AbortController();
+
+    async function loadStats() {
+      try {
+        setStatsLoading(true);
+
+        const [destRes, usersRes, bookingsRes] = await Promise.all([
+          fetch("/api/destinations", { signal: controller.signal }),
+          fetch("/api/users", { signal: controller.signal }),
+          fetch("/api/bookings", { signal: controller.signal }),
+        ]);
+
+        const [destData, usersData, bookingsData] = await Promise.all([
+          destRes.ok ? destRes.json() : Promise.resolve({ destinations: [] }),
+          usersRes.ok ? usersRes.json() : Promise.resolve({ users: [] }),
+          bookingsRes.ok ? bookingsRes.json() : Promise.resolve({ bookings: [] }),
+        ]);
+
+        const bookings = Array.isArray(bookingsData.bookings)
+          ? bookingsData.bookings
+          : [];
+
+        setStatValues({
+          destinations: Array.isArray(destData.destinations)
+            ? destData.destinations.length
+            : 0,
+          users: Array.isArray(usersData.users) ? usersData.users.length : 0,
+          bookings: bookings.length,
+          pending: bookings.filter((b) => b.status === "pending").length,
+        });
+      } catch (error) {
+        console.error("Failed to load admin stats:", error);
+      } finally {
+        if (!controller.signal.aborted) {
+          setStatsLoading(false);
+        }
+      }
+    }
+
+    loadStats();
+    return () => controller.abort();
+  }, [status, session]);
   if (loading || status === "loading") {
     return (
       <PageTransition>
@@ -43,153 +100,105 @@ export default function AdminDashboard() {
       <PageTransition>
         <div className="min-h-screen flex items-center justify-center">
           <FadeInUp>
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-              <p>You don&apos;t have permission to access this page.</p>
-            </div>
+            <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
           </FadeInUp>
         </div>
       </PageTransition>
     );
   }
 
+  const navItems = [
+    { name: "Destinations", path: "/admin/destinations" },
+    { name: "Blogs", path: "/admin/blogs" },
+    { name: "Activities", path: "/admin/activities" },
+    { name: "Bookings", path: "/admin/bookings" },
+    { name: "Users", path: "/admin/users" },
+    { name: "Payments", path: "/admin/payments" },
+  ];
+
+  const stats = [
+    { label: "Destinations", key: "destinations", color: "blue" },
+    { label: "Users", key: "users", color: "green" },
+    { label: "Bookings", key: "bookings", color: "purple" },
+    { label: "Pending Bookings", key: "pending", color: "orange" },
+  ];
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <FadeInUp delay={0.2} once={false}>
-            <h1 className="text-2xl md:text-4xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="min-h-screen flex bg-gray-100">
+        <aside
+          className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out z-30 md:static md:translate-x-0 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="p-6 text-2xl font-bold border-b flex items-center justify-between">
+            <span>Admin Panel</span>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden text-sm text-gray-500 hover:text-gray-700"
+            >
+              Close
+            </button>
+          </div>
+
+          <nav className="flex-1 p-4 space-y-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.path}
+                className="block px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-600 hover:text-white transition"
+                onClick={() => setSidebarOpen(false)}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="p-4 border-t">
+            <button
+              onClick={() => router.push("/")}
+              className="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50"
+            >
+              Logout
+            </button>
+          </div>
+        </aside>
+
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        <main className="flex-1 p-6 md:p-8 md:ml-0 ml-0">
+          <div className="flex items-center justify-between mb-6">
+            <FadeInUp delay={0.1}>
+              <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            </FadeInUp>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            >
+              Menu
+            </button>
+          </div>
+
+          <FadeInUp delay={0.2}>
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((item) => (
+                <StaggerItem key={item.label}>
+                  <ScaleIn className="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h3 className={`text-3xl font-bold text-${item.color}-600`}>
+                      {statsLoading ? "--" : statValues[item.key] ?? 0}
+                    </h3>
+                    <p className="text-gray-600">{item.label}</p>
+                  </ScaleIn>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
           </FadeInUp>
-          
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Destinations Management */}
-            <StaggerItem>
-              <ScaleIn 
-                whileHover={true} 
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer"
-                delay={0.1}
-                once={false}
-              >
-                <Link href="/admin/destinations">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-semibold">Destinations</h2>
-                    <svg
-                      className="w-8 h-8 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-gray-600">Manage trekking destinations</p>
-                  <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all transform hover:scale-105">
-                    Manage
-                  </button>
-                </Link>
-              </ScaleIn>
-            </StaggerItem>
-
-            {/* Users Management */}
-            <StaggerItem>
-              <ScaleIn 
-                whileHover={true} 
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer"
-                delay={0.2}
-                once={false}
-              >
-                <Link href="/admin/users">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-semibold">Users</h2>
-                    <svg
-                      className="w-8 h-8 text-green-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-gray-600">Manage users and roles</p>
-                  <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-all transform hover:scale-105">
-                    Manage
-                  </button>
-                </Link>
-              </ScaleIn>
-            </StaggerItem>
-
-            {/* Bookings Management */}
-            <StaggerItem>
-              <ScaleIn 
-                whileHover={true} 
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition cursor-pointer"
-                delay={0.3}
-                once={false}
-              >
-                <Link href="/admin/bookings">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-semibold">Bookings</h2>
-                    <svg
-                      className="w-8 h-8 text-purple-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-gray-600">Manage trek bookings</p>
-                  <button className="mt-4 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-all transform hover:scale-105">
-                    Manage
-                  </button>
-                </Link>
-              </ScaleIn>
-            </StaggerItem>
-          </StaggerContainer>
-
-          {/* Additional Stats Section */}
-          <FadeInUp delay={0.5} once={false} className="mt-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h3 className="text-3xl font-bold text-blue-600">25</h3>
-                <p className="text-gray-600">Total Destinations</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h3 className="text-3xl font-bold text-green-600">150</h3>
-                <p className="text-gray-600">Active Users</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h3 className="text-3xl font-bold text-purple-600">89</h3>
-                <p className="text-gray-600">Total Bookings</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h3 className="text-3xl font-bold text-orange-600">12</h3>
-                <p className="text-gray-600">Pending Reviews</p>
-              </div>
-            </div>
-          </FadeInUp>
-        </div>
+        </main>
       </div>
     </PageTransition>
   );
