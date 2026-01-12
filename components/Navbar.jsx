@@ -113,8 +113,13 @@ export default function Navbar() {
           {/* Right Section: Auth & CTA */}
           <div className="flex items-center gap-4">
             {session ? (
-              <div className="hidden md:flex items-center gap-4 border-l border-white/10 pl-4">
-                <span className="text-xs text-gray-400 uppercase tracking-widest">Hi, {session.user?.name?.split(' ')[0]}</span>
+              <div className="hidden md:flex items-center gap-3 border-l border-white/10 pl-4">
+                <Link
+                  href={session.user?.role === "admin" ? "/admin" : "/user/dashboard"}
+                  className="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded-full transition"
+                >
+                  Hi, {session.user?.name?.split(" ")[0] || "User"}
+                </Link>
                 <button 
                   onClick={() => signOut()}
                   className="text-xs font-bold hover:text-emerald-400 transition"
@@ -162,6 +167,9 @@ export default function Navbar() {
            ))}
            {session?.user.role === 'admin' && (
              <Link href="/admin" className="text-purple-400">Admin Dashboard</Link>
+           )}
+           {session && session.user?.role !== 'admin' && (
+             <Link href="/user/dashboard" className="text-emerald-400">My Dashboard</Link>
            )}
         </div>
       </div>

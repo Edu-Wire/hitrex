@@ -1,43 +1,56 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const trips = [
-  {
-    id: "day-trips",
-    title: "Day Trips",
-    subtitle: "01 / Adventure",
-    coordinates: "46.8523° N, 121.7603° W",
-    description: "Experience the thrill of outdoor adventure in just one day with Hitrex’s carefully curated day trips.",
-    images: ["/images/trip-1.avif", "/images/trip-2.avif", "/images/trip-3.avif"],
-  },
-  {
-    id: "weekend-trips",
-    title: "Weekend Trips",
-    subtitle: "02 / Escape",
-    coordinates: "36.2704° N, 116.8101° W",
-    description: "Make the most of your weekend with Hitrex’s exciting weekend and long weekend trips.",
-    images: ["/images/trip-4.avif", "/images/trip-5.avif", "/images/trip-6.avif"],
-  },
-  {
-    id: "camping-trips",
-    title: "Camping Trips",
-    subtitle: "03 / Immersive",
-    coordinates: "63.0692° N, 151.0070° W",
-    description: "Embark on a journey of discovery with Hitrex’s long tours, combining hiking and camping.",
-    images: ["/images/trip-7.avif", "/images/trip-8.avif", "/images/trip-9.avif"],
-  },
-];
-
 export default function TripsPage() {
   const containerRef = useRef(null);
   const heroRef = useRef(null);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    const loadActivities = async () => {
+      try {
+        const res = await fetch("/api/activities", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("Failed to fetch activities");
+        const data = await res.json();
+        const apiActivities = Array.isArray(data?.activities)
+          ? data.activities
+          : [];
+        if (!controller.signal.aborted) {
+          setTrips(apiActivities);
+          setError(apiActivities.length ? null : "No activities found.");
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error(err);
+          setTrips([]);
+          setError("Unable to load activities.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadActivities();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!trips.length) return;
+
     const ctx = gsap.context(() => {
       // 1. Smooth Skew Effect on Scroll
       let proxy = { skew: 0 },
@@ -100,7 +113,7 @@ export default function TripsPage() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [trips]);
 
   return (
     <div ref={containerRef} className="bg-[#0a0a0a] text-white selection:bg-orange-500 overflow-x-hidden">
@@ -132,6 +145,12 @@ export default function TripsPage() {
 
       {/* 2. TRIPS ITERATION */}
       <div className="relative z-20 space-y-40 pb-40">
+        {error && (
+          <p className="text-center text-sm text-amber-500">{error}</p>
+        )}
+        {loading && (
+          <p className="text-center text-xs text-gray-400">Loading activities...</p>
+        )}
         {trips.map((trip, index) => {
           const isEven = index % 2 === 0;
           return (
