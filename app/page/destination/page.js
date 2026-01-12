@@ -13,7 +13,8 @@ export default function DestinationsPage() {
   const [loading, setLoading] = useState(true);
   const [locations, setLocations] = useState(["All"]);
   const [activities, setActivities] = useState(["All"]);
-  
+
+  const containerRef = useRef(null);
   const headerRef = useRef(null);
   const cardsRef = useRef([]);
 
@@ -27,17 +28,20 @@ export default function DestinationsPage() {
       const data = await res.json();
       const list = data.destinations || [];
       setDestinations(list);
-      
+
       const locs = new Set(["All"]);
       const acts = new Set(["All"]);
-      list.forEach(d => {
-        d.location?.split("/").forEach(l => locs.add(l.trim()));
-        d.tags?.forEach(t => acts.add(t));
+      list.forEach((d) => {
+        d.location?.split("/").forEach((l) => locs.add(l.trim()));
+        d.tags?.forEach((t) => acts.add(t));
       });
       setLocations(Array.from(locs));
       setActivities(Array.from(acts));
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filtered = destinations.filter((dest) => {
@@ -47,205 +51,213 @@ export default function DestinationsPage() {
     );
   });
 
-  // GSAP 3D Scroll Animations
   useEffect(() => {
-    if (loading || filtered.length === 0) return;
-    
+    if (loading) return;
+
     gsap.registerPlugin(ScrollTrigger);
-
-    // Header Parallax
-    gsap.to(".hero-bg", {
-      scrollTrigger: {
-        trigger: headerRef.current,
-        start: "top top",
-        scrub: true
-      },
-      y: 100,
-      scale: 1.1,
-      opacity: 0.2
-    });
-
-    const cards = cardsRef.current.filter(Boolean);
-    
-    cards.forEach((card, i) => {
-      // 1. Perspective Flip on Scroll
-      gsap.fromTo(card, 
-        { 
-          opacity: 0, 
-          rotationX: -30, 
-          y: 100, 
-          scale: 0.9,
-          transformOrigin: "top center" 
-        },
-        {
-          opacity: 1,
-          rotationX: 0,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top bottom-=100",
-            end: "top center+=100",
-            scrub: 1,
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-
-      // 2. Continuous Floating Animation
-      gsap.to(card, {
-        y: "-=10",
-        duration: 2 + Math.random(),
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: i * 0.2
+    const ctx = gsap.context(() => {
+      // 1. HERO TEXT REVEAL
+      const chars = gsap.utils.toArray(".char");
+      gsap.to(chars, {
+        y: "0%",
+        opacity: 1,
+        duration: 1.5,
+        stagger: 0.04,
+        ease: "expo.out",
+        delay: 0.3,
       });
-    });
 
-    // 3. Image Parallax within cards
-    const cardImages = document.querySelectorAll(".card-parallax-img");
-    cardImages.forEach(img => {
-      gsap.to(img, {
-        yPercent: 15,
-        ease: "none",
+      // 2. HERO BG PARALLAX
+      gsap.to(".hero-bg", {
         scrollTrigger: {
-          trigger: img,
-          scrub: true
-        }
+          trigger: headerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1.5,
+        },
+        y: 150,
+        scale: 1.05,
+        ease: "none",
       });
-    });
 
-    return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
+      // 3. STAGGERED CARD REVEAL
+      const cards = cardsRef.current.filter(Boolean);
+      gsap.set(cards, { opacity: 0, y: 50 });
+
+      ScrollTrigger.batch(cards, {
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 1,
+            ease: "power4.out",
+            overwrite: true,
+          }),
+        start: "top bottom-=50px",
+      });
+
+      // 4. FLOATING EFFECT
+      cards.forEach((card, i) => {
+        gsap.to(card, {
+          y: "-=10",
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: i * 0.2,
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, [filtered, loading]);
 
+  const splitText = (text) => {
+    return text.split("").map((char, i) => (
+      <span key={i} className="inline-block overflow-hidden h-fit leading-tight">
+        <span className="char inline-block translate-y-[110%] opacity-0 will-change-transform">
+          {char === " " ? "\u00A0" : char}
+        </span>
+      </span>
+    ));
+  };
+
   return (
-    <div className="bg-[#080808] min-h-screen text-white overflow-x-hidden selection:bg-orange-500 selection:text-white">
-      
-      {/* 1. IMPACT HERO SECTION */}
-      <section ref={headerRef} className="relative h-[70vh] w-full flex flex-col items-center justify-center overflow-hidden">
-        <div className="hero-bg absolute inset-0">
+    <div
+      ref={containerRef}
+      className="bg-[#050505] min-h-screen text-white overflow-x-hidden selection:bg-orange-600 -mt-24 md:-mt-28"
+    >
+      <section
+        ref={headerRef}
+        className="relative h-[100vh] w-full flex flex-col items-center justify-center overflow-hidden pt-24"
+      >
+        <div className="hero-bg absolute inset-0 will-change-transform">
           <Image
-            src="/images/samrat-khadka-wrfl3DeoTIw-unsplash.jpg"
-            alt="Trekking Hero"
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80"
+            alt="Mountains"
             fill
             priority
             className="object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#080808]/50 to-[#080808]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/15 to-[#050505]/70" />
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-5xl">
-          <p className="text-orange-500 font-bold tracking-[0.4em] uppercase text-xs mb-4 animate-fade-in">Hitrex Worldwide</p>
-          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter mb-8 opacity-0 animate-reveal-title">
-            GO <span className="text-transparent stroke-text">BEYOND</span>
+        <div className="relative z-10 text-center px-4 max-w-7xl">
+          <h1 className="text-8xl md:text-[11vw] font-black tracking-tighter mb-12 leading-[0.8] flex flex-col items-center">
+            <span className="flex">{splitText("BEYOND")}</span>
+            <span className="flex text-transparent stroke-text">
+              {splitText("HORIZONS")}
+            </span>
           </h1>
-          
-          {/* FLOATING FILTER PANEL */}
-          <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <div className="flex flex-1 w-full items-center px-6 gap-4 border-b md:border-b-0 md:border-r border-white/10 py-3">
-              <span className="text-orange-500 font-black text-[10px] uppercase tracking-widest">Target</span>
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-transparent text-lg font-black w-full outline-none appearance-none cursor-pointer"
-              >
-                {locations.map(loc => <option key={loc} value={loc} className="bg-stone-950">{loc}</option>)}
-              </select>
+
+          {/* REDESIGNED COMPACT FILTER BAR */}
+          <div className="bg-white/[0.01] backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl max-w-fit mx-auto transition-all hover:bg-white/[0.05]">
+            
+            {/* Region Select */}
+            <div className="relative group px-6 py-2 w-full md:w-auto md:min-w-[160px] border-b md:border-b-0 md:border-r border-white/5 transition-colors hover:bg-white/5 rounded-xl md:rounded-none md:first:rounded-l-full">
+              <div className="flex flex-col items-start">
+                <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
+                  Region
+                </label>
+                <div className="relative w-full flex items-center">
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    className="bg-transparent text-sm font-medium text-white w-full outline-none appearance-none cursor-pointer font-sans py-0.5 pr-6"
+                  >
+                    {locations.map((loc) => (
+                      <option key={loc} value={loc} className="bg-zinc-900 text-white">
+                        {loc}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-0 pointer-events-none text-zinc-500 group-hover:text-white transition-colors">
+                    <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-1 w-full items-center px-6 gap-4 py-3">
-              <span className="text-orange-500 font-black text-[10px] uppercase tracking-widest">Type</span>
-              <select
-                value={selectedActivity}
-                onChange={(e) => setSelectedActivity(e.target.value)}
-                className="bg-transparent text-lg font-black w-full outline-none appearance-none cursor-pointer"
-              >
-                {activities.map(act => <option key={act} value={act} className="bg-stone-950">{act}</option>)}
-              </select>
+            {/* Adventure Select */}
+            <div className="relative group px-6 py-2 w-full md:w-auto md:min-w-[160px] transition-colors hover:bg-white/5 rounded-xl md:rounded-none">
+              <div className="flex flex-col items-start">
+                <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
+                  Adventure
+                </label>
+                <div className="relative w-full flex items-center">
+                  <select
+                    value={selectedActivity}
+                    onChange={(e) => setSelectedActivity(e.target.value)}
+                    className="bg-transparent text-sm font-medium text-white w-full outline-none appearance-none cursor-pointer font-sans py-0.5 pr-6"
+                  >
+                    {activities.map((act) => (
+                      <option key={act} value={act} className="bg-zinc-900 text-white">
+                        {act}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-0 pointer-events-none text-zinc-500 group-hover:text-white transition-colors">
+                    <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <button className="bg-orange-600 hover:bg-orange-500 text-white px-12 py-4 rounded-xl md:rounded-full font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 shadow-lg shadow-orange-900/20">
+            {/* Action Button */}
+            <button className="w-full md:w-auto bg-white text-black hover:bg-orange-600 hover:text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold uppercase text-[10px] tracking-widest transition-all duration-300 shadow-xl whitespace-nowrap">
               Discover
             </button>
           </div>
         </div>
       </section>
 
-      {/* 2. PERSPECTIVE GRID */}
-      <main className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="h-[2px] w-12 bg-orange-600" />
-              <p className="text-orange-500 font-black text-xs tracking-widest uppercase">Catalog 2026</p>
-            </div>
-            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter">THE EXPEDITIONS</h2>
+      <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-32">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+          <div className="space-y-4">
+            <p className="text-orange-500 font-bold text-xs tracking-[0.3em] uppercase">Selection / 2026</p>
+            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none">PREMIUM<br />ROUTES</h2>
           </div>
-          <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur-xl">
-             <span className="text-3xl font-black text-orange-500">{filtered.length}</span>
-             <span className="text-xs font-bold text-gray-500 ml-3 uppercase tracking-widest">Paths Found</span>
+          <div className="text-right">
+            <span className="text-8xl font-light text-white/5 tracking-tighter">{filtered.length}</span>
           </div>
         </div>
 
         {loading ? (
           <div className="h-96 flex items-center justify-center">
-            <div className="w-16 h-1 w-32 bg-white/10 overflow-hidden relative rounded-full">
-               <div className="absolute inset-0 bg-orange-600 animate-loading-bar" />
+            <div className="w-24 h-[1px] bg-white/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-orange-600 animate-loading-smooth" />
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 perspective-container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
             {filtered.map((dest, index) => (
-              <div
-                key={dest._id}
-                ref={(el) => (cardsRef.current[index] = el)}
-                className="group relative bg-[#111] rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-orange-500/40 transition-all duration-700 shadow-2xl will-change-transform"
-              >
-                {/* Parallax Image Section */}
-                <div className="relative h-[450px] overflow-hidden">
-                  <div className="card-parallax-img absolute inset-0 h-[120%] -top-[10%]">
-                    <Image
-                      src={dest.image}
-                      alt={dest.name}
-                      fill
-                      className="object-cover opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
-                  
-                  {/* Category Tag */}
-                  <div className="absolute top-8 left-8">
-                     <span className="bg-orange-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl">
-                        {dest.tags[0]}
-                     </span>
+              <div key={dest._id} ref={(el) => (cardsRef.current[index] = el)} className="group relative will-change-transform">
+                <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden bg-zinc-900 transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.3,1)] group-hover:scale-[0.98]">
+                  <Image src={dest.image} alt={dest.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                  <div className="absolute top-8 left-8 overflow-hidden rounded-full">
+                    <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black px-5 py-2 inline-block uppercase tracking-widest border border-white/20">{dest.tags[0]}</span>
                   </div>
                 </div>
-
-                {/* Content Overlay */}
-                <div className="p-10 relative -mt-32 z-10 bg-gradient-to-t from-[#111] via-[#111] to-transparent">
-                  <p className="text-orange-500 font-mono text-[10px] uppercase tracking-[0.3em] mb-3">{dest.location}</p>
-                  <h3 className="text-4xl font-black italic tracking-tighter mb-6 group-hover:text-orange-500 transition-colors uppercase leading-none">
-                    {dest.name}
-                  </h3>
-                  
-                  <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                <div className="mt-8 px-4">
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                       <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Duration</p>
-                       <p className="text-lg font-black">{dest.date}</p>
+                      <p className="text-orange-500 font-bold text-[10px] uppercase tracking-widest mb-2">{dest.location}</p>
+                      <h3 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors group-hover:text-orange-500">{dest.name}</h3>
                     </div>
-                    <button 
-                      onClick={() => router.push(`/book/${dest._id}`)}
-                      className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all transform hover:rotate-45"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </button>
+                    <div className="text-right">
+                      <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Est.</p>
+                      <p className="text-2xl font-black">${dest.price || "2,400"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dest.date}</p>
+                    <button onClick={() => router.push(`/book/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
                   </div>
                 </div>
               </div>
@@ -255,28 +267,28 @@ export default function DestinationsPage() {
       </main>
 
       <style jsx global>{`
-        .perspective-container {
-          perspective: 2000px;
-        }
         .stroke-text {
-          -webkit-text-stroke: 2px white;
+          -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+          text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+          transition: -webkit-text-stroke 0.4s ease;
         }
-        @keyframes reveal-title {
-          from { opacity: 0; transform: translateY(80px) rotateX(-20deg); }
-          to { opacity: 1; transform: translateY(0) rotateX(0); }
+        .stroke-text:hover {
+          -webkit-text-stroke: 1.5px rgba(255, 255, 255, 1);
         }
-        @keyframes loading-bar {
+        @keyframes reveal-simple {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-reveal-simple {
+          animation: reveal-simple 1s ease forwards 1s;
+        }
+        @keyframes loading-smooth {
           0% { transform: translateX(-100%); }
+          50% { transform: translateX(0); }
           100% { transform: translateX(100%); }
         }
-        .animate-reveal-title {
-          animation: reveal-title 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
-        .animate-fade-in {
-          animation: fadeIn 1s ease forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; } to { opacity: 1; }
+        .animate-loading-smooth {
+          animation: loading-smooth 2s infinite ease-in-out;
         }
       `}</style>
     </div>
