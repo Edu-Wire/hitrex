@@ -6,6 +6,10 @@ const nextConfig = {
   turbopack: {
     root: path.join(process.cwd()),
   },
+  experimental: {
+    // Disable lightningcss to avoid native binary requirement on Render
+    optimizeCss: false,
+  },
   images: {
     unoptimized: true, // ✅ Fix logo issue on Render (serves directly from /public)
     remotePatterns: [
