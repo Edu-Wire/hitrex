@@ -115,19 +115,27 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* 3. AUTH & CTA */}
+      
           <div className="flex items-center gap-4 justify-end">
-            {!session ? (
+            {session ? (
+              <div className="hidden md:flex items-center gap-3 border-l border-white/10 pl-4">
+                <Link
+                  href={session.user?.role === "admin" ? "/admin" : "/user/dashboard"}
+                  className="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-2 rounded-full transition"
+                >
+                  Hi, {session.user?.name?.split(" ")[0] || "User"}
+                </Link>
+                <button 
+                  onClick={() => signOut()} 
+                  className="text-xs font-bold text-gray-300 hover:text-red-400 transition tracking-widest"
+                >
+                  LOGOUT
+                </button>
+              </div>
+            ) : (
               <Link href="/login" className="hidden md:block text-sm font-medium text-gray-300 hover:text-emerald-400 transition">
                 Login
               </Link>
-            ) : (
-              <button 
-                onClick={() => signOut()} 
-                className="hidden md:block text-xs font-bold text-gray-400 hover:text-red-400 transition tracking-widest"
-              >
-                LOGOUT
-              </button>
             )}
             
             <Link
@@ -166,6 +174,24 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+        {session?.user?.role === "admin" && (
+          <Link 
+            href="/admin" 
+            onClick={() => setIsMenuOpen(false)} 
+            className="text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-tighter"
+          >
+            Admin Dashboard
+          </Link>
+        )}
+        {session && session.user?.role !== "admin" && (
+          <Link 
+            href="/user/dashboard" 
+            onClick={() => setIsMenuOpen(false)} 
+            className="text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-tighter"
+          >
+            My Dashboard
+          </Link>
+        )}
       </div>
     </nav>
   );

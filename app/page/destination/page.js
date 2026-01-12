@@ -64,7 +64,7 @@ export default function DestinationsPage() {
         duration: 1.5,
         stagger: 0.04,
         ease: "expo.out",
-        delay: 0.3,
+        delay: 0.2,
       });
 
       // 2. HERO BG PARALLAX

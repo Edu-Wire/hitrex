@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FiArrowUpRight, FiMap, FiCompass, FiActivity } from "react-icons/fi";
+import { FiArrowUpRight, FiMap, FiCompass, FiActivity, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { Oswald } from "next/font/google";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -35,6 +35,61 @@ const slides = [
 ];
 
 export default function HeroSection() {
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
+  const [soundOn, setSoundOn] = useState(false);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    const audioEl = audioRef.current;
+    if (!videoEl || !audioEl) return;
+
+    const syncAudio = async () => {
+      try {
+        audioEl.currentTime = videoEl.currentTime;
+        audioEl.volume = 0.18;
+        await audioEl.play();
+        setSoundOn(true);
+      } catch (err) {
+        console.warn("Audio autoplay blocked; user interaction will trigger it.");
+        setSoundOn(false);
+      }
+    };
+
+    const handlePlay = () => syncAudio();
+    const handlePause = () => audioEl.pause();
+
+    videoEl.addEventListener("play", handlePlay);
+    videoEl.addEventListener("pause", handlePause);
+
+    // Attempt initial sync
+    syncAudio();
+
+    return () => {
+      videoEl.removeEventListener("play", handlePlay);
+      videoEl.removeEventListener("pause", handlePause);
+    };
+  }, []);
+
+  const toggleSound = async () => {
+    const audioEl = audioRef.current;
+    const videoEl = videoRef.current;
+    if (!audioEl || !videoEl) return;
+    if (soundOn) {
+      audioEl.pause();
+      setSoundOn(false);
+      return;
+    }
+    try {
+      audioEl.currentTime = videoEl.currentTime;
+      audioEl.volume = 0.18;
+      await audioEl.play();
+      setSoundOn(true);
+    } catch (err) {
+      setSoundOn(false);
+    }
+  };
+
   return (
     <section className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
       {/* Background Video with subtle zoom effect */}
@@ -45,6 +100,7 @@ export default function HeroSection() {
         className="absolute inset-0"
       >
         <video
+          ref={videoRef}
           className="w-full h-full object-cover"
           src="/176780-856056381_small.mp4"
           autoPlay
@@ -52,10 +108,26 @@ export default function HeroSection() {
           loop
           playsInline
         />
+        <audio
+          ref={audioRef}
+          src="/sound/bird-sound-249237.mp3"
+          loop
+          preload="auto"
+        />
       </motion.div>
       
       {/* Dynamic Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
+
+      {/* Sound toggle overlay */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={toggleSound}
+          className="flex items-center justify-center px-4 py-3 rounded-full bg-white text-black text-sm font-semibold shadow-lg hover:bg-emerald-100 border border-emerald-200"
+        >
+          {soundOn ? <FiVolume2 /> : <FiVolumeX />}
+        </button>
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-32 md:pt-40">
         

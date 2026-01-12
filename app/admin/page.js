@@ -11,6 +11,7 @@ import {
   StaggerItem,
   ScaleIn,
 } from "@/components/animations";
+import { BarChart } from "@mui/x-charts/BarChart";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
   const [statValues, setStatValues] = useState({
     destinations: 0,
     upcomingTrips: 0,
+    activities: 0,
     blogs: 0,
     users: 0,
     bookings: 0,
@@ -49,17 +51,19 @@ export default function AdminDashboard() {
       try {
         setStatsLoading(true);
 
-        const [destRes, tripsRes, blogsRes, usersRes, bookingsRes] = await Promise.all([
+        const [destRes, tripsRes, activitiesRes, blogsRes, usersRes, bookingsRes] = await Promise.all([
           fetch("/api/destinations", { signal: controller.signal }),
           fetch("/api/upcoming-trips", { signal: controller.signal }),
+          fetch("/api/activities", { signal: controller.signal }),
           fetch("/api/blogs", { signal: controller.signal }),
           fetch("/api/users", { signal: controller.signal }),
           fetch("/api/bookings", { signal: controller.signal }),
         ]);
 
-        const [destData, tripsData, blogsData, usersData, bookingsData] = await Promise.all([
+        const [destData, tripsData, activitiesData, blogsData, usersData, bookingsData] = await Promise.all([
           destRes.ok ? destRes.json() : Promise.resolve({ destinations: [] }),
           tripsRes.ok ? tripsRes.json() : Promise.resolve({ trips: [] }),
+          activitiesRes.ok ? activitiesRes.json() : Promise.resolve({ activities: [] }),
           blogsRes.ok ? blogsRes.json() : Promise.resolve({ blogs: [] }),
           usersRes.ok ? usersRes.json() : Promise.resolve({ users: [] }),
           bookingsRes.ok ? bookingsRes.json() : Promise.resolve({ bookings: [] }),
@@ -69,6 +73,7 @@ export default function AdminDashboard() {
           ? bookingsData.bookings
           : [];
         const trips = Array.isArray(tripsData.trips) ? tripsData.trips : [];
+        const activities = Array.isArray(activitiesData.activities) ? activitiesData.activities : [];
         const blogs = Array.isArray(blogsData.blogs) ? blogsData.blogs : [];
 
         setStatValues({
@@ -76,6 +81,7 @@ export default function AdminDashboard() {
             ? destData.destinations.length
             : 0,
           upcomingTrips: trips.length,
+          activities: activities.length,
           blogs: blogs.length,
           users: Array.isArray(usersData.users) ? usersData.users.length : 0,
           bookings: bookings.length,
@@ -130,11 +136,20 @@ export default function AdminDashboard() {
   const stats = [
     { label: "Destinations", key: "destinations", color: "blue" },
     { label: "Upcoming Trips", key: "upcomingTrips", color: "emerald" },
+    { label: "Activities", key: "activities", color: "orange" },
     { label: "Blogs", key: "blogs", color: "indigo" },
     { label: "Users", key: "users", color: "green" },
     { label: "Bookings", key: "bookings", color: "purple" },
     { label: "Pending Bookings", key: "pending", color: "orange" },
   ];
+
+  const chartData = stats.map((item) => ({
+    label: item.label,
+    value: statValues[item.key] ?? 0,
+    color: item.color,
+  }));
+
+  const maxValue = Math.max(...chartData.map((d) => d.value), 1);
 
   return (
     <PageTransition>
@@ -202,7 +217,7 @@ export default function AdminDashboard() {
               {stats.map((item) => (
                 <StaggerItem key={item.label}>
                   <ScaleIn className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className={`text-3xl font-bold text-${item.color}-600`}>
+                    <h3 className="text-3xl font-bold text-emerald-600">
                       {statsLoading ? "--" : statValues[item.key] ?? 0}
                     </h3>
                     <p className="text-gray-600">{item.label}</p>
@@ -211,6 +226,41 @@ export default function AdminDashboard() {
               ))}
             </StaggerContainer>
           </FadeInUp>
+
+          {/* MUI Bar Chart analytics */}
+          <div className="mt-10 bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">Portfolio Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div className="md:col-span-2 overflow-x-auto">
+                <BarChart
+                  height={360}
+                  slotProps={{ legend: { hidden: true } }}
+                  series={[
+                    {
+                      data: chartData.map((d) => d.value),
+                      label: "Count",
+                      color: "#10b981",
+                    },
+                  ]}
+                  xAxis={[
+                    {
+                      data: chartData.map((d) => d.label),
+                      scaleType: "band",
+                    },
+                  ]}
+                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                />
+              </div>
+              <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 text-sm text-gray-700">
+                <p className="font-semibold mb-2 text-gray-900">Summary</p>
+                <ul className="space-y-2 list-disc list-inside">
+                  <li>Live counts pulled from API data for each resource.</li>
+                  <li>Rendered with MUI X BarChart for clearer comparison.</li>
+                  <li>Pending bookings remain a separate category.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     </PageTransition>
