@@ -235,9 +235,9 @@ export default function Home() {
                    viewport={{ once: true }}
                    className="space-y-6"
                  >
-                   <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
-                     // Technical Grading
-                   </span>
+                  <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
+                    Technical Grading
+                  </span>
                    <h2 className={`${displaySerif.className} text-5xl md:text-7xl font-bold text-gray-900 leading-tight`}>
                      Measure Your <br /> Grit.
                    </h2>
@@ -283,7 +283,7 @@ export default function Home() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
-                  // Community Pulse
+                  Community Pulse
                 </span>
                 <h2 className={`${displaySerif.className} text-5xl md:text-6xl font-bold leading-tight`}>
                   Trail Voices
@@ -432,9 +432,9 @@ export default function Home() {
              <div className="max-w-7xl mx-auto px-6">
                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                  <div className="space-y-4">
-                   <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
-                     // Strategic Briefing
-                   </span>
+                  <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
+                    Strategic Briefing
+                  </span>
                    <h2 className={`${displaySerif.className} text-5xl md:text-6xl font-bold leading-tight`}>
                      Expedition Intel
                    </h2>

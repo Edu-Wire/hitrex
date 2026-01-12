@@ -19,7 +19,6 @@ export async function GET(request) {
 
     // Debug: verify model shape when issues arise
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
       console.log("UpcomingTrip model debug:", {
         type: typeof UpcomingTrip,
         keys: Object.keys(UpcomingTrip || {}),

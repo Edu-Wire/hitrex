@@ -109,8 +109,8 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="text-zinc-400 text-xl leading-relaxed font-light italic">
-              "At Hitrex, we inspire individuals to embrace the outdoors through unforgettable 
-              hiking and trekking experiences that challenge the body and nourish the soul."
+              &ldquo;At Hitrex, we inspire individuals to embrace the outdoors through unforgettable 
+              hiking and trekking experiences that challenge the body and nourish the soul.&rdquo;
             </p>
             <p className="text-zinc-500 leading-relaxed">
               We connect clients with nature’s most beautiful landscapes, fostering 

@@ -84,7 +84,7 @@ export default function BlogPage() {
         <motion.div style={{ y: yText, opacity: opacityText }} className="relative z-20 text-center px-4">
           <div className="hero-subtext">
             <span className="text-orange-500 font-bold tracking-[0.5em] uppercase text-xs mb-4 block">
-              The Explorer's Journal
+              The Explorer&rsquo;s Journal
             </span>
           </div>
           
@@ -95,7 +95,7 @@ export default function BlogPage() {
 
           <div className="hero-subtext">
             <p className="max-w-md mx-auto text-zinc-400 font-light text-lg italic">
-              "Every trail has a story. Some are written in dirt, others in the soul."
+              &ldquo;Every trail has a story. Some are written in dirt, others in the soul.&rdquo;
             </p>
           </div>
         </motion.div>
