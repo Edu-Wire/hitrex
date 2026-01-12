@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Oswald, Playfair_Display } from "next/font/google";
@@ -14,6 +15,8 @@ import {
   FaCloudSun,
   FaTools,
   FaFirstAid,
+  FaStar,
+  FaUserCircle,
   FaExclamationTriangle, // ✅ added
   FaAngleRight,          // ✅ added
 } from "react-icons/fa";
@@ -32,6 +35,19 @@ export default function Home() {
   const [destinations, setDestinations] = useState(staticDestinations);
   const [destError, setDestError] = useState(null);
   const [destLoading, setDestLoading] = useState(true);
+  const { data: session } = useSession();
+
+  const [reviews, setReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const countWords = (text = "") =>
+    text
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean).length;
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -77,6 +93,90 @@ export default function Home() {
     loadDestinations();
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadReviews = async () => {
+      try {
+        setLoadingReviews(true);
+        const res = await fetch("/api/reviews", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        const data = await res.json();
+        if (!controller.signal.aborted) {
+          setReviews(Array.isArray(data?.reviews) ? data.reviews : []);
+          setReviewError("");
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error(err);
+          setReviewError("Could not load reviews right now.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingReviews(false);
+        }
+      }
+    };
+
+    loadReviews();
+    return () => controller.abort();
+  }, []);
+
+  const renderStars = (rating) => {
+    return Array.from({ length: 5 }).map((_, idx) => (
+      <FaStar
+        key={idx}
+        className={`h-4 w-4 ${
+          idx < rating ? "text-amber-400" : "text-zinc-600"
+        }`}
+      />
+    ));
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!session) {
+      setReviewError("Please log in to leave a review.");
+      return;
+    }
+
+    const wordCount = countWords(reviewForm.comment);
+    if (wordCount > 100) {
+      setReviewError("Review must be 100 words or fewer.");
+      return;
+    }
+
+    setSubmittingReview(true);
+    setReviewError("");
+    setReviewSuccess("");
+
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reviewForm),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to submit review");
+      }
+
+      setReviews((prev) => [data.review, ...prev]);
+      setReviewForm({ rating: 5, comment: "" });
+      setReviewSuccess("Review submitted. Thank you for sharing!");
+    } catch (err) {
+      setReviewError(err.message || "Failed to submit review");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const displayedReviews = reviews.slice(0, 3);
+  const reviewWordCount = countWords(reviewForm.comment);
 
   return (
     <PageTransition>
@@ -176,6 +276,156 @@ export default function Home() {
                  </div>
                </div>
              </section>
+
+        {/* ================= REVIEWS ================= */}
+        <section id="reviews" className="bg-zinc-950 py-32 text-white">
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-start">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
+                  // Community Pulse
+                </span>
+                <h2 className={`${displaySerif.className} text-5xl md:text-6xl font-bold leading-tight`}>
+                  Trail Voices
+                </h2>
+                <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
+                  Hear from trekkers who trusted HITREX. Share your story to guide the next explorer—login is required to keep submissions authentic.
+                </p>
+              </div>
+
+              <form onSubmit={handleReviewSubmit} className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-zinc-200">Your rating</label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setReviewForm((prev) => ({ ...prev, rating: val }))}
+                        className={`h-9 w-9 rounded-full border flex items-center justify-center transition ${
+                          reviewForm.rating >= val
+                            ? "bg-amber-500 border-amber-400 text-black"
+                            : "border-zinc-700 text-zinc-400 hover:border-amber-500/60"
+                        }`}
+                      >
+                        {val}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-zinc-200" htmlFor="review-comment">
+                      Experience
+                    </label>
+                    <span className={`text-[11px] ${reviewWordCount > 100 ? "text-red-400" : "text-zinc-500"}`}>
+                      {reviewWordCount}/100 words
+                    </span>
+                  </div>
+                  <textarea
+                    id="review-comment"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition min-h-[140px]"
+                    placeholder="What made your trek memorable?"
+                    value={reviewForm.comment}
+                    onChange={(e) =>
+                      setReviewForm((prev) => ({ ...prev, comment: e.target.value }))
+                    }
+                    disabled={submittingReview}
+                  />
+                </div>
+
+                {!session && (
+                  <p className="text-xs text-amber-400">
+                    Please login before posting a review.
+                  </p>
+                )}
+
+                {reviewError && (
+                  <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2">
+                    {reviewError}
+                  </div>
+                )}
+                {reviewSuccess && (
+                  <div className="text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-3 py-2">
+                    {reviewSuccess}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={
+                    submittingReview ||
+                    !reviewForm.comment.trim() ||
+                    !session ||
+                    reviewWordCount > 100
+                  }
+                  className={`w-full text-sm font-bold uppercase tracking-widest rounded-xl py-3 transition ${
+                    submittingReview ||
+                    !reviewForm.comment.trim() ||
+                    !session ||
+                    reviewWordCount > 100
+                      ? "bg-zinc-700 text-zinc-400 cursor-not-allowed"
+                      : "bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20"
+                  }`}
+                >
+                  {submittingReview ? "Submitting..." : "Post Review"}
+                </button>
+              </form>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className={`${oswald.className} text-2xl uppercase font-bold`}>
+                  Recent Reviews
+                </h3>
+                <span className="text-xs text-zinc-500">Showing up to 3</span>
+              </div>
+
+              {loadingReviews ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((idx) => (
+                    <div
+                      key={idx}
+                      className="h-40 rounded-2xl bg-zinc-900 border border-zinc-800 animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : displayedReviews.length ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  {displayedReviews.map((review) => (
+                    <div
+                      key={review._id || review.id}
+                      className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 space-y-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FaUserCircle className="h-7 w-7 text-emerald-400" />
+                        <div>
+                          <p className="text-sm font-semibold text-white">
+                            {review.name || "Explorer"}
+                          </p>
+                          <div className="flex items-center gap-1">
+                            {renderStars(review.rating || 0)}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-zinc-300 leading-relaxed">
+                        {review.comment}
+                      </p>
+                      <p className="text-[11px] text-zinc-500">
+                        {review.createdAt
+                          ? new Date(review.createdAt).toLocaleDateString()
+                          : ""}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400">No reviews yet. Be the first to share your trek.</p>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* ================= INSIGHTS ================= */}
        <section id="insights" className="relative py-32 bg-zinc-950 text-white">
