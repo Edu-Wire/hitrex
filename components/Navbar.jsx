@@ -115,9 +115,8 @@ export default function Navbar() {
             ))}
           </div>
 
-<<<<<<< HEAD
-          {/* Right Section: Auth & CTA */}
-          <div className="flex items-center gap-4">
+      
+          <div className="flex items-center gap-4 justify-end">
             {session ? (
               <div className="hidden md:flex items-center gap-3 border-l border-white/10 pl-4">
                 <Link
@@ -127,29 +126,16 @@ export default function Navbar() {
                   Hi, {session.user?.name?.split(" ")[0] || "User"}
                 </Link>
                 <button 
-                  onClick={() => signOut()}
-                  className="text-xs font-bold hover:text-emerald-400 transition"
+                  onClick={() => signOut()} 
+                  className="text-xs font-bold text-gray-300 hover:text-red-400 transition tracking-widest"
                 >
                   LOGOUT
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="hidden md:block text-sm font-medium hover:text-emerald-400 transition">
-=======
-          {/* 3. AUTH & CTA */}
-          <div className="flex items-center gap-4 justify-end">
-            {!session ? (
               <Link href="/login" className="hidden md:block text-sm font-medium text-gray-300 hover:text-emerald-400 transition">
->>>>>>> 988a229d10509da3608886dd77be3555f882a78e
                 Login
               </Link>
-            ) : (
-              <button 
-                onClick={() => signOut()} 
-                className="hidden md:block text-xs font-bold text-gray-400 hover:text-red-400 transition tracking-widest"
-              >
-                LOGOUT
-              </button>
             )}
             
             <Link
@@ -178,21 +164,6 @@ export default function Navbar() {
       <div className={`fixed inset-0 bg-black/95 backdrop-blur-2xl transition-all duration-500 lg:hidden flex flex-col items-center justify-center space-y-8 text-3xl font-bold ${
         isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}>
-<<<<<<< HEAD
-        <div className="flex flex-col items-center justify-center h-full space-y-8 text-2xl font-bold">
-           {menuLinks.map((link) => (
-             <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className="hover:text-emerald-500 transition">
-                {link.label}
-             </Link>
-           ))}
-           {session?.user.role === 'admin' && (
-             <Link href="/admin" className="text-purple-400">Admin Dashboard</Link>
-           )}
-           {session && session.user?.role !== 'admin' && (
-             <Link href="/user/dashboard" className="text-emerald-400">My Dashboard</Link>
-           )}
-        </div>
-=======
         {menuLinks.map((link) => (
           <Link 
             key={link.href} 
@@ -203,7 +174,24 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
->>>>>>> 988a229d10509da3608886dd77be3555f882a78e
+        {session?.user?.role === "admin" && (
+          <Link 
+            href="/admin" 
+            onClick={() => setIsMenuOpen(false)} 
+            className="text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-tighter"
+          >
+            Admin Dashboard
+          </Link>
+        )}
+        {session && session.user?.role !== "admin" && (
+          <Link 
+            href="/user/dashboard" 
+            onClick={() => setIsMenuOpen(false)} 
+            className="text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-tighter"
+          >
+            My Dashboard
+          </Link>
+        )}
       </div>
     </nav>
   );

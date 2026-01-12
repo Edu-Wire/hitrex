@@ -64,7 +64,7 @@ export default function DestinationsPage() {
         duration: 1.5,
         stagger: 0.04,
         ease: "expo.out",
-        delay: 0.3,
+        delay: 0.2,
       });
 
       // 2. HERO BG PARALLAX
@@ -138,7 +138,7 @@ export default function DestinationsPage() {
             alt="Mountains"
             fill
             priority
-            className="object-cover opacity-40"
+            className="object-cover opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/15 to-[#050505]/70" />
         </div>

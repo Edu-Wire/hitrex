@@ -107,7 +107,7 @@ export default function BlogPage() {
             alt="Hero"
             fill
             priority
-            className="object-cover opacity-40 scale-105"
+            className="object-cover opacity-100 scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/60 to-[#050505]" />
         </div>

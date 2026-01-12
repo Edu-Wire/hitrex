@@ -67,7 +67,7 @@ export default function TripsPage() {
           duration: 1.2, 
           stagger: 0.05, 
           ease: "expo.out",
-          delay: 0.5 
+          delay: 0.5
         }
       );
 
@@ -154,15 +154,12 @@ export default function TripsPage() {
           src="/images/trip-hero.avif"
           alt="Trips banner"
           fill
-          className="object-cover opacity-60 scale-110"
+          className="object-cover opacity-90 scale-110"
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-[#0a0a0a]" />
         
         <div className="relative z-10 text-center skew-elem">
-          <p className="text-green-500 font-bold tracking-[0.5em] uppercase mb-4 opacity-0 animate-fade-in">
-            Hitrex Expedition
-          </p>
           <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col items-center">
             <span className="flex overflow-hidden">
               {splitText("OUR")}
