@@ -29,6 +29,15 @@ export default function AdminDashboard() {
     bookings: 0,
     pending: 0,
   });
+  const [displayValues, setDisplayValues] = useState({
+    destinations: 0,
+    upcomingTrips: 0,
+    activities: 0,
+    blogs: 0,
+    users: 0,
+    bookings: 0,
+    pending: 0,
+  });
 
   useEffect(() => {
     if (status === "loading") return;
@@ -99,6 +108,37 @@ export default function AdminDashboard() {
     loadStats();
     return () => controller.abort();
   }, [status, session]);
+
+  useEffect(() => {
+    if (statsLoading) return;
+
+    const keys = Object.keys(statValues);
+    const from = keys.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+    const to = { ...statValues };
+    const duration = 900;
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    let rafId;
+
+    const tick = (start) => (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = easeOut(progress);
+      const next = keys.reduce((acc, key) => {
+        const value = Math.round(from[key] + (to[key] - from[key]) * eased);
+        acc[key] = value;
+        return acc;
+      }, {});
+      setDisplayValues(next);
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick(start));
+      }
+    };
+
+    rafId = requestAnimationFrame((start) => tick(start)(start));
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [statsLoading, statValues]);
   if (loading || status === "loading") {
     return (
       <PageTransition>
@@ -218,7 +258,7 @@ export default function AdminDashboard() {
                 <StaggerItem key={item.label}>
                   <ScaleIn className="bg-white p-6 rounded-lg shadow-lg text-center">
                     <h3 className="text-3xl font-bold text-emerald-600">
-                      {statsLoading ? "--" : statValues[item.key] ?? 0}
+                      {statsLoading ? "--" : displayValues[item.key] ?? 0}
                     </h3>
                     <p className="text-gray-600">{item.label}</p>
                   </ScaleIn>
