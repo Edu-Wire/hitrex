@@ -39,7 +39,26 @@ export default function TripsPage() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Smooth Skew Effect on Scroll
+      // 1. LETTER ANIMATION: OUR TRIPS
+      // Select all character spans
+      const chars = gsap.utils.toArray(".char");
+      
+      gsap.fromTo(chars, 
+        { 
+          y: "100%", 
+          opacity: 0 
+        }, 
+        { 
+          y: "0%", 
+          opacity: 1, 
+          duration: 1.2, 
+          stagger: 0.05, 
+          ease: "expo.out",
+          delay: 0.5 
+        }
+      );
+
+      // 2. Smooth Skew Effect on Scroll
       let proxy = { skew: 0 },
           skewSetter = gsap.quickSetter(".skew-elem", "skewY", "deg"),
           clamp = gsap.utils.clamp(-2, 2); 
@@ -60,7 +79,7 @@ export default function TripsPage() {
         }
       });
 
-      // 2. Parallax Hero Text
+      // 3. Parallax Hero Text (on scroll)
       gsap.to(".hero-title", {
         scrollTrigger: {
           trigger: heroRef.current,
@@ -72,7 +91,7 @@ export default function TripsPage() {
         opacity: 0,
       });
 
-      // 3. Section Reveal Animations
+      // 4. Section Reveal Animations
       const sections = gsap.utils.toArray(".trip-section");
       sections.forEach((section) => {
         const revealImages = section.querySelectorAll(".reveal-img");
@@ -102,11 +121,22 @@ export default function TripsPage() {
     return () => ctx.revert();
   }, []);
 
+  // Helper function to split text into characters
+  const splitText = (text) => {
+    return text.split("").map((char, i) => (
+      <span key={i} className="inline-block overflow-hidden h-fit leading-none px-2">
+        <span className="char inline-block translate-y-full">
+          {char === " " ? "\u00A0" : char}
+        </span>
+      </span>
+    ));
+  };
+
   return (
-    <div ref={containerRef} className="bg-[#0a0a0a] text-white selection:bg-orange-500 overflow-x-hidden">
+    <div ref={containerRef} className="bg-[#0a0a0a] text-white selection:bg-orange-500 overflow-x-hidden -mt-24 md:-mt-28">
       
       {/* 1. ULTRA HERO SECTION */}
-      <section ref={heroRef} className="relative h-[110vh] w-full flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className="relative h-[110vh] w-full flex items-center justify-center overflow-hidden -mt-24 md:-mt-28">
         <Image
           src="/images/trip-hero.avif"
           alt="Trips banner"
@@ -117,9 +147,16 @@ export default function TripsPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-[#0a0a0a]" />
         
         <div className="relative z-10 text-center skew-elem">
-          <p className="text-orange-500 font-bold tracking-[0.5em] uppercase mb-4 opacity-0 animate-fade-in">Hitrex Expedition</p>
-          <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter italic">
-            OUR <br /> <span className="text-transparent stroke-text">TRIPS</span>
+          <p className="text-green-500 font-bold tracking-[0.5em] uppercase mb-4 opacity-0 animate-fade-in">
+            Hitrex Expedition
+          </p>
+          <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col items-center">
+            <span className="flex overflow-hidden">
+              {splitText("OUR")}
+            </span>
+            <span className="flex overflow-hidden text-transparent stroke-text">
+              {splitText("TRIPS")}
+            </span>
           </h1>
         </div>
 
