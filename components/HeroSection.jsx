@@ -36,7 +36,7 @@ const slides = [
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full min-h-screen overflow-hidden -mt-24 pt-24 bg-zinc-950">
+    <section className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
       {/* Background Video with subtle zoom effect */}
       <motion.div 
         initial={{ scale: 1.1 }}
@@ -57,7 +57,7 @@ export default function HeroSection() {
       {/* Dynamic Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh]">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-32 md:pt-40">
         
         {/* Left copy */}
         <motion.div 
@@ -77,7 +77,7 @@ export default function HeroSection() {
           </motion.div>
           
           <h1 className={`${heroHeadline.className} text-6xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}>
-            CONQUER <br /> <span className="text-transparent border-t border-b border-white/30 bg-clip-text bg-gradient-to-r from-white to-gray-500">THE UNKNOWN</span>
+            CONQUER <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-800">THE UNKNOWN</span>
           </h1>
           
           <p className="text-lg sm:text-xl text-gray-300 max-w-lg mb-10 font-light leading-relaxed">
@@ -104,13 +104,7 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom decorative stats for 'Hiking' vibe */}
-      <div className="absolute bottom-10 left-0 w-full hidden md:block">
-        <div className="max-w-7xl mx-auto px-8 flex gap-12 text-white/40 text-xs tracking-widest uppercase">
-          <div className="flex flex-col"><span>Lat: 45.8327° N</span><span>Lon: 6.8651° E</span></div>
-          <div className="flex flex-col"><span>Conditions: Clear</span><span>Temp: -4°C</span></div>
-          <div className="flex flex-col"><span>HITREX Official Partner</span><span>Est. 2024</span></div>
-        </div>
-      </div>
+ 
     </section>
   );
 }
