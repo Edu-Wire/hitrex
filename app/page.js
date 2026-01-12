@@ -41,7 +41,7 @@ export default function Home() {
     <PageTransition>
       <main
         ref={containerRef}
-        className="relative min-h-screen w-full bg-[#0a0a0a] overflow-hidden"
+        className="relative min-h-screen w-full bg-[#0a0a0a] overflow-hidden -mt-24 md:-mt-28"
       >
         {/* ================= HERO ================= */}
         <HeroSection />
@@ -49,7 +49,7 @@ export default function Home() {
         {/* ================= DESTINATIONS ================= */}
         <section
           id="destinations"
-          className="relative w-full py-28 bg-zinc-100 rounded-t-[4rem] -mt-12 z-20"
+          className="relative w-full pt-40 pb-32 bg-zinc-100 rounded-t-[4rem] mt-0 z-20"
         >
           <div className="max-w-7xl mx-auto px-6 mb-16">
             <motion.div style={{ y: y1 }}>

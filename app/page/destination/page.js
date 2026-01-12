@@ -3,19 +3,18 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 export default function DestinationsPage() {
   const router = useRouter();
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("All");
+  const [selectedActivity, setSelectedActivity] = useState("All");
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [locations, setLocations] = useState(["All"]);
   const [activities, setActivities] = useState(["All"]);
-  const scrollContainerRef = useRef(null);
-  const autoScrollIntervalRef = useRef(null);
-  const resumeTimeoutRef = useRef(null);
-  const [isPaused, setIsPaused] = useState(false);
+  
+  const headerRef = useRef(null);
   const cardsRef = useRef([]);
 
   useEffect(() => {
@@ -25,463 +24,261 @@ export default function DestinationsPage() {
   const fetchDestinations = async () => {
     try {
       const res = await fetch("/api/destinations");
-      
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      
       const data = await res.json();
+      const list = data.destinations || [];
+      setDestinations(list);
       
-      if (data.error) {
-        console.error("API returned error:", data.error);
-        setDestinations([]);
-        setLoading(false);
-        return;
-      }
-      
-      const destinationsList = data.destinations || [];
-      setDestinations(destinationsList);
-      
-      // Extract unique locations and activities
-      const uniqueLocations = new Set(["All"]);
-      const uniqueActivities = new Set(["All"]);
-      
-      destinationsList.forEach((dest) => {
-        // Extract country names from location
-        if (dest.location) {
-          const locationParts = dest.location.split("/");
-          locationParts.forEach((loc) => {
-            const trimmedLoc = loc.trim();
-            if (trimmedLoc) uniqueLocations.add(trimmedLoc);
-          });
-        }
-        
-        // Add all tags as activities
-        if (dest.tags && Array.isArray(dest.tags)) {
-          dest.tags.forEach((tag) => {
-            if (tag) uniqueActivities.add(tag);
-          });
-        }
+      const locs = new Set(["All"]);
+      const acts = new Set(["All"]);
+      list.forEach(d => {
+        d.location?.split("/").forEach(l => locs.add(l.trim()));
+        d.tags?.forEach(t => acts.add(t));
       });
-      
-      setLocations(Array.from(uniqueLocations));
-      setActivities(Array.from(uniqueActivities));
-    } catch (error) {
-      console.error("Error fetching destinations:", error);
-      setDestinations([]);
-    } finally {
-      setLoading(false);
-    }
+      setLocations(Array.from(locs));
+      setActivities(Array.from(acts));
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
   const filtered = destinations.filter((dest) => {
     return (
-      (selectedLocation === "" || selectedLocation === "All" || dest.location.includes(selectedLocation)) &&
-      (selectedActivity === "" || selectedActivity === "All" || dest.tags.includes(selectedActivity))
+      (selectedLocation === "All" || dest.location.includes(selectedLocation)) &&
+      (selectedActivity === "All" || dest.tags.includes(selectedActivity))
     );
   });
 
-  // GSAP ScrollTrigger animations for cards
+  // GSAP 3D Scroll Animations
   useEffect(() => {
-    if (filtered.length === 0 || loading) {
-      cardsRef.current = [];
-      return;
-    }
+    if (loading || filtered.length === 0) return;
+    
+    gsap.registerPlugin(ScrollTrigger);
 
-    let ScrollTriggerInstance;
-    let timer;
+    // Header Parallax
+    gsap.to(".hero-bg", {
+      scrollTrigger: {
+        trigger: headerRef.current,
+        start: "top top",
+        scrub: true
+      },
+      y: 100,
+      scale: 1.1,
+      opacity: 0.2
+    });
 
-    const initAnimations = async () => {
-      try {
-        // Dynamically import ScrollTrigger
-        const module = await import("gsap/ScrollTrigger");
-        ScrollTriggerInstance = module.ScrollTrigger;
-        gsap.registerPlugin(ScrollTriggerInstance);
-
-        // Wait for DOM to update
-        timer = setTimeout(() => {
-          const cards = cardsRef.current.filter(Boolean);
-          
-          if (cards.length === 0) return;
-
-          // Find the container (parent of cards)
-          const container = cards[0]?.parentElement;
-          if (!container) return;
-
-          // Set initial state for all cards
-          gsap.set(cards, {
-            opacity: 0,
-            y: 50
-          });
-
-          // Create a timeline that animates cards sequentially
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: container,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-              once: false
-            }
-          });
-
-          // Add each card animation to the timeline sequentially
-          cards.forEach((card, index) => {
-            tl.to(card, {
-              opacity: 1,
-              y: 0,
-              duration: 0.5,
-              ease: "power2.out"
-            }, index * 0.1); // Each card starts 0.1s after the previous one
-          });
-        }, 100);
-      } catch (error) {
-        console.error("Error loading ScrollTrigger:", error);
-      }
-    };
-
-    initAnimations();
-
-    return () => {
-      if (timer) clearTimeout(timer);
-      // Cleanup all ScrollTriggers
-      if (ScrollTriggerInstance) {
-        ScrollTriggerInstance.getAll().forEach(trigger => trigger.kill());
-      }
-    };
-  }, [filtered.length, loading]);
-
-  // Auto-scroll effect
-  useEffect(() => {
-    if (filtered.length === 0 || isPaused || loading) return;
-
-    const smoothScrollTo = (element, target, duration = 800) => {
-      const start = element.scrollLeft;
-      const distance = target - start;
-      let startTime = null;
-
-      const easeInOutCubic = (t) => {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      };
-
-      const animation = (currentTime) => {
-        if (startTime === null) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        const progress = Math.min(timeElapsed / duration, 1);
-        
-        element.scrollLeft = start + distance * easeInOutCubic(progress);
-        
-        if (progress < 1) {
-          requestAnimationFrame(animation);
-        }
-      };
-
-      requestAnimationFrame(animation);
-    };
-
-    const startAutoScroll = () => {
-      autoScrollIntervalRef.current = setInterval(() => {
-        if (scrollContainerRef.current) {
-          const container = scrollContainerRef.current;
-          const containerWidth = container.offsetWidth;
-          const gap = 24;
-          const cardWidth = (containerWidth - 2 * gap) / 3;
-          const scrollAmount = cardWidth + gap;
-          
-          // Check if we've reached the end
-          const maxScroll = container.scrollWidth - container.offsetWidth;
-          const currentScroll = container.scrollLeft;
-          
-          if (currentScroll + scrollAmount >= maxScroll - 10) {
-            // Loop back to the beginning
-            smoothScrollTo(container, 0);
-          } else {
-            smoothScrollTo(container, currentScroll + scrollAmount);
+    const cards = cardsRef.current.filter(Boolean);
+    
+    cards.forEach((card, i) => {
+      // 1. Perspective Flip on Scroll
+      gsap.fromTo(card, 
+        { 
+          opacity: 0, 
+          rotationX: -30, 
+          y: 100, 
+          scale: 0.9,
+          transformOrigin: "top center" 
+        },
+        {
+          opacity: 1,
+          rotationX: 0,
+          y: 0,
+          scale: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top bottom-=100",
+            end: "top center+=100",
+            scrub: 1,
+            toggleActions: "play none none reverse"
           }
         }
-      }, 3500); // Scroll every 3.5 seconds (allowing time for animation)
-    };
+      );
 
-    startAutoScroll();
+      // 2. Continuous Floating Animation
+      gsap.to(card, {
+        y: "-=10",
+        duration: 2 + Math.random(),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: i * 0.2
+      });
+    });
+
+    // 3. Image Parallax within cards
+    const cardImages = document.querySelectorAll(".card-parallax-img");
+    cardImages.forEach(img => {
+      gsap.to(img, {
+        yPercent: 15,
+        ease: "none",
+        scrollTrigger: {
+          trigger: img,
+          scrub: true
+        }
+      });
+    });
 
     return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-      if (resumeTimeoutRef.current) {
-        clearTimeout(resumeTimeoutRef.current);
-      }
+      ScrollTrigger.getAll().forEach(t => t.kill());
     };
-  }, [filtered.length, isPaused, loading]);
-
-  const smoothScrollTo = (element, target, duration = 800) => {
-    const start = element.scrollLeft;
-    const distance = target - start;
-    let startTime = null;
-
-    const easeInOutCubic = (t) => {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    };
-
-    const animation = (currentTime) => {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      
-      element.scrollLeft = start + distance * easeInOutCubic(progress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animation);
-      }
-    };
-
-    requestAnimationFrame(animation);
-  };
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      setIsPaused(true);
-      if (resumeTimeoutRef.current) {
-        clearTimeout(resumeTimeoutRef.current);
-      }
-      const container = scrollContainerRef.current;
-      const containerWidth = container.offsetWidth;
-      const gap = 24; // gap-6 = 1.5rem = 24px
-      const cardWidth = (containerWidth - 2 * gap) / 3;
-      const targetScroll = container.scrollLeft - (cardWidth + gap);
-      smoothScrollTo(container, targetScroll);
-      // Resume auto-scroll after 5 seconds
-      resumeTimeoutRef.current = setTimeout(() => setIsPaused(false), 5000);
-    }
-  };
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      setIsPaused(true);
-      if (resumeTimeoutRef.current) {
-        clearTimeout(resumeTimeoutRef.current);
-      }
-      const container = scrollContainerRef.current;
-      const containerWidth = container.offsetWidth;
-      const gap = 24; // gap-6 = 1.5rem = 24px
-      const cardWidth = (containerWidth - 2 * gap) / 3;
-      const targetScroll = container.scrollLeft + (cardWidth + gap);
-      smoothScrollTo(container, targetScroll);
-      // Resume auto-scroll after 5 seconds
-      resumeTimeoutRef.current = setTimeout(() => setIsPaused(false), 5000);
-    }
-  };
+  }, [filtered, loading]);
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative w-full h-screen -mt-24 md:-mt-28 flex items-center justify-center text-white">
-        <Image
-          src="/images/samrat-khadka-wrfl3DeoTIw-unsplash.jpg"
-          alt="Trekking Hero"
-          fill
-          priority
-          className="absolute object-cover"
-        />
-        <div className="absolute inset-0 bg-black/30 z-10"></div>
-        <div className="relative z-20 px-4 w-full max-w-4xl">
-          <style dangerouslySetInnerHTML={{__html: `
-            @keyframes slideUpLetter {
-              from {
-                opacity: 0;
-                transform: translateY(20px);
-              }
-              to {
-                opacity: 1;
-                transform: translateY(0);
-              }
-            }
-          `}} />
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-16 text-center mt-8 flex justify-center items-center flex-wrap">
-            {"DESTINATIONS".split("").map((letter, index) => (
-              <span
-                key={index}
-                className="inline-block tracking-wider"
-                style={{
-                  animation: `slideUpLetter 0.6s ease-out forwards`,
-                  animationDelay: `${index * 0.05}s`,
-                  opacity: 0,
-                  transform: "translateY(20px)",
-                  letterSpacing: "0.15em"
-                }}
-              >
-                {letter === " " ? "\u00A0" : letter}
-              </span>
-            ))}
+    <div className="bg-[#080808] min-h-screen text-white overflow-x-hidden selection:bg-orange-500 selection:text-white">
+      
+      {/* 1. IMPACT HERO SECTION */}
+      <section ref={headerRef} className="relative h-[70vh] w-full flex flex-col items-center justify-center overflow-hidden">
+        <div className="hero-bg absolute inset-0">
+          <Image
+            src="/images/samrat-khadka-wrfl3DeoTIw-unsplash.jpg"
+            alt="Trekking Hero"
+            fill
+            priority
+            className="object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#080808]/50 to-[#080808]" />
+        </div>
+
+        <div className="relative z-10 text-center px-4 max-w-5xl">
+          <p className="text-orange-500 font-bold tracking-[0.4em] uppercase text-xs mb-4 animate-fade-in">Hitrex Worldwide</p>
+          <h1 className="text-7xl md:text-9xl font-black italic tracking-tighter mb-8 opacity-0 animate-reveal-title">
+            GO <span className="text-transparent stroke-text">BEYOND</span>
           </h1>
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="px-4 py-3 rounded-xl bg-white/40 backdrop-blur-md border-2 border-white/80 text-white w-full md:w-auto min-w-[280px] focus:outline-none focus:ring-2 focus:ring-white/90 focus:border-white/90"
-            >
-              <option value="" disabled className="text-gray-400">
-                Location
-              </option>
-              {locations.map((loc) => (
-                <option key={loc} value={loc} className="text-gray-800">
-                  {loc}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedActivity}
-              onChange={(e) => setSelectedActivity(e.target.value)}
-              className="px-4 py-3 rounded-xl bg-white/40 backdrop-blur-md border-2 border-white/80 text-white w-full md:w-auto min-w-[280px] focus:outline-none focus:ring-2 focus:ring-white/90 focus:border-white/90"
-            >
-              <option value="" disabled className="text-gray-400">
-                Activity
-              </option>
-              {activities.map((act) => (
-                <option key={act} value={act} className="text-gray-800">
-                  {act}
-                </option>
-              ))}
-            </select>
-            <button className="px-8 py-3 rounded-xl bg-blue-500 text-white font-semibold hover:bg-blue-600 transition w-full md:w-auto whitespace-nowrap">
-              Find
+          
+          {/* FLOATING FILTER PANEL */}
+          <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-2 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <div className="flex flex-1 w-full items-center px-6 gap-4 border-b md:border-b-0 md:border-r border-white/10 py-3">
+              <span className="text-orange-500 font-black text-[10px] uppercase tracking-widest">Target</span>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="bg-transparent text-lg font-black w-full outline-none appearance-none cursor-pointer"
+              >
+                {locations.map(loc => <option key={loc} value={loc} className="bg-stone-950">{loc}</option>)}
+              </select>
+            </div>
+
+            <div className="flex flex-1 w-full items-center px-6 gap-4 py-3">
+              <span className="text-orange-500 font-black text-[10px] uppercase tracking-widest">Type</span>
+              <select
+                value={selectedActivity}
+                onChange={(e) => setSelectedActivity(e.target.value)}
+                className="bg-transparent text-lg font-black w-full outline-none appearance-none cursor-pointer"
+              >
+                {activities.map(act => <option key={act} value={act} className="bg-stone-950">{act}</option>)}
+              </select>
+            </div>
+
+            <button className="bg-orange-600 hover:bg-orange-500 text-white px-12 py-4 rounded-xl md:rounded-full font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 shadow-lg shadow-orange-900/20">
+              Discover
             </button>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <div className="mt-8">
-        {/* Destinations List */}
-        <main className="p-6">
-          <style dangerouslySetInnerHTML={{__html: `
-            @keyframes slideInFromLeft {
-              from {
-                opacity: 0;
-                transform: translateX(-50px);
-              }
-              to {
-                opacity: 1;
-                transform: translateX(0);
-              }
-            }
-            .slide-in-left {
-              animation: slideInFromLeft 0.8s ease-out forwards;
-              animation-delay: 0.3s;
-              opacity: 0;
-            }
-          `}} />
-          <h2 className="text-3xl font-bold mb-6 slide-in-left">Upcoming Trips</h2>
-          
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">Loading destinations...</p>
+      {/* 2. PERSPECTIVE GRID */}
+      <main className="max-w-[1400px] mx-auto px-6 md:px-12 py-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="h-[2px] w-12 bg-orange-600" />
+              <p className="text-orange-500 font-black text-xs tracking-widest uppercase">Catalog 2026</p>
             </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No destinations found.</p>
+            <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter">THE EXPEDITIONS</h2>
+          </div>
+          <div className="bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur-xl">
+             <span className="text-3xl font-black text-orange-500">{filtered.length}</span>
+             <span className="text-xs font-bold text-gray-500 ml-3 uppercase tracking-widest">Paths Found</span>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="h-96 flex items-center justify-center">
+            <div className="w-16 h-1 w-32 bg-white/10 overflow-hidden relative rounded-full">
+               <div className="absolute inset-0 bg-orange-600 animate-loading-bar" />
             </div>
-          ) : (
-            <div className="relative px-16">
-              <button
-                onClick={scrollLeft}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-500 rounded-full p-3 shadow-lg hover:bg-blue-600 hover:scale-110 hover:shadow-xl transition-all duration-300"
-                aria-label="Previous"
-              >
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 perspective-container">
+            {filtered.map((dest, index) => (
               <div
-                ref={scrollContainerRef}
-                className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
-                style={{ 
-                  scrollbarWidth: "none", 
-                  msOverflowStyle: "none",
-                  scrollBehavior: "smooth"
-                }}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
+                key={dest._id}
+                ref={(el) => (cardsRef.current[index] = el)}
+                className="group relative bg-[#111] rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-orange-500/40 transition-all duration-700 shadow-2xl will-change-transform"
               >
-                {filtered.map((dest, index) => (
-                  <div
-                    key={dest._id}
-                    ref={(el) => (cardsRef.current[index] = el)}
-                    className="group flex-shrink-0 snap-center bg-white rounded-lg shadow hover:shadow-lg transition"
-                    style={{ 
-                      width: "calc((100% - 3rem) / 3)"
-                    }}
-                  >
-                    <div className="overflow-hidden rounded-t-lg">
-                      <Image
-                        src={dest.image}
-                        alt={dest.name}
-                        width={600}
-                        height={400}
-                        className="rounded-t-lg object-cover w-full h-64 transition-transform duration-500 ease-in-out group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-xl font-bold">{dest.name}</h3>
-                      <p className="text-gray-600">{dest.location}</p>
-                      <p className="text-sm text-gray-500">{dest.date}</p>
-                      <div className="flex gap-2 mt-2 flex-wrap">
-                        {dest.tags.map((tag, i) => (
-                          <span
-                            key={i}
-                            className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                        {dest.description}
-                      </p>
-                      <div className="flex gap-2 mt-4">
-                        <button
-                          onClick={() => router.push(`/book/${dest._id}`)}
-                          className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                        >
-                          Book Now
-                        </button>
-                      </div>
-                    </div>
+                {/* Parallax Image Section */}
+                <div className="relative h-[450px] overflow-hidden">
+                  <div className="card-parallax-img absolute inset-0 h-[120%] -top-[10%]">
+                    <Image
+                      src={dest.image}
+                      alt={dest.name}
+                      fill
+                      className="object-cover opacity-60 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105"
+                    />
                   </div>
-                ))}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                  
+                  {/* Category Tag */}
+                  <div className="absolute top-8 left-8">
+                     <span className="bg-orange-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-xl">
+                        {dest.tags[0]}
+                     </span>
+                  </div>
+                </div>
+
+                {/* Content Overlay */}
+                <div className="p-10 relative -mt-32 z-10 bg-gradient-to-t from-[#111] via-[#111] to-transparent">
+                  <p className="text-orange-500 font-mono text-[10px] uppercase tracking-[0.3em] mb-3">{dest.location}</p>
+                  <h3 className="text-4xl font-black italic tracking-tighter mb-6 group-hover:text-orange-500 transition-colors uppercase leading-none">
+                    {dest.name}
+                  </h3>
+                  
+                  <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                    <div>
+                       <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Duration</p>
+                       <p className="text-lg font-black">{dest.date}</p>
+                    </div>
+                    <button 
+                      onClick={() => router.push(`/book/${dest._id}`)}
+                      className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all transform hover:rotate-45"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button
-                onClick={scrollRight}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-500 rounded-full p-3 shadow-lg hover:bg-blue-600 hover:scale-110 hover:shadow-xl transition-all duration-300"
-                aria-label="Next"
-              >
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-        </main>
-      </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      <style jsx global>{`
+        .perspective-container {
+          perspective: 2000px;
+        }
+        .stroke-text {
+          -webkit-text-stroke: 2px white;
+        }
+        @keyframes reveal-title {
+          from { opacity: 0; transform: translateY(80px) rotateX(-20deg); }
+          to { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+        @keyframes loading-bar {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-reveal-title {
+          animation: reveal-title 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        .animate-fade-in {
+          animation: fadeIn 1s ease forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; } to { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
