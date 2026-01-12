@@ -1,20 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { FiArrowLeft, FiArrowRight, FiCalendar, FiMapPin, FiActivity } from "react-icons/fi";
 import { FaMountain, FaCompass } from "react-icons/fa";
 import { Oswald } from "next/font/google";
-import upcomingTrips from "../data/upcomingTrips";
+import staticUpcomingTrips from "../data/upcomingTrips";
 
 const oswald = Oswald({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function UpcomingTrips() {
+  const [trips, setTrips] = useState(staticUpcomingTrips);
   const [current, setCurrent] = useState(0);
-  const [showControls, setShowControls] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const total = upcomingTrips.length;
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchTrips = async () => {
+      try {
+        const response = await fetch("/api/upcoming-trips", { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch upcoming trips");
+        }
+
+        const data = await response.json();
+        const apiTrips = Array.isArray(data?.trips) ? data.trips : [];
+
+        if (!isMounted) return;
+
+        if (apiTrips.length) {
+          setTrips(apiTrips);
+          setCurrent(0);
+          setError(null);
+        } else {
+          setTrips(staticUpcomingTrips);
+          setError("Live trips unavailable, showing defaults.");
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error(err);
+        setTrips(staticUpcomingTrips);
+        setError("Live trips unavailable, showing defaults.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchTrips();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const total = trips.length;
   const visibleCount = Math.min(total, 4);
 
   // Advanced Stack Physics
@@ -63,9 +106,15 @@ export default function UpcomingTrips() {
             <h2 className={`${oswald.className} text-5xl md:text-7xl font-bold text-white uppercase leading-[0.9]`}>
               Live <br /> <span className="text-emerald-500">Expeditions</span>
             </h2>
-            <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
+              <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
               Real-time upcoming departures. Our technical teams are currently prepping gear for these high-altitude routes.
             </p>
+            {error && (
+              <p className="text-amber-500 text-sm">{error}</p>
+            )}
+            {loading && (
+              <p className="text-zinc-500 text-xs">Refreshing itineraries...</p>
+            )}
             
             {/* Custom Navigation Bricks */}
             <div className="flex gap-4 pt-6">
@@ -89,7 +138,7 @@ export default function UpcomingTrips() {
             <AnimatePresence mode="popLayout">
               {Array.from({ length: visibleCount }).map((_, layerIdx) => {
                 const tripIndex = (current + layerIdx) % total;
-                const trip = upcomingTrips[tripIndex];
+                const trip = trips[tripIndex];
                 const style = getCardStyle(layerIdx);
                 const isTop = layerIdx === 0;
 

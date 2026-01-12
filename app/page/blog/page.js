@@ -15,35 +15,11 @@ import {
   SlideInRight,
 } from "@/components/animations";
 
-const blogs = [
-  {
-    id: "hiking",
-    subtitle: "Adventure",
-    title: "Hiking",
-    description:
-      "Discover breathtaking trails and unique experiences on our curated hiking adventures.",
-    images: ["/images/hiking-1.avif", "/images/hiking-2.avif", "/images/hiking-3.avif"],
-  },
-  {
-    id: "winter-hiking",
-    subtitle: "Snow Adventure",
-    title: "Winter Hiking",
-    description:
-      "Embrace the snow with thrilling winter hikes and stunning frozen landscapes.",
-    images: ["/images/winter-1.avif", "/images/winter-2.avif", "/images/winter-3.avif"],
-  },
-  {
-    id: "camping",
-    subtitle: "Forest Tours",
-    title: "Camping",
-    description:
-      "Reconnect with nature through immersive camping trips under starry skies.",
-    images: ["/images/camping-1.avif", "/images/camping-2.avif", "/images/camping-3.avif"],
-  },
-];
-
 export default function BlogPage() {
   const [cursor, setCursor] = useState({ x: 0, y: 0, visible: false });
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const onMove = (e) => setCursor({ x: e.clientX, y: e.clientY, visible: true });
@@ -54,6 +30,32 @@ export default function BlogPage() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
     };
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadBlogs = async () => {
+      try {
+        const res = await fetch("/api/blogs", { signal: controller.signal, cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to fetch blogs");
+        const data = await res.json();
+        const apiBlogs = Array.isArray(data?.blogs) ? data.blogs : [];
+        if (!controller.signal.aborted) {
+          setBlogs(apiBlogs);
+          setError(apiBlogs.length ? null : "No blogs available yet.");
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error(err);
+          setBlogs([]);
+          setError("Unable to load blogs right now.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+    loadBlogs();
+    return () => controller.abort();
   }, []);
 
   return (
@@ -152,9 +154,15 @@ export default function BlogPage() {
         >
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/85 via-white/90 to-white/95" />
           <div className="relative space-y-20">
+          {error && (
+            <p className="text-center text-sm text-amber-600">{error}</p>
+          )}
+          {loading && (
+            <p className="text-center text-xs text-gray-500">Loading blogs...</p>
+          )}
           {blogs.map((blog, index) => (
             <div
-              key={blog.id}
+              key={blog._id || blog.id || index}
               className={`flex flex-col ${
                 index % 2 === 1 ? "md:flex-row-reverse" : "md:flex-row"
               } gap-10 md:gap-16 items-center`}

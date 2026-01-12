@@ -21,6 +21,8 @@ export default function AdminDashboard() {
   const [statsLoading, setStatsLoading] = useState(true);
   const [statValues, setStatValues] = useState({
     destinations: 0,
+    upcomingTrips: 0,
+    blogs: 0,
     users: 0,
     bookings: 0,
     pending: 0,
@@ -47,14 +49,18 @@ export default function AdminDashboard() {
       try {
         setStatsLoading(true);
 
-        const [destRes, usersRes, bookingsRes] = await Promise.all([
+        const [destRes, tripsRes, blogsRes, usersRes, bookingsRes] = await Promise.all([
           fetch("/api/destinations", { signal: controller.signal }),
+          fetch("/api/upcoming-trips", { signal: controller.signal }),
+          fetch("/api/blogs", { signal: controller.signal }),
           fetch("/api/users", { signal: controller.signal }),
           fetch("/api/bookings", { signal: controller.signal }),
         ]);
 
-        const [destData, usersData, bookingsData] = await Promise.all([
+        const [destData, tripsData, blogsData, usersData, bookingsData] = await Promise.all([
           destRes.ok ? destRes.json() : Promise.resolve({ destinations: [] }),
+          tripsRes.ok ? tripsRes.json() : Promise.resolve({ trips: [] }),
+          blogsRes.ok ? blogsRes.json() : Promise.resolve({ blogs: [] }),
           usersRes.ok ? usersRes.json() : Promise.resolve({ users: [] }),
           bookingsRes.ok ? bookingsRes.json() : Promise.resolve({ bookings: [] }),
         ]);
@@ -62,11 +68,15 @@ export default function AdminDashboard() {
         const bookings = Array.isArray(bookingsData.bookings)
           ? bookingsData.bookings
           : [];
+        const trips = Array.isArray(tripsData.trips) ? tripsData.trips : [];
+        const blogs = Array.isArray(blogsData.blogs) ? blogsData.blogs : [];
 
         setStatValues({
           destinations: Array.isArray(destData.destinations)
             ? destData.destinations.length
             : 0,
+          upcomingTrips: trips.length,
+          blogs: blogs.length,
           users: Array.isArray(usersData.users) ? usersData.users.length : 0,
           bookings: bookings.length,
           pending: bookings.filter((b) => b.status === "pending").length,
@@ -109,7 +119,8 @@ export default function AdminDashboard() {
 
   const navItems = [
     { name: "Destinations", path: "/admin/destinations" },
-    { name: "Blogs", path: "/admin/blogs" },
+    { name: "Upcoming Trips", path: "/admin/upcoming-trips" },
+    { name: "Blogs", path: "/admin/blog" },
     { name: "Activities", path: "/admin/activities" },
     { name: "Bookings", path: "/admin/bookings" },
     { name: "Users", path: "/admin/users" },
@@ -118,6 +129,8 @@ export default function AdminDashboard() {
 
   const stats = [
     { label: "Destinations", key: "destinations", color: "blue" },
+    { label: "Upcoming Trips", key: "upcomingTrips", color: "emerald" },
+    { label: "Blogs", key: "blogs", color: "indigo" },
     { label: "Users", key: "users", color: "green" },
     { label: "Bookings", key: "bookings", color: "purple" },
     { label: "Pending Bookings", key: "pending", color: "orange" },

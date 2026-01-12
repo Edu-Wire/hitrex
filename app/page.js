@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Oswald, Playfair_Display } from "next/font/google";
@@ -21,7 +21,7 @@ import {
 
 import HeroSection from "@/components/HeroSection";
 import UpcomingTrips from "@/components/UpcomingTrips";
-import destinations from "@/data/destinations";
+import staticDestinations from "@/data/destinations";
 import { PageTransition, StaggerContainer } from "@/components/animations";
 
 const oswald = Oswald({ subsets: ["latin"], weight: ["400", "700"] });
@@ -29,6 +29,9 @@ const displaySerif = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
 
 export default function Home() {
   const containerRef = useRef(null);
+  const [destinations, setDestinations] = useState(staticDestinations);
+  const [destError, setDestError] = useState(null);
+  const [destLoading, setDestLoading] = useState(true);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -36,6 +39,44 @@ export default function Home() {
   });
 
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadDestinations = async () => {
+      try {
+        const res = await fetch("/api/destinations", {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("Failed to fetch destinations");
+        const data = await res.json();
+        const apiDestinations = Array.isArray(data?.destinations)
+          ? data.destinations
+          : [];
+        if (!controller.signal.aborted && apiDestinations.length) {
+          setDestinations(apiDestinations);
+          setDestError(null);
+        } else if (!controller.signal.aborted) {
+          setDestinations(staticDestinations);
+          setDestError("Live destinations unavailable, showing defaults.");
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error(err);
+          setDestinations(staticDestinations);
+          setDestError("Live destinations unavailable, showing defaults.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setDestLoading(false);
+        }
+      }
+    };
+
+    loadDestinations();
+    return () => controller.abort();
+  }, []);
 
   return (
     <PageTransition>
@@ -60,6 +101,14 @@ export default function Home() {
                 <span className="text-emerald-600">Terrains</span>
               </h2>
             </motion.div>
+            {destError && (
+              <p className="text-amber-600 text-sm mt-3">{destError}</p>
+            )}
+            {destLoading && (
+              <p className="text-zinc-500 text-xs mt-2">
+                Refreshing destinations...
+              </p>
+            )}
           </div>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
