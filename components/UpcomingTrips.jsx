@@ -1,40 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { FiArrowLeft, FiArrowRight, FiCalendar, FiClock } from "react-icons/fi";
-import { FaGlobeAmericas } from "react-icons/fa";
+import { FiArrowLeft, FiArrowRight, FiCalendar, FiMapPin, FiActivity } from "react-icons/fi";
+import { FaMountain, FaCompass } from "react-icons/fa";
+import { Oswald } from "next/font/google";
 import upcomingTrips from "../data/upcomingTrips";
+
+const oswald = Oswald({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function UpcomingTrips() {
   const [current, setCurrent] = useState(0);
   const [showControls, setShowControls] = useState(false);
 
-  const cards = upcomingTrips.map((trip, idx) => ({
-    ...trip,
-    displayTitle: idx === 0 ? "National Cuisine" : trip.name,
-    blurb:
-      idx === 0
-        ? "Discover authentic flavors, regional spices, and culinary stories from the heart of each destination."
-        : trip.description,
-  }));
-
-  const total = cards.length;
+  const total = upcomingTrips.length;
   const visibleCount = Math.min(total, 4);
 
+  // Advanced Stack Physics
   const getCardStyle = (offset) => {
     const depth = Math.min(offset, 3);
-    const baseOpacity = Math.max(0.25, 0.6 - depth * 0.12);
     return {
-      x: offset === 0 ? 0 : -depth * 26,
-      y: depth * 10,
-      scale: offset === 0 ? 1 : 1 - depth * 0.07,
-      rotate: offset === 0 ? 0 : -depth * 2.5,
-      opacity: offset === 0 ? 1 : baseOpacity,
-      visibility: "visible",
+      x: offset === 0 ? 0 : offset * 40, // Stagger to the right
+      y: offset === 0 ? 0 : offset * -15, // Lift up slightly
+      scale: 1 - offset * 0.05,
+      rotate: offset === 0 ? 0 : offset * 2,
+      opacity: offset === 0 ? 1 : 0.4 - offset * 0.1,
       zIndex: total - offset,
-      pointerEvents: offset === 0 ? "auto" : "none",
     };
   };
 
@@ -42,146 +34,131 @@ export default function UpcomingTrips() {
   const handlePrev = () => setCurrent((c) => (c - 1 + total) % total);
 
   return (
-    <section
-      className="relative py-16 px-6 text-slate-900 overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(10,12,16,0.72), rgba(10,12,16,0.72)),
-          url("https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=2000&auto=format&fit=crop")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="grid md:grid-cols-[0.55fr_1.45fr] items-center gap-10 mb-10">
-          <div className="space-y-4">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              Upcoming Trips
-            </h2>
-            <p className="text-white/80 text-base md:text-lg max-w-xl leading-relaxed">
-              Handpicked adventures rotating through the stack. Swipe through to find your next escape.
-            </p>
-          </div>
+    <section className="relative py-24 px-6 overflow-hidden bg-zinc-950">
+      {/* Cinematic Background with Topo Pattern Overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000" 
+            fill 
+            className="object-cover opacity-20 grayscale"
+            alt="Mountain Background"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent" />
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
+      </div>
 
-          <div
-            className="relative h-[500px] flex items-center justify-center"
-            onMouseEnter={() => setShowControls(true)}
-            onMouseLeave={() => setShowControls(false)}
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid lg:grid-cols-[0.8fr_1.2fr] items-center gap-16">
+          
+          {/* Left Content */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            className="space-y-6"
           >
-            <button
-              onClick={handlePrev}
-              aria-label="Previous card"
-              className={`absolute left-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full border border-white/30 bg-white/15 text-white flex items-center justify-center transition duration-200 ${
-                showControls ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <FiArrowLeft />
-            </button>
-            <button
-              onClick={handleNext}
-              aria-label="Next card"
-              className={`absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full border border-white/30 bg-white text-slate-900 flex items-center justify-center shadow-md transition duration-200 ${
-                showControls ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <FiArrowRight />
-            </button>
+            <div className="flex items-center gap-3 text-emerald-500 font-mono text-xs tracking-widest uppercase">
+                <FaCompass className="animate-spin-slow" />
+                Next Deployment
+            </div>
+            <h2 className={`${oswald.className} text-5xl md:text-7xl font-bold text-white uppercase leading-[0.9]`}>
+              Live <br /> <span className="text-emerald-500">Expeditions</span>
+            </h2>
+            <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
+              Real-time upcoming departures. Our technical teams are currently prepping gear for these high-altitude routes.
+            </p>
+            
+            {/* Custom Navigation Bricks */}
+            <div className="flex gap-4 pt-6">
+              <button
+                onClick={handlePrev}
+                className="group h-14 w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
+              >
+                <FiArrowLeft className="text-xl group-hover:-translate-x-1 transition-transform" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="group h-14 w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
+              >
+                <FiArrowRight className="text-xl group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </motion.div>
 
-            {Array.from({ length: visibleCount }).map((_, layerIdx) => {
-              const tripIndex = (current + layerIdx) % total;
-              const trip = cards[tripIndex];
-              const style = getCardStyle(layerIdx);
-              const isTop = layerIdx === 0;
-              const initialFromBack =
-                layerIdx === visibleCount - 1
-                  ? { opacity: 0, x: 80, y: -30, scale: 0.9 }
-                  : { opacity: 0, x: 30, y: 40, scale: 0.95 };
+          {/* Right Card Stack */}
+          <div className="relative h-[550px] w-full flex items-center justify-center lg:justify-start lg:pl-20">
+            <AnimatePresence mode="popLayout">
+              {Array.from({ length: visibleCount }).map((_, layerIdx) => {
+                const tripIndex = (current + layerIdx) % total;
+                const trip = upcomingTrips[tripIndex];
+                const style = getCardStyle(layerIdx);
+                const isTop = layerIdx === 0;
 
-              return (
-                <motion.div
-                  key={`${trip.id}-${layerIdx}`}
-                  layout
-                  initial={initialFromBack}
-                  animate={{
-                    x: style.x,
-                    y: style.y,
-                    scale: style.scale,
-                    rotate: style.rotate,
-                    opacity: style.opacity,
-                  }}
-                  transition={{ type: "spring", stiffness: 170, damping: 22, mass: 1.15 }}
-                  style={{
-                    zIndex: style.zIndex,
-                    pointerEvents: style.pointerEvents,
-                    visibility: style.visibility,
-                  }}
-                  className="absolute w-full max-w-xl"
-                >
-                  {isTop ? (
-                    <div className="relative h-[420px] rounded-3xl bg-white shadow-2xl shadow-black/20 border border-white/60 overflow-hidden">
-                      <div className="relative h-56 w-full overflow-hidden">
+                return (
+                  <motion.div
+                    key={`${trip.id}-${tripIndex}`}
+                    initial={{ opacity: 0, scale: 0.8, x: 200 }}
+                    animate={style}
+                    exit={{ opacity: 0, scale: 1.1, x: -200, rotate: -10 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                    className="absolute w-full max-w-[480px]"
+                  >
+                    <div className={`relative h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
+                      
+                      {/* Card Visual */}
+                      <div className="relative h-64 w-full">
                         <Image
                           src={trip.image}
-                          alt={trip.displayTitle}
+                          alt={trip.name}
                           fill
-                          className="object-cover"
-                          sizes="480px"
-                          priority={layerIdx < 2}
+                          className={`object-cover ${!isTop && 'grayscale opacity-50'}`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
-                        <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
-                          <div>
-                            <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                              {trip.location}
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
+                        
+                        {isTop && (
+                            <div className="absolute top-6 right-6 bg-emerald-500 text-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter flex items-center gap-2">
+                                <FiActivity className="animate-pulse" /> Limited Slots
+                            </div>
+                        )}
+                      </div>
+
+                      {/* Card Content */}
+                      <div className="p-8 space-y-4">
+                        <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+                            <FiMapPin /> {trip.location}
+                        </div>
+                        <h3 className={`${oswald.className} text-3xl font-bold text-white uppercase tracking-tight`}>
+                          {trip.name}
+                        </h3>
+                        
+                        {isTop && (
+                          <>
+                            <p className="text-zinc-400 text-sm line-clamp-2 font-light leading-relaxed">
+                                {trip.description}
                             </p>
-                            <h3 className="text-2xl font-semibold drop-shadow-sm text-white">
-                              {trip.displayTitle}
-                            </h3>
-                          </div>
-                          <div className="h-11 w-11 rounded-full bg-white/90 text-slate-900 flex items-center justify-center shadow-md">
-                            <FaGlobeAmericas />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-6 space-y-3">
-                        <p className="text-sm text-slate-700 leading-relaxed line-clamp-3">
-                          {trip.blurb}
-                        </p>
-                        <div className="flex items-center gap-4 text-xs text-slate-500">
-                          <span className="inline-flex items-center gap-1">
-                            <FiCalendar className="text-slate-700" /> {trip.date}
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <FiClock className="text-slate-700" /> {trip.duration}
-                          </span>
-                        </div>
-                        <button className="mt-3 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-semibold transition shadow-lg hover:bg-slate-800">
-                          Learn More <FiArrowRight />
-                        </button>
+                            <div className="flex items-center gap-6 pt-2">
+                                <div className="flex flex-col">
+                                    <span className="text-zinc-600 text-[10px] uppercase font-bold">Departure</span>
+                                    <span className="text-white text-xs font-mono">{trip.date}</span>
+                                </div>
+                                <div className="h-8 w-px bg-white/10" />
+                                <div className="flex flex-col">
+                                    <span className="text-zinc-600 text-[10px] uppercase font-bold">Duration</span>
+                                    <span className="text-white text-xs font-mono">{trip.duration}</span>
+                                </div>
+                            </div>
+                            <button className="w-full mt-4 py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
+                                Reserve Gear Spot
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
-                  ) : (
-                    <div className="relative h-[420px] rounded-3xl bg-white shadow-xl shadow-black/10 border border-white/50 overflow-hidden">
-                      <div className="relative h-full w-full">
-                        <Image
-                          src={trip.image}
-                          alt={trip.displayTitle}
-                          fill
-                          className="object-cover"
-                          sizes="480px"
-                        />
-                        <div className="absolute inset-0 bg-white/65 backdrop-blur-sm" />
-                        <div className="absolute bottom-4 left-5 right-5 text-slate-900 text-sm font-semibold">
-                          {trip.displayTitle}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
+
         </div>
       </div>
     </section>
