@@ -77,7 +77,7 @@ export default function UpcomingTrips() {
   const handlePrev = () => setCurrent((c) => (c - 1 + total) % total);
 
   return (
-    <section className="relative py-24 px-6 overflow-hidden bg-zinc-950">
+    <section className="relative py-20 sm:py-24 px-4 sm:px-6 overflow-hidden bg-zinc-950">
       {/* Cinematic Background with Topo Pattern Overlay */}
       <div className="absolute inset-0 z-0">
         <Image 
@@ -91,7 +91,7 @@ export default function UpcomingTrips() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid lg:grid-cols-[0.8fr_1.2fr] items-center gap-16">
+        <div className="grid lg:grid-cols-[0.8fr_1.2fr] items-center gap-12 lg:gap-16">
           
           {/* Left Content */}
           <motion.div 
@@ -103,7 +103,7 @@ export default function UpcomingTrips() {
                 <FaCompass className="animate-spin-slow" />
                 Next Deployment
             </div>
-            <h2 className={`${oswald.className} text-5xl md:text-7xl font-bold text-white uppercase leading-[0.9]`}>
+            <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase leading-[0.9]`}>
               Live <br /> <span className="text-emerald-500">Expeditions</span>
             </h2>
               <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
@@ -120,13 +120,13 @@ export default function UpcomingTrips() {
             <div className="flex gap-4 pt-6">
               <button
                 onClick={handlePrev}
-                className="group h-14 w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
+                className="group h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
               >
                 <FiArrowLeft className="text-xl group-hover:-translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={handleNext}
-                className="group h-14 w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
+                className="group h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
               >
                 <FiArrowRight className="text-xl group-hover:translate-x-1 transition-transform" />
               </button>
@@ -134,7 +134,7 @@ export default function UpcomingTrips() {
           </motion.div>
 
           {/* Right Card Stack */}
-          <div className="relative h-[550px] w-full flex items-center justify-center lg:justify-start lg:pl-20">
+          <div className="relative min-h-[420px] sm:min-h-[500px] lg:h-[550px] w-full flex items-center justify-center lg:justify-start md:pl-12 lg:pl-20">
             <AnimatePresence mode="popLayout">
               {Array.from({ length: visibleCount }).map((_, layerIdx) => {
                 const tripIndex = (current + layerIdx) % total;
@@ -149,12 +149,12 @@ export default function UpcomingTrips() {
                     animate={style}
                     exit={{ opacity: 0, scale: 1.1, x: -200, rotate: -10 }}
                     transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    className="absolute w-full max-w-[480px]"
+                    className="absolute w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px]"
                   >
-                    <div className={`relative h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
+                    <div className={`relative h-[420px] sm:h-[460px] lg:h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
                       
                       {/* Card Visual */}
-                      <div className="relative h-64 w-full">
+                      <div className="relative h-52 sm:h-64 w-full">
                         <Image
                           src={trip.image}
                           alt={trip.name}

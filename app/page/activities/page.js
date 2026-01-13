@@ -48,33 +48,27 @@ export default function TripsPage() {
     return () => controller.abort();
   }, []);
 
+  // Hero animation and global scroll effects run immediately on mount
   useEffect(() => {
-    if (!trips.length) return;
-
     const ctx = gsap.context(() => {
-      // 1. LETTER ANIMATION: OUR TRIPS
-      // Select all character spans
       const chars = gsap.utils.toArray(".char");
-      
-      gsap.fromTo(chars, 
-        { 
-          y: "100%", 
-          opacity: 0 
-        }, 
-        { 
-          y: "0%", 
-          opacity: 1, 
-          duration: 1.2, 
-          stagger: 0.05, 
+
+      gsap.fromTo(
+        chars,
+        { y: "100%", opacity: 0 },
+        {
+          y: "0%",
+          opacity: 1,
+          duration: 1.2,
+          stagger: 0.05,
           ease: "expo.out",
-          delay: 0.5
+          delay: 0, // fire as soon as page loads
         }
       );
 
-      // 2. Smooth Skew Effect on Scroll
       let proxy = { skew: 0 },
-          skewSetter = gsap.quickSetter(".skew-elem", "skewY", "deg"),
-          clamp = gsap.utils.clamp(-2, 2); 
+        skewSetter = gsap.quickSetter(".skew-elem", "skewY", "deg"),
+        clamp = gsap.utils.clamp(-2, 2);
 
       ScrollTrigger.create({
         onUpdate: (self) => {
@@ -86,13 +80,12 @@ export default function TripsPage() {
               duration: 0.8,
               ease: "power3",
               overwrite: true,
-              onUpdate: () => skewSetter(proxy.skew)
+              onUpdate: () => skewSetter(proxy.skew),
             });
           }
-        }
+        },
       });
 
-      // 3. Parallax Hero Text (on scroll)
       gsap.to(".hero-title", {
         scrollTrigger: {
           trigger: heroRef.current,
@@ -103,8 +96,16 @@ export default function TripsPage() {
         y: 200,
         opacity: 0,
       });
+    }, containerRef);
 
-      // 4. Section Reveal Animations
+    return () => ctx.revert();
+  }, []);
+
+  // Section reveals wait for trips to load
+  useEffect(() => {
+    if (!trips.length) return;
+
+    const ctx = gsap.context(() => {
       const sections = gsap.utils.toArray(".trip-section");
       sections.forEach((section) => {
         const revealImages = section.querySelectorAll(".reveal-img");
@@ -116,16 +117,23 @@ export default function TripsPage() {
             start: "top 80%",
             end: "top 20%",
             toggleActions: "play none none reverse",
-          }
+          },
         });
 
-        tl.fromTo(revealText, 
-          { x: -50, opacity: 0 }, 
+        tl.fromTo(
+          revealText,
+          { x: -50, opacity: 0 },
           { x: 0, opacity: 1, duration: 1, ease: "expo.out" }
-        )
-        .fromTo(revealImages, 
-          { clipPath: "inset(0 100% 0 0)", scale: 1.3 }, 
-          { clipPath: "inset(0 0% 0 0)", scale: 1, duration: 1.2, ease: "expo.inOut", stagger: 0.15 },
+        ).fromTo(
+          revealImages,
+          { clipPath: "inset(0 100% 0 0)", scale: 1.3 },
+          {
+            clipPath: "inset(0 0% 0 0)",
+            scale: 1,
+            duration: 1.2,
+            ease: "expo.inOut",
+            stagger: 0.15,
+          },
           "-=0.8"
         );
       });
@@ -157,7 +165,7 @@ export default function TripsPage() {
           className="object-cover opacity-90 scale-110"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/20 to-[#0a0a0a]" />
         
         <div className="relative z-10 text-center skew-elem">
           <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col items-center">
@@ -194,7 +202,7 @@ export default function TripsPage() {
                 {/* Left Side: Text Info */}
                 <div className="reveal-text flex-1 space-y-6">
                   <div className="flex items-center gap-4">
-                    <span className="h-[1px] w-12 bg-orange-500" />
+                    <span className="h-px w-12 bg-orange-500" />
                     <span className="text-orange-500 font-bold tracking-widest text-sm uppercase">{trip.subtitle}</span>
                   </div>
                   <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase skew-elem">

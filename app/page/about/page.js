@@ -63,11 +63,13 @@ export default function AboutPage() {
             Our Legacy & Story
           </span>
           
-          <h1 className={`${displaySerif.className} text-7xl md:text-[10vw] font-black tracking-tighter leading-none flex justify-center`}>
+          <h1
+            className={`${displaySerif.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
+          >
             {splitText("WHO WE ARE")}
           </h1>
           
-          <div className="hero-line h-[1px] w-40 bg-orange-600 mx-auto mt-8 opacity-50" />
+          <div className="hero-line h-px w-40 bg-orange-600 mx-auto mt-8 opacity-50" />
         </motion.div>
 
         {/* Hero Background */}

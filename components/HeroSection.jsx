@@ -120,16 +120,16 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
 
       {/* Sound toggle overlay */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
         <button
           onClick={toggleSound}
-          className="flex items-center justify-center px-4 py-3 rounded-full bg-white text-black text-sm font-semibold shadow-lg hover:bg-emerald-100 border border-emerald-200"
+          className="flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-full bg-white text-black text-sm font-semibold shadow-lg hover:bg-emerald-100 border border-emerald-200"
         >
           {soundOn ? <FiVolume2 /> : <FiVolumeX />}
         </button>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-32 md:pt-40">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-24 sm:pt-32 md:pt-40">
         
         {/* Left copy */}
         <motion.div 
@@ -148,24 +148,24 @@ export default function HeroSection() {
             Adventure Awaits
           </motion.div>
           
-          <h1 className={`${heroHeadline.className} text-6xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}>
+          <h1 className={`${heroHeadline.className} text-4xl sm:text-6xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}>
             CONQUER <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-800">THE UNKNOWN</span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-gray-300 max-w-lg mb-10 font-light leading-relaxed">
+          <p className="text-base sm:text-lg text-gray-300 max-w-xl mb-8 sm:mb-10 font-light leading-relaxed">
             From vertical ascents to hidden valley trails, HITREX provides the gear and the guides to push your limits.
           </p>
 
           <div className="flex flex-wrap gap-4">
             <Link
               href="/page/destination"
-              className="group relative inline-flex items-center gap-3 text-lg font-bold text-black bg-white px-8 py-4 rounded-full transition-all hover:scale-105"
+              className="group relative inline-flex items-center gap-3 text-base sm:text-lg font-bold text-black bg-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all hover:scale-105"
             >
               Start Trekking
               <FiArrowUpRight className="text-xl group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
             
-            <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-8 py-4 rounded-full transition-all">
+            <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all">
               Watch Expedition
             </button>
           </div>
@@ -196,7 +196,7 @@ function HeroCards() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.4 }}
-      className="w-full lg:w-[400px] flex flex-col gap-4"
+      className="w-full max-w-xl lg:max-w-none lg:w-[400px] flex flex-col gap-4"
     >
       {/* Main Glass Card */}
       <div className="group bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl backdrop-blur-md relative overflow-hidden">
@@ -217,7 +217,7 @@ function HeroCards() {
           <span className="text-[10px] uppercase font-medium">{slides[idx].location}</span>
         </div>
 
-        <div className="relative w-full h-56 rounded-2xl overflow-hidden mb-4">
+        <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={idx}
