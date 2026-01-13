@@ -99,7 +99,7 @@ export default function HeroSection() {
         transition={{ duration: 10, ease: "easeOut" }}
         className="absolute inset-0"
       >
-       <video
+<video
   ref={videoRef}
   className="w-full h-full object-cover"
   autoPlay
@@ -109,10 +109,11 @@ export default function HeroSection() {
   preload="auto"
 >
   <source
-    src=""
+    src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768304612/258658_medium_mncdkm.mp4"
     type="video/mp4"
   />
 </video>
+
 
         <audio
           ref={audioRef}
