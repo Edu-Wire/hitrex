@@ -190,12 +190,12 @@ export default function Home() {
         {/* ================= DESTINATIONS ================= */}
         <section
           id="destinations"
-          className="relative w-full pt-40 pb-32 bg-zinc-100 rounded-t-[4rem] mt-0 z-20"
+          className="relative w-full pt-28 sm:pt-32 lg:pt-40 pb-20 md:pb-28 lg:pb-32 bg-zinc-100 rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20"
         >
-          <div className="max-w-7xl mx-auto px-6 mb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-12 md:mb-16">
             <motion.div style={{ y: y1 }}>
               <h2
-                className={`${oswald.className} text-6xl md:text-8xl font-bold text-zinc-900 uppercase tracking-tight`}
+                className={`${oswald.className} text-4xl sm:text-6xl lg:text-8xl font-bold text-zinc-900 uppercase tracking-tight`}
               >
                 Prime <br />
                 <span className="text-emerald-600">Terrains</span>
@@ -211,7 +211,7 @@ export default function Home() {
             )}
           </div>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 max-w-7xl mx-auto">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-6 max-w-7xl mx-auto">
             {destinations.slice(0, 4).map((dest, index) => (
               <DestinationCardFlip key={dest.id} dest={dest} index={index} />
             ))}
@@ -224,11 +224,11 @@ export default function Home() {
         </section>
 
         {/* ================= DIFFICULTY ================= */}
-        <section id="difficulty" className="relative py-32 bg-white overflow-hidden">
+        <section id="difficulty" className="relative py-24 sm:py-32 bg-white overflow-hidden">
                {/* Decorative Topography Pattern */}
                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
                
-               <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+               <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                  <motion.div 
                    initial={{ opacity: 0, x: -30 }}
                    whileInView={{ opacity: 1, x: 0 }}
@@ -238,10 +238,10 @@ export default function Home() {
                   <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
                     Technical Grading
                   </span>
-                   <h2 className={`${displaySerif.className} text-5xl md:text-7xl font-bold text-gray-900 leading-tight`}>
+                   <h2 className={`${displaySerif.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
                      Measure Your <br /> Grit.
                    </h2>
-                   <p className="text-gray-600 text-lg leading-relaxed max-w-md">
+                   <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
                      Our trails are rated using the HITREX standard, analyzing vertical gain, oxygen levels, and technical demand.
                    </p>
                    <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100 max-w-sm">
@@ -278,14 +278,14 @@ export default function Home() {
              </section>
 
         {/* ================= REVIEWS ================= */}
-        <section id="reviews" className="bg-zinc-950 py-32 text-white">
-          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-start">
+        <section id="reviews" className="bg-zinc-950 py-24 sm:py-32 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             <div className="space-y-6">
               <div className="space-y-2">
                 <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
                   Community Pulse
                 </span>
-                <h2 className={`${displaySerif.className} text-5xl md:text-6xl font-bold leading-tight`}>
+                <h2 className={`${displaySerif.className} text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
                   Trail Voices
                 </h2>
                 <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
@@ -428,14 +428,14 @@ export default function Home() {
         </section>
 
         {/* ================= INSIGHTS ================= */}
-       <section id="insights" className="relative py-32 bg-zinc-950 text-white">
-             <div className="max-w-7xl mx-auto px-6">
-               <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <section id="insights" className="relative py-24 sm:py-32 bg-zinc-950 text-white">
+             <div className="max-w-7xl mx-auto px-4 sm:px-6">
+               <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16 gap-6">
                  <div className="space-y-4">
                   <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
                     Strategic Briefing
                   </span>
-                   <h2 className={`${displaySerif.className} text-5xl md:text-6xl font-bold leading-tight`}>
+                   <h2 className={`${displaySerif.className} text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
                      Expedition Intel
                    </h2>
                  </div>
@@ -444,7 +444,7 @@ export default function Home() {
                  </p>
                </div>
      
-               <div className="grid md:grid-cols-3 gap-6">
+               <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
                  {insightData.map((item, idx) => (
                    <motion.div
                      key={item.title}
@@ -483,9 +483,9 @@ function DestinationCardFlip({ dest, index }) {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group h-[520px] [perspective:1500px]"
+      className="group h-[420px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
     >
-      <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+      <div className="relative h-full w-full transition-transform duration-700 transform-3d group-hover:transform-[rotateY(180deg)]">
         {/* FRONT */}
         <div className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl">
           <Image
@@ -494,14 +494,14 @@ function DestinationCardFlip({ dest, index }) {
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-          <div className="absolute bottom-8 left-6">
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
+          <div className="absolute bottom-6 sm:bottom-8 left-5 sm:left-6">
             <h3
-              className={`${oswald.className} text-3xl text-white font-bold`}
+              className={`${oswald.className} text-2xl sm:text-3xl text-white font-bold`}
             >
               {dest.name}
             </h3>
-            <p className="text-sm text-zinc-300">{dest.location}</p>
+            <p className="text-xs sm:text-sm text-zinc-300">{dest.location}</p>
           </div>
         </div>
 

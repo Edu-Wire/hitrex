@@ -29,29 +29,27 @@ export default function BlogPage() {
     gsap.registerPlugin(ScrollTrigger);
   }, []);
 
-  // GSAP Entry Animation for Heading
+  // GSAP Entry Animation for Heading (run on mount so it doesn't wait for fetch)
   useEffect(() => {
-    if (!loading) {
-      const ctx = gsap.context(() => {
-        gsap.to(".char-inner", {
-          y: 0,
-          stagger: 0.05,
-          delay: 0.5,
-          duration: 1.5,
-          ease: "expo.out",
-        });
-        
-        gsap.from(".hero-subtext", {
-          opacity: 0,
-          y: 20,
-          duration: 1,
-          delay: 1.2,
-          ease: "power3.out"
-        });
-      }, containerRef);
-      return () => ctx.revert();
-    }
-  }, [loading]);
+    const ctx = gsap.context(() => {
+      gsap.to(".char-inner", {
+        y: 0,
+        stagger: 0.05,
+        delay: 0.2,
+        duration: 1.2,
+        ease: "expo.out",
+      });
+      
+      gsap.from(".hero-subtext", {
+        opacity: 0,
+        y: 20,
+        duration: 1,
+        delay: 0.8,
+        ease: "power3.out"
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
 
   const fetchBlogs = async () => {
     try {

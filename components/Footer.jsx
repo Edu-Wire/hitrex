@@ -6,7 +6,7 @@ import { FadeInUp, StaggerContainer, StaggerItem } from "./animations";
 export default function Footer() {
   return (
     <footer className="font-sans bg-emerald-800 text-emerald-50 mt-0">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <StaggerItem>
@@ -140,13 +140,13 @@ export default function Footer() {
                 {/* Newsletter Signup */}
                 <div className="mt-6">
                   <h5 className="text-sm font-semibold mb-2 text-emerald-100">Newsletter</h5>
-                  <div className="flex">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-0">
                     <input
                       type="email"
                       placeholder="Your email"
-                      className="flex-1 px-3 py-2 bg-emerald-900/40 border border-emerald-700 rounded-l-md text-emerald-50 placeholder-emerald-200/70 focus:outline-none focus:border-emerald-200"
+                      className="flex-1 px-3 py-2 bg-emerald-900/40 border border-emerald-700 rounded-md sm:rounded-l-md sm:rounded-r-none text-emerald-50 placeholder-emerald-200/70 focus:outline-none focus:border-emerald-200"
                     />
-                    <button className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-emerald-50 rounded-r-md transition-colors">
+                    <button className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-emerald-50 rounded-md sm:rounded-l-none sm:rounded-r-md transition-colors sm:min-w-[120px]">
                       Subscribe
                     </button>
                   </div>
