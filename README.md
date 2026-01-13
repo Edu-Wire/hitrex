@@ -34,3 +34,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Stripe setup
+
+- Add `STRIPE_SECRET_KEY` and (optionally) `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` to your environment.
+- Create payment intents via `POST /api/payments/stripe` with JSON `{ "amount": 4999, "currency": "inr", "customerEmail": "user@example.com" }`.
+- Response includes `clientSecret`, `paymentIntentId`, and the publishable key (when provided) so the client can confirm the payment with Stripe.js or a mobile SDK.
+- Amount is accepted in rupees and converted to the smallest unit internally (paise).
