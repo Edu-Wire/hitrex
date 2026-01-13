@@ -185,7 +185,7 @@ export default function Navbar() {
               </Link>
 
               {/* Menu Toggle */}
-              {/* <button
+               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 text-white hover:bg-white/10 rounded-full transition-colors"
               >
@@ -198,7 +198,7 @@ export default function Navbar() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
                   </svg>
                 )}
-              </button> */}
+               </button> 
             </div>
           </div>
         </div>
