@@ -90,7 +90,7 @@ export default function AboutPage() {
   </video>
 
   {/* Overlay for text readability */}
-  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/1000 to-[#050505]" />
+  <div className="absolute inset-0  " />
 </motion.div>
 
 
