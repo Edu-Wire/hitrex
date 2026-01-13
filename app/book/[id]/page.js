@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
+import { toast } from "react-toastify";
 
 export default function BookDestination() {
   const { data: session, status } = useSession();
@@ -136,10 +137,10 @@ export default function BookDestination() {
 
         window.location.href = paymentData.checkoutUrl;
       } else {
-        alert(data.error || "Failed to create booking");
+        toast.error(data.error || "Failed to create booking");
       }
     } catch (error) {
-      alert(error.message || "Error creating booking/payment");
+      toast.error(error.message || "Error creating booking/payment");
       console.error(error);
     } finally {
       setSubmitting(false);

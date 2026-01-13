@@ -132,7 +132,32 @@ export default function DestinationsPage() {
         ref={headerRef}
         className="relative h-[100vh] w-full flex flex-col items-center justify-center overflow-hidden pt-24"
       >
+
+
         <div className="hero-bg absolute inset-0 will-change-transform">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    className="absolute inset-0 w-full h-full object-cover"
+  >
+    <source
+      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302705/270940_medium_mggjxf.mp4"
+      type="video/mp4"
+    />
+  </video>
+
+  {/* Overlay for readability */}
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]/75" />
+</div>
+
+
+
+
+
+        {/* <div className="hero-bg absolute inset-0 will-change-transform">
           <Image
             src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80"
             alt="Mountains"
@@ -141,7 +166,7 @@ export default function DestinationsPage() {
             className="object-cover opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/15 to-[#050505]/70" />
-        </div>
+        </div> */}
 
         <div className="relative z-10 text-center px-4 max-w-7xl">
           <h1 className="text-8xl md:text-[11vw] font-black tracking-tighter mb-12 leading-[0.8] flex flex-col items-center">

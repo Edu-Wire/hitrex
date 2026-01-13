@@ -158,14 +158,37 @@ export default function TripsPage() {
       
       {/* 1. ULTRA HERO SECTION */}
       <section ref={heroRef} className="relative h-[110vh] w-full flex items-center justify-center overflow-hidden -mt-24 md:-mt-28">
-        <Image
+       
+
+       <video
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+  className="absolute inset-0 w-full h-full object-cover opacity-90 scale-110"
+>
+  <source
+    src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+    type="video/mp4"
+  />
+</video>
+
+{/* Overlay for contrast */}
+<div className="absolute inset-0 bg-linear-to-b from-transparent via-black/1000 to-[#0a0a0a]" />
+
+       
+       
+
+
+        {/* <Image
           src="/images/trip-hero.avif"
           alt="Trips banner"
           fill
           className="object-cover opacity-90 scale-110"
           priority
         />
-        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/20 to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/20 to-[#0a0a0a]" /> */}
         
         <div className="relative z-10 text-center skew-elem">
           <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col items-center">

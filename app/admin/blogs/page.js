@@ -5,47 +5,45 @@ import { useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
 import { toast } from "react-toastify";
 
-export default function AdminUpcomingTrips() {
+export default function AdminBlogs() {
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
 
-  const [trips, setTrips] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   const [formData, setFormData] = useState({
     id: "",
-    name: "",
-    location: "",
-    date: "",
-    duration: "",
-    image: "",
+    subtitle: "",
+    title: "",
     description: "",
+    images: "",
   });
 
   /* 🔐 Redirect if not admin */
   useEffect(() => {
     if (!loading && !isAdmin) {
-      router.push("/login"); // or /unauthorized
+      router.push("/");
     }
   }, [loading, isAdmin, router]);
 
-  /* 📦 Fetch trips */
+  /* 📦 Fetch blogs */
   useEffect(() => {
     if (!loading && isAdmin) {
-      fetchTrips();
+      fetchBlogs();
     }
   }, [loading, isAdmin]);
 
-  const fetchTrips = async () => {
+  const fetchBlogs = async () => {
     setDataLoading(true);
     try {
-      const res = await fetch("/api/upcoming-trips");
+      const res = await fetch("/api/blogs");
       const data = await res.json();
-      setTrips(Array.isArray(data.trips) ? data.trips : []);
+      setBlogs(Array.isArray(data.blogs) ? data.blogs : []);
     } catch (error) {
-      console.error("Error fetching trips:", error);
-      toast.error("Failed to load trips");
+      console.error("Error fetching blogs:", error);
+      toast.error("Failed to load blogs");
     } finally {
       setDataLoading(false);
     }
@@ -56,36 +54,42 @@ export default function AdminUpcomingTrips() {
 
     if (
       !formData.id ||
-      !formData.name ||
-      !formData.location ||
-      !formData.date ||
-      !formData.duration ||
-      !formData.image ||
-      !formData.description
+      !formData.subtitle ||
+      !formData.title ||
+      !formData.description ||
+      !formData.images
     ) {
       toast.error("Please fill all fields");
       return;
     }
 
+    const payload = {
+      ...formData,
+      images: formData.images
+        .split(",")
+        .map((img) => img.trim())
+        .filter(Boolean),
+    };
+
     try {
-      const res = await fetch("/api/upcoming-trips", {
+      const res = await fetch("/api/blogs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(data.message || "Trip added successfully");
+        toast.success(data.message || "Blog created");
         resetForm();
         setShowForm(false);
-        fetchTrips();
+        fetchBlogs();
       } else {
-        toast.error(data.error || "Failed to add trip");
+        toast.error(data.error || "Failed to create blog");
       }
     } catch (error) {
-      console.error("Error creating trip:", error);
+      console.error("Error creating blog:", error);
       toast.error("Something went wrong");
     }
   };
@@ -93,16 +97,14 @@ export default function AdminUpcomingTrips() {
   const resetForm = () => {
     setFormData({
       id: "",
-      name: "",
-      location: "",
-      date: "",
-      duration: "",
-      image: "",
+      subtitle: "",
+      title: "",
       description: "",
+      images: "",
     });
   };
 
-  const totalTrips = useMemo(() => trips.length, [trips]);
+  const totalBlogs = useMemo(() => blogs.length, [blogs]);
 
   /* ⏳ Loading state */
   if (loading || dataLoading) {
@@ -119,10 +121,10 @@ export default function AdminUpcomingTrips() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Manage Upcoming Trips
+            Manage Blogs
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Total trips: {totalTrips}
+            Total blogs: {totalBlogs}
           </p>
         </div>
 
@@ -130,24 +132,21 @@ export default function AdminUpcomingTrips() {
           onClick={() => setShowForm((prev) => !prev)}
           className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg transition"
         >
-          {showForm ? "Close Form" : "Add Upcoming Trip"}
+          {showForm ? "Close Form" : "Add Blog"}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
         <div className="bg-white text-gray-900 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Add Upcoming Trip</h2>
+          <h2 className="text-xl font-semibold mb-4">Add Blog</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["id", "Trip ID"],
-                ["name", "Name"],
-                ["location", "Location"],
-                ["date", "Date (e.g. Oct 15 - 19, 2025)"],
-                ["duration", "Duration (e.g. 7 Days)"],
-                ["image", "Image URL"],
+                ["id", "Blog ID"],
+                ["subtitle", "Subtitle"],
+                ["title", "Title"],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
@@ -164,6 +163,22 @@ export default function AdminUpcomingTrips() {
                   />
                 </div>
               ))}
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Images (comma separated) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.images}
+                  onChange={(e) =>
+                    setFormData({ ...formData, images: e.target.value })
+                  }
+                  placeholder="/images/one.avif, /images/two.avif"
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
             </div>
 
             <div>
@@ -186,7 +201,7 @@ export default function AdminUpcomingTrips() {
                 type="submit"
                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-500 transition"
               >
-                Save Trip
+                Save Blog
               </button>
               <button
                 type="button"
@@ -200,31 +215,29 @@ export default function AdminUpcomingTrips() {
         </div>
       )}
 
-      {/* Trips List */}
+      {/* Blogs List */}
       <section className="bg-white text-gray-900 rounded-lg shadow divide-y divide-gray-200">
-        {trips.length === 0 && (
+        {blogs.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            No upcoming trips yet.
+            No blogs yet. Add your first blog.
           </div>
         )}
 
-        {trips.map((trip) => (
+        {blogs.map((blog) => (
           <div
-            key={trip._id || trip.id}
+            key={blog._id || blog.id}
             className="p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
           >
-            <div>
+            <div className="space-y-1">
               <p className="text-xs text-gray-400 uppercase tracking-wide">
-                {trip.id}
+                {blog.id}
               </p>
-              <h3 className="text-lg font-semibold">{trip.name}</h3>
-              <p className="text-sm text-gray-600">
-                {trip.location} • {trip.date} • {trip.duration}
-              </p>
+              <h3 className="text-lg font-semibold">{blog.title}</h3>
+              <p className="text-sm text-gray-600">{blog.subtitle}</p>
             </div>
 
             <p className="text-sm text-gray-600 max-w-xl line-clamp-2">
-              {trip.description}
+              {blog.description}
             </p>
           </div>
         ))}

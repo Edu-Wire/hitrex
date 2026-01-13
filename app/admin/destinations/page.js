@@ -1,15 +1,16 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useAdminAuth } from "@/lib/useAdminAuth";
+import { toast } from "react-toastify";
 
 export default function AdminDestinations() {
-  const { data: session, status } = useSession();
+  const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
   const [destinations, setDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -25,13 +26,9 @@ export default function AdminDestinations() {
   });
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session) {
-      router.push("/login");
-      return;
-    }
+    if (!isAdmin || loading) return;
     fetchDestinations();
-  }, [session, status, router]);
+  }, [isAdmin, loading]);
 
   const fetchDestinations = async () => {
     try {
@@ -41,7 +38,7 @@ export default function AdminDestinations() {
     } catch (error) {
       console.error("Error fetching destinations:", error);
     } finally {
-      setLoading(false);
+      setDataLoading(false);
     }
   };
 
@@ -69,16 +66,16 @@ export default function AdminDestinations() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         setShowForm(false);
         setEditingId(null);
         resetForm();
         fetchDestinations();
       } else {
-        alert(data.error || "Failed to save destination");
+        toast.error(data.error || "Failed to save destination");
       }
     } catch (error) {
-      alert("Error saving destination");
+      toast.error("Error saving destination");
       console.error(error);
     }
   };
@@ -110,13 +107,13 @@ export default function AdminDestinations() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchDestinations();
       } else {
-        alert(data.error || "Failed to delete destination");
+        toast.error(data.error || "Failed to delete destination");
       }
     } catch (error) {
-      alert("Error deleting destination");
+      toast.error("Error deleting destination");
       console.error(error);
     }
   };
@@ -144,21 +141,20 @@ export default function AdminDestinations() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pt-0 pb-24 -mt-24 md:-mt-28 -mb-24 md:-mb-28">
-      <div className="max-w-7xl mx-auto px-4 pt-28 md:pt-32">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white">Manage Destinations</h1>
-          <button
-            onClick={() => {
-              setShowForm(!showForm);
-              setEditingId(null);
-              resetForm();
-            }}
-            className="bg-blue-600 text-white px-6 py-2 rounded-3xl hover:bg-blue-700 transition"
-          >
-            {showForm ? "Cancel" : "Add New Destination"}
-          </button>
-        </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Manage Destinations</h1>
+        <button
+          onClick={() => {
+            setShowForm(!showForm);
+            setEditingId(null);
+            resetForm();
+          }}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          {showForm ? "Cancel" : "Add New Destination"}
+        </button>
+      </div>
 
         {/* Add/Edit Form */}
         {showForm && (
@@ -346,7 +342,6 @@ export default function AdminDestinations() {
             <p className="text-gray-500 text-lg">No destinations found. Add your first destination!</p>
           </div>
         )}
-      </div>
     </div>
   );
 }

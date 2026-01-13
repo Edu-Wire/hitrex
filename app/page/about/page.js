@@ -73,16 +73,26 @@ export default function AboutPage() {
         </motion.div>
 
         {/* Hero Background */}
-        <motion.div style={{ scale: heroScale }} className="absolute inset-0 z-0">
-          <Image
-            src="/abooutBg.jpg" // Ensure this path is correct
-            alt="About background"
-            fill
-            priority
-            className="object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]" />
-        </motion.div>
+      {/* Hero Background */}
+<motion.div style={{ scale: heroScale }} className="absolute inset-0 z-0">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    className="absolute inset-0 w-full h-full object-cover opacity-50"
+  >
+    <source
+      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768303140/263586_medium_tqruyy.mp4"
+      type="video/mp4"
+    />
+  </video>
+
+  {/* Overlay for text readability */}
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/1000 to-[#050505]" />
+</motion.div>
+
 
         <motion.div 
           animate={{ y: [0, 10, 0] }} 

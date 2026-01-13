@@ -99,16 +99,24 @@ export default function BlogPage() {
         </motion.div>
 
         {/* Hero Background */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80"
-            alt="Hero"
-            fill
-            priority
-            className="object-cover opacity-100 scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/60 to-[#050505]" />
-        </div>
+    <div className="absolute inset-0 z-0">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    className="absolute inset-0 w-full h-full object-cover opacity-100 scale-105"
+  >
+    <source
+      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+      type="video/mp4"
+    />
+  </video>
+
+  {/* Overlay for text readability */}
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/1000 to-[#050505]" />
+</div>
 
         <motion.div 
           animate={{ y: [0, 10, 0] }} 

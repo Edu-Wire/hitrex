@@ -1,25 +1,22 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useAdminAuth } from "@/lib/useAdminAuth";
+import { toast } from "react-toastify";
 
 export default function AdminBookings() {
-  const { data: session, status } = useSession();
+  const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session) {
-      router.push("/login");
-      return;
-    }
+    if (!isAdmin || loading) return;
     fetchBookings();
-  }, [session, status, router]);
+  }, [isAdmin, loading]);
 
   const fetchBookings = async () => {
     try {
@@ -29,7 +26,7 @@ export default function AdminBookings() {
     } catch (error) {
       console.error("Error fetching bookings:", error);
     } finally {
-      setLoading(false);
+      setDataLoading(false);
     }
   };
 
@@ -44,13 +41,13 @@ export default function AdminBookings() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchBookings();
       } else {
-        alert(data.error || "Failed to update booking");
+        toast.error(data.error || "Failed to update booking");
       }
     } catch (error) {
-      alert("Error updating booking");
+      toast.error("Error updating booking");
       console.error(error);
     }
   };
@@ -66,13 +63,13 @@ export default function AdminBookings() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchBookings();
       } else {
-        alert(data.error || "Failed to update payment status");
+        toast.error(data.error || "Failed to update payment status");
       }
     } catch (error) {
-      alert("Error updating payment status");
+      toast.error("Error updating payment status");
       console.error(error);
     }
   };
@@ -88,13 +85,13 @@ export default function AdminBookings() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchBookings();
       } else {
-        alert(data.error || "Failed to delete booking");
+        toast.error(data.error || "Failed to delete booking");
       }
     } catch (error) {
-      alert("Error deleting booking");
+      toast.error("Error deleting booking");
       console.error(error);
     }
   };
@@ -141,10 +138,9 @@ export default function AdminBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pt-0 pb-24 -mt-24 md:-mt-28 -mb-24 md:-mb-28">
-      <div className="max-w-7xl mx-auto px-4 pt-28 md:pt-32">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white">Manage Bookings</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Manage Bookings</h1>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter("all")}
@@ -304,7 +300,6 @@ export default function AdminBookings() {
               <p className="text-gray-500 text-lg">No bookings found.</p>
             </div>
           )}
-        </div>
       </div>
     </div>
   );

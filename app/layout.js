@@ -3,6 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SessionProvider from "@/components/SessionProvider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -26,6 +28,18 @@ export default function RootLayout({ children }) {
             {children}
             <Footer />
           </div>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
         </SessionProvider>
       </body>
     </html>

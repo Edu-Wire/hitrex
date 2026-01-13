@@ -99,15 +99,21 @@ export default function HeroSection() {
         transition={{ duration: 10, ease: "easeOut" }}
         className="absolute inset-0"
       >
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          src="/176780-856056381_small.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+       <video
+  ref={videoRef}
+  className="w-full h-full object-cover"
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+>
+  <source
+    src=""
+    type="video/mp4"
+  />
+</video>
+
         <audio
           ref={audioRef}
           src="/sound/bird-sound-249237.mp3"
@@ -148,9 +154,15 @@ export default function HeroSection() {
             Adventure Awaits
           </motion.div>
           
-          <h1 className={`${heroHeadline.className} text-4xl sm:text-6xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}>
-            CONQUER <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-800">THE UNKNOWN</span>
-          </h1>
+         <h1
+  className={`${heroHeadline.className} text-4xl sm:text-6xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}
+>
+  CONQUER
+  <span className="block mt-[10px] text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
+    THE UNKNOWN
+  </span>
+</h1>
+
           
           <p className="text-base sm:text-lg text-gray-300 max-w-xl mb-8 sm:mb-10 font-light leading-relaxed">
             From vertical ascents to hidden valley trails, HITREX provides the gear and the guides to push your limits.
@@ -165,9 +177,9 @@ export default function HeroSection() {
               <FiArrowUpRight className="text-xl group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
             
-            <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all">
+            {/* <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all">
               Watch Expedition
-            </button>
+            </button> */}
           </div>
         </motion.div>
 

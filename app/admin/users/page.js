@@ -1,24 +1,23 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useAdminAuth } from "@/lib/useAdminAuth";
+import { toast } from "react-toastify";
 
 export default function AdminUsers() {
-  const { data: session, status } = useSession();
+  const { isAdmin, loading } = useAdminAuth();
+  const { data: session } = useSession();
   const router = useRouter();
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session) {
-      router.push("/login");
-      return;
-    }
+    if (!isAdmin || loading) return;
     fetchUsers();
-  }, [session, status, router]);
+  }, [isAdmin, loading]);
 
   const fetchUsers = async () => {
     try {
@@ -28,7 +27,7 @@ export default function AdminUsers() {
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
-      setLoading(false);
+      setDataLoading(false);
     }
   };
 
@@ -43,13 +42,13 @@ export default function AdminUsers() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchUsers();
       } else {
-        alert(data.error || "Failed to update user");
+        toast.error(data.error || "Failed to update user");
       }
     } catch (error) {
-      alert("Error updating user");
+      toast.error("Error updating user");
       console.error(error);
     }
   };
@@ -65,13 +64,13 @@ export default function AdminUsers() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        toast.success(data.message);
         fetchUsers();
       } else {
-        alert(data.error || "Failed to delete user");
+        toast.error(data.error || "Failed to delete user");
       }
     } catch (error) {
-      alert("Error deleting user");
+      toast.error("Error deleting user");
       console.error(error);
     }
   };
@@ -98,10 +97,9 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pt-0 pb-24 -mt-24 md:-mt-28 -mb-24 md:-mb-28">
-      <div className="max-w-7xl mx-auto px-4 pt-28 md:pt-32">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-white">Manage Users</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Manage Users</h1>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter("all")}
@@ -235,7 +233,6 @@ export default function AdminUsers() {
               {users.filter((u) => u.role === "user").length}
             </p>
           </div>
-        </div>
       </div>
     </div>
   );
