@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { gsap } from "gsap";
+import Footer from "@/components/Footer";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 // import { Playfair_Display } from "next/font/google";
 import { Oswald, Playfair_Display } from "next/font/google";
@@ -219,6 +220,8 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+
+        <Footer />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function MyBookings() {
   const { data: session, status } = useSession();
@@ -32,174 +33,144 @@ export default function MyBookings() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusStyle = (status) => {
     switch (status) {
       case "confirmed":
-        return "bg-green-100 text-green-700";
+        return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
       case "pending":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-amber-500/10 text-amber-500 border-amber-500/20";
       case "cancelled":
-        return "bg-red-100 text-red-700";
-      case "completed":
-        return "bg-blue-100 text-blue-700";
+        return "bg-red-500/10 text-red-500 border-red-500/20";
       default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const getPaymentColor = (status) => {
-    switch (status) {
-      case "paid":
-        return "bg-green-100 text-green-700";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700";
-      case "refunded":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
     }
   };
 
   if (loading || status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-xl font-black text-white animate-pulse uppercase tracking-widest italic">
+          Syncing Expeditions...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-4">My Bookings</h1>
+    <div className="min-h-screen bg-[#050505] text-white pt-32 px-4 selection:bg-[#ff4d00] relative">
+
+      {/* 🔥 FIX: Black background behind navbar (PAGE ONLY) */}
+      <div className="fixed top-0 left-0 w-full h-[128px] bg-[#050505] z-0" />
+
+      <div className="relative z-10 max-w-6xl mx-auto">
+
+        {/* Header */}
+        <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <p className="text-[#ff4d00] font-black uppercase tracking-[0.4em] text-[10px]">
+              Expedition Log
+            </p>
+            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
+              Your <span className="text-[#ff4d00]">History</span>
+            </h1>
+          </div>
+
           <button
             onClick={() => router.push("/page/destination")}
-            className="bg-blue-600 text-white px-4 md:px-6 py-2 rounded hover:bg-blue-700 transition text-sm md:text-base"
+            className="w-fit bg-white text-black px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#ff4d00] hover:text-white transition-all shadow-xl"
           >
-            Book New Trek
+            New Adventure
           </button>
-        </div>
+        </header>
 
         {bookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-700 mb-4">
-              No Bookings Yet
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#0f0f0f] rounded-[2.5rem] border border-white/5 p-16 text-center shadow-2xl"
+          >
+            <h2 className="text-2xl font-black uppercase italic mb-3">
+              No Tracks Found
             </h2>
-            <p className="text-gray-600 mb-6">
-              Start your adventure by booking your first trek!
+            <p className="text-zinc-500 mb-8 max-w-sm mx-auto">
+              Your journal is empty. The wild is calling.
             </p>
             <button
               onClick={() => router.push("/page/destination")}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition"
+              className="text-[#ff4d00] font-black uppercase tracking-widest text-xs border-b-2 border-[#ff4d00] pb-1 hover:text-white hover:border-white"
             >
-              Explore Destinations
+              Start Your Journey
             </button>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {bookings.map((booking) => (
-              <div
+          <div className="grid grid-cols-1 gap-10">
+            {bookings.map((booking, index) => (
+              <motion.div
                 key={booking._id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-[#0f0f0f] rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl"
               >
                 <div className="md:flex">
-                  {/* Destination Image */}
-                  <div className="md:w-1/3 relative h-64 md:h-auto">
+                  <div className="md:w-[40%] relative h-72 md:h-auto">
                     <Image
                       src={booking.destination?.image || "/images/default.jpg"}
                       alt={booking.destination?.name || "Destination"}
                       fill
                       className="object-cover"
                     />
+                    <div className="absolute top-6 left-6">
+                      <span
+                        className={`border px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-xl ${getStatusStyle(
+                          booking.status
+                        )}`}
+                      >
+                        {booking.status}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Booking Details */}
-                  <div className="md:w-2/3 p-6">
-                    <div className="flex justify-between items-start mb-4">
+                  <div className="md:w-[60%] p-8 md:p-12">
+                    <p className="text-[#ff4d00] text-[10px] font-black uppercase tracking-widest mb-1">
+                      {booking.destination?.location}
+                    </p>
+                    <h2 className="text-3xl md:text-5xl font-black uppercase italic">
+                      {booking.destination?.name}
+                    </h2>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8">
                       <div>
-                        <h2 className="text-2xl font-bold mb-1">
-                          {booking.destination?.name || "N/A"}
-                        </h2>
-                        <p className="text-gray-600">
-                          {booking.destination?.location || "N/A"}
+                        <p className="text-zinc-600 text-[10px] uppercase">Ref ID</p>
+                        <p className="font-mono text-xs text-zinc-400">
+                          #{booking._id.slice(-8).toUpperCase()}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <span
-                          className={`inline-block px-3 py-1 rounded text-sm font-semibold ${getStatusColor(
-                            booking.status
-                          )}`}
-                        >
-                          {booking.status.toUpperCase()}
-                        </span>
-                        <span
-                          className={`inline-block px-3 py-1 rounded text-sm font-semibold ml-2 ${getPaymentColor(
-                            booking.paymentStatus
-                          )}`}
-                        >
-                          {booking.paymentStatus.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                       <div>
-                        <p className="text-sm text-gray-500">Booking ID</p>
-                        <p className="font-semibold">#{booking._id.slice(-6)}</p>
+                        <p className="text-zinc-600 text-[10px] uppercase">Departure</p>
+                        <p className="font-bold">{booking.trekDate}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Trek Date</p>
-                        <p className="font-semibold">{booking.trekDate}</p>
+                        <p className="text-zinc-600 text-[10px] uppercase">Travelers</p>
+                        <p className="font-bold">{booking.numberOfPeople}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">People</p>
-                        <p className="font-semibold">{booking.numberOfPeople}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Total Amount</p>
-                        <p className="font-bold text-green-600">
+                        <p className="text-[#ff4d00] text-[10px] uppercase">Amount</p>
+                        <p className="text-2xl font-black italic">
                           ₹{booking.totalAmount}
                         </p>
                       </div>
                     </div>
-
-                    <div className="border-t pt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm text-gray-500">Contact Name</p>
-                          <p className="font-medium">{booking.userName}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Phone</p>
-                          <p className="font-medium">{booking.userPhone}</p>
-                        </div>
-                      </div>
-                      {booking.specialRequests && (
-                        <div className="mt-4">
-                          <p className="text-sm text-gray-500">Special Requests</p>
-                          <p className="text-gray-700">{booking.specialRequests}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t">
-                      <p className="text-sm text-gray-500">
-                        Booked on:{" "}
-                        {new Date(booking.createdAt).toLocaleDateString("en-IN", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Decorative Glow */}
+      <div className="fixed top-0 right-0 w-[40vw] h-[40vh] bg-[#ff4d00]/5 blur-[120px] pointer-events-none -z-10" />
     </div>
   );
 }

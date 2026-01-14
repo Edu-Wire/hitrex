@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Footer from "@/components/Footer";
 
 export default function DestinationsPage() {
   const router = useRouter();
@@ -316,6 +317,7 @@ export default function DestinationsPage() {
           animation: loading-smooth 2s infinite ease-in-out;
         }
       `}</style>
+        <Footer />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import Footer from "@/components/Footer";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Oswald, Playfair_Display } from "next/font/google";
@@ -471,6 +472,8 @@ export default function Home() {
              </div>
            </section>
       </main>
+
+       <Footer />
     </PageTransition>
   );
 }
@@ -528,7 +531,16 @@ function DestinationCardFlip({ dest, index }) {
           </button>
         </div>
       </div>
+
+      
+
+     
+
     </motion.div>
+
+
+ 
+ 
   );
 }
 

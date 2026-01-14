@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Footer from "@/components/Footer";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { FaCompass } from "react-icons/fa";
@@ -197,7 +198,13 @@ function BlogRow({ blog, index }) {
         <p className="text-zinc-400 leading-relaxed font-light text-lg">
           {blog.description}
         </p>
+
+
+         {/* <footer/> */}
       </div>
+     
     </motion.div>
+    
   );
+  
 }

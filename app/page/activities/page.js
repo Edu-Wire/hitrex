@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Footer from "@/components/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -270,6 +271,9 @@ export default function TripsPage() {
           animation: fade-in 1s ease forwards 0.5s;
         }
       `}</style>
+
+
+       <Footer />
     </div>
   );
 }

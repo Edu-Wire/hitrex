@@ -39,56 +39,46 @@ export default function HeroSection() {
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
-  useEffect(() => {
-    const videoEl = videoRef.current;
-    const audioEl = audioRef.current;
-    if (!videoEl || !audioEl) return;
+useEffect(() => {
+  const videoEl = videoRef.current;
+  const audioEl = audioRef.current;
+  if (!videoEl || !audioEl) return;
 
-    const syncAudio = async () => {
-      try {
-        audioEl.currentTime = videoEl.currentTime;
-        audioEl.volume = 0.18;
-        await audioEl.play();
-        setSoundOn(true);
-      } catch (err) {
-        console.warn("Audio autoplay blocked; user interaction will trigger it.");
-        setSoundOn(false);
-      }
-    };
+  const handlePause = () => {
+    audioEl.pause();
+    setSoundOn(false);
+  };
 
-    const handlePlay = () => syncAudio();
-    const handlePause = () => audioEl.pause();
+  videoEl.addEventListener("pause", handlePause);
 
-    videoEl.addEventListener("play", handlePlay);
-    videoEl.addEventListener("pause", handlePause);
+  return () => {
+    videoEl.removeEventListener("pause", handlePause);
+  };
+}, []);
 
-    // Attempt initial sync
-    syncAudio();
 
-    return () => {
-      videoEl.removeEventListener("play", handlePlay);
-      videoEl.removeEventListener("pause", handlePause);
-    };
-  }, []);
 
-  const toggleSound = async () => {
-    const audioEl = audioRef.current;
-    const videoEl = videoRef.current;
-    if (!audioEl || !videoEl) return;
+const toggleSound = async () => {
+  const audioEl = audioRef.current;
+  const videoEl = videoRef.current;
+  if (!audioEl || !videoEl) return;
+
+  try {
     if (soundOn) {
       audioEl.pause();
       setSoundOn(false);
-      return;
-    }
-    try {
+    } else {
       audioEl.currentTime = videoEl.currentTime;
       audioEl.volume = 0.18;
-      await audioEl.play();
+      await audioEl.play(); // ✅ user interaction → allowed
       setSoundOn(true);
-    } catch (err) {
-      setSoundOn(false);
     }
-  };
+  } catch (err) {
+    console.error("Audio play failed:", err);
+    setSoundOn(false);
+  }
+};
+
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
