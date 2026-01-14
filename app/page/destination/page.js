@@ -136,23 +136,23 @@ export default function DestinationsPage() {
 
 
         <div className="hero-bg absolute inset-0 will-change-transform">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    className="absolute inset-0 w-full h-full object-cover"
-  >
-    <source
-      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302705/270940_medium_mggjxf.mp4"
-      type="video/mp4"
-    />
-  </video>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source
+              src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302705/270940_medium_mggjxf.mp4"
+              type="video/mp4"
+            />
+          </video>
 
-  {/* Overlay for readability */}
-  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]/75" />
-</div>
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]/75" />
+        </div>
 
 
 
@@ -179,7 +179,7 @@ export default function DestinationsPage() {
 
           {/* REDESIGNED COMPACT FILTER BAR */}
           <div className="bg-white/[0.01] backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl max-w-fit mx-auto transition-all hover:bg-white/[0.05]">
-            
+
             {/* Region Select */}
             <div className="relative group px-6 py-2 w-full md:w-auto md:min-w-[160px] border-b md:border-b-0 md:border-r border-white/5 transition-colors hover:bg-white/5 rounded-xl md:rounded-none md:first:rounded-l-full">
               <div className="flex flex-col items-start">
@@ -200,7 +200,7 @@ export default function DestinationsPage() {
                   </select>
                   <div className="absolute right-0 pointer-events-none text-zinc-500 group-hover:text-white transition-colors">
                     <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export default function DestinationsPage() {
                   </select>
                   <div className="absolute right-0 pointer-events-none text-zinc-500 group-hover:text-white transition-colors">
                     <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export default function DestinationsPage() {
                   </div>
                   <div className="flex items-center justify-between pt-6 border-t border-white/5">
                     <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dest.date}</p>
-                    <button onClick={() => router.push(`/book/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
+                    <button onClick={() => router.push(`/page/destination/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
                   </div>
                 </div>
               </div>
@@ -317,7 +317,7 @@ export default function DestinationsPage() {
           animation: loading-smooth 2s infinite ease-in-out;
         }
       `}</style>
-        <Footer />
+      <Footer />
     </div>
   );
 }
