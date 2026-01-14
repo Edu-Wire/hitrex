@@ -4,7 +4,14 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { Playfair_Display } from "next/font/google";
+// import { Playfair_Display } from "next/font/google";
+import { Oswald, Playfair_Display } from "next/font/google";
+
+const heroSans = Oswald({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
 
 const displaySerif = Playfair_Display({
   subsets: ["latin"],
@@ -64,7 +71,8 @@ export default function AboutPage() {
           </span>
           
           <h1
-            className={`${displaySerif.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
+           className={`${heroSans.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
+
           >
             {splitText("WHO WE ARE")}
           </h1>
@@ -153,7 +161,11 @@ export default function AboutPage() {
       <section className="bg-zinc-950/50 py-32 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
-            <h2 className="text-6xl font-black uppercase tracking-tighter">Extraordinary<br/><span className="text-orange-600">Values</span></h2>
+            <h2 className="text-5xl text-center md:text-left mx-auto md:mx-0 md:ml-[20px] font-black uppercase tracking-tighter">
+  Extraordinary<br />
+  <span className="text-orange-600">Values</span>
+</h2>
+
             <p className="max-w-sm text-zinc-500 text-sm">Guided by a commitment to the wild, safety, and the spirit of the global trekking community.</p>
           </div>
 

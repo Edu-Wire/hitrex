@@ -219,7 +219,7 @@ export default function Home() {
         </section>
 
         {/* ================= UPCOMING TRIPS ================= */}
-        <section id="trips" className="bg-zinc-900 py-24 text-white">
+        <section id="trips" className="bg-zinc-900  text-white">
           <UpcomingTrips />
         </section>
 
@@ -238,7 +238,7 @@ export default function Home() {
                   <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
                     Technical Grading
                   </span>
-                   <h2 className={`${displaySerif.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
+                   <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
                      Measure Your <br /> Grit.
                    </h2>
                    <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
@@ -285,7 +285,7 @@ export default function Home() {
                 <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
                   Community Pulse
                 </span>
-                <h2 className={`${displaySerif.className} text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                <h2 className={`${oswald.className}text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
                   Trail Voices
                 </h2>
                 <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
@@ -435,7 +435,7 @@ export default function Home() {
                   <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
                     Strategic Briefing
                   </span>
-                   <h2 className={`${displaySerif.className} text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                   <h2 className={`${oswald.className}text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
                      Expedition Intel
                    </h2>
                  </div>
