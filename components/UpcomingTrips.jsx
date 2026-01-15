@@ -110,11 +110,11 @@ export default function UpcomingTrips() {
             whileInView={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
-            <div className="flex items-center gap-3 text-emerald-500 font-mono text-xs tracking-widest uppercase">
+            <div className="flex items-center gap-3 text-emerald-500 text-xs tracking-widest uppercase">
               <FaCompass className="animate-spin-slow" />
               Next Deployment
             </div>
-            <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase leading-[0.9]`}>
+            <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-white uppercase leading-[0.9] tracking-tighter`}>
               Live <br /> <span className="text-emerald-500">Expeditions</span>
             </h2>
             <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
@@ -198,12 +198,12 @@ export default function UpcomingTrips() {
                             <div className="flex items-center gap-6 pt-2">
                               <div className="flex flex-col">
                                 <span className="text-zinc-600 text-[10px] uppercase font-bold">Departure</span>
-                                <span className="text-white text-xs font-mono">{trip.date}</span>
+                                <span className="text-white text-xs">{trip.date}</span>
                               </div>
                               <div className="h-8 w-px bg-white/10" />
                               <div className="flex flex-col">
                                 <span className="text-zinc-600 text-[10px] uppercase font-bold">Duration</span>
-                                <span className="text-white text-xs font-mono">{trip.duration}</span>
+                                <span className="text-white text-xs">{trip.duration}</span>
                               </div>
                             </div>
                             <button className="w-full mt-4 py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">

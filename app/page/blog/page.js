@@ -21,7 +21,7 @@ export default function BlogPage() {
   const containerRef = useRef(null);
   const titleRef = useRef(null);
   const { scrollYProgress } = useScroll();
-  
+
   const yText = useTransform(scrollYProgress, [0, 0.2], [0, 200]);
   const opacityText = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
@@ -40,7 +40,7 @@ export default function BlogPage() {
         duration: 1.2,
         ease: "expo.out",
       });
-      
+
       gsap.from(".hero-subtext", {
         opacity: 0,
         y: 20,
@@ -77,7 +77,7 @@ export default function BlogPage() {
 
   return (
     <div ref={containerRef} className="bg-[#050505] min-h-screen text-white selection:bg-orange-500 relative -mt-24">
-      
+
       {/* 1. ETHERIAL HERO SECTION */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: yText, opacity: opacityText }} className="relative z-20 text-center px-4">
@@ -86,7 +86,7 @@ export default function BlogPage() {
               The Explorer&rsquo;s Journal
             </span>
           </div>
-          
+
           {/* ANIMATED HEADING */}
           <h1 className="text-7xl md:text-[12vw] font-black tracking-tighter leading-none mb-6 flex justify-center">
             {splitText("CHRONICLES")}
@@ -100,27 +100,27 @@ export default function BlogPage() {
         </motion.div>
 
         {/* Hero Background */}
-    <div className="absolute inset-0 z-0">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    className="absolute inset-0 w-full h-full object-cover opacity-100 scale-105"
-  >
-    <source
-      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
-      type="video/mp4"
-    />
-  </video>
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover opacity-100 scale-105"
+          >
+            <source
+              src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+              type="video/mp4"
+            />
+          </video>
 
-  {/* Overlay for text readability */}
-  <div className="absolute inset-0 from-transparent via-[#050505]/1000 to-[#050505]" />
-</div>
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0 from-transparent via-[#050505]/1000 to-[#050505]" />
+        </div>
 
-        <motion.div 
-          animate={{ y: [0, 10, 0] }} 
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
         >
@@ -142,6 +142,7 @@ export default function BlogPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
@@ -150,7 +151,7 @@ function BlogRow({ blog, index }) {
   const isEven = index % 2 === 0;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 100 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -177,10 +178,10 @@ function BlogRow({ blog, index }) {
               </SwiperSlide>
             ))}
           </Swiper>
-          
+
           <div className="absolute top-8 left-8 z-20">
             <span className="bg-orange-600/90 backdrop-blur-md text-white text-[10px] font-black px-4 py-1.5 uppercase tracking-tighter rounded-full">
-               Featured Story
+              Featured Story
             </span>
           </div>
         </div>
@@ -200,11 +201,11 @@ function BlogRow({ blog, index }) {
         </p>
 
 
-         {/* <footer/> */}
+        {/* <footer/> */}
       </div>
-     
+
     </motion.div>
-    
+
   );
-  
+
 }

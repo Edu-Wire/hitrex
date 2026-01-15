@@ -11,6 +11,7 @@ import {
   Youtube,
   Send,
 } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export default function ContactPage() {
   const fadeInUp = {
@@ -192,6 +193,7 @@ export default function ContactPage() {
 
       {/* Background Glow */}
       <div className="fixed bottom-0 right-0 w-[50vw] h-[50vh] bg-[#ff4d00]/5 blur-[120px] pointer-events-none -z-10" />
+      <Footer />
     </div>
   );
 }

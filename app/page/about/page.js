@@ -5,8 +5,7 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import Footer from "@/components/Footer";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-// import { Playfair_Display } from "next/font/google";
-import { Oswald, Playfair_Display } from "next/font/google";
+import { Oswald } from "next/font/google";
 
 const heroSans = Oswald({
   subsets: ["latin"],
@@ -14,10 +13,6 @@ const heroSans = Oswald({
 });
 
 
-const displaySerif = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 export default function AboutPage() {
   const containerRef = useRef(null);
@@ -63,48 +58,48 @@ export default function AboutPage() {
 
   return (
     <div ref={containerRef} className="bg-[#050505] min-h-screen text-white selection:bg-orange-500 relative -mt-24">
-      
+
       {/* 1. CINEMATIC HERO */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: heroY }} className="relative z-20 text-center px-4">
           <span className="text-orange-500 font-bold tracking-[0.6em] uppercase text-[10px] mb-6 block opacity-80">
             Our Legacy & Story
           </span>
-          
+
           <h1
-           className={`${heroSans.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
+            className={`${heroSans.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
 
           >
             {splitText("WHO WE ARE")}
           </h1>
-          
+
           <div className="hero-line h-px w-40 bg-orange-600 mx-auto mt-8 opacity-50" />
         </motion.div>
 
         {/* Hero Background */}
-      {/* Hero Background */}
-<motion.div style={{ scale: heroScale }} className="absolute inset-0 z-0">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    className="absolute inset-0 w-full h-full object-cover opacity-50"
-  >
-    <source
-      src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768303140/263586_medium_tqruyy.mp4"
-      type="video/mp4"
-    />
-  </video>
+        {/* Hero Background */}
+        <motion.div style={{ scale: heroScale }} className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover opacity-50"
+          >
+            <source
+              src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768303140/263586_medium_tqruyy.mp4"
+              type="video/mp4"
+            />
+          </video>
 
-  {/* Overlay for text readability */}
-  <div className="absolute inset-0  " />
-</motion.div>
+          {/* Overlay for text readability */}
+          <div className="absolute inset-0  " />
+        </motion.div>
 
 
-        <motion.div 
-          animate={{ y: [0, 10, 0] }} 
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
           className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 hidden md:block"
         >
@@ -130,12 +125,12 @@ export default function AboutPage() {
               </h2>
             </div>
             <p className="text-zinc-400 text-xl leading-relaxed font-light italic">
-              &ldquo;At Hitrex, we inspire individuals to embrace the outdoors through unforgettable 
+              &ldquo;At Hitrex, we inspire individuals to embrace the outdoors through unforgettable
               hiking and trekking experiences that challenge the body and nourish the soul.&rdquo;
             </p>
             <p className="text-zinc-500 leading-relaxed">
-              We connect clients with nature’s most beautiful landscapes, fostering 
-              appreciation for wellness, environment, and growth. Our journeys are designed 
+              We connect clients with nature’s most beautiful landscapes, fostering
+              appreciation for wellness, environment, and growth. Our journeys are designed
               not just to reach a peak, but to discover the strength within.
             </p>
           </motion.div>
@@ -163,21 +158,21 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
             <h2 className="text-5xl text-center md:text-left mx-auto md:mx-0 md:ml-[20px] font-black uppercase tracking-tighter">
-  Extraordinary<br />
-  <span className="text-orange-600">Values</span>
-</h2>
+              Extraordinary<br />
+              <span className="text-orange-600">Values</span>
+            </h2>
 
             <p className="max-w-sm text-zinc-500 text-sm">Guided by a commitment to the wild, safety, and the spirit of the global trekking community.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <ValueCard 
-                title="Extraordinary Experiences" 
-                desc="Every trek with us is a unique story — whether mountain trails or hidden wonders, we create experiences that last a lifetime. Our expert guides ensure every journey is safe and inspiring."
+            <ValueCard
+              title="Extraordinary Experiences"
+              desc="Every trek with us is a unique story — whether mountain trails or hidden wonders, we create experiences that last a lifetime. Our expert guides ensure every journey is safe and inspiring."
             />
-            <ValueCard 
-                title="Our Core Values" 
-                desc="Adventure, sustainability, and community. We promote exploration with respect for nature and a commitment to safety and purpose-driven travel."
+            <ValueCard
+              title="Our Core Values"
+              desc="Adventure, sustainability, and community. We promote exploration with respect for nature and a commitment to safety and purpose-driven travel."
             />
           </div>
         </div>
@@ -221,14 +216,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-        <Footer />
+      <Footer />
     </div>
   );
 }
 
 function ValueCard({ title, desc }) {
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ y: -10 }}
       className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5 backdrop-blur-3xl transition-all hover:bg-white/[0.05] hover:border-white/10"
     >

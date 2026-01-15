@@ -95,8 +95,8 @@ export default function TripDetailsPage() {
     return (
         <div ref={containerRef} className="bg-[#050505] min-h-screen text-white overflow-x-hidden selection:bg-orange-600 -mt-24">
             {/* Hero Section */}
-            <section className="relative h-[80vh] w-full overflow-hidden">
-                <div ref={heroImageRef} className="absolute inset-0 w-full h-[120%] -top-[10%] will-change-transform">
+            <section className="relative min-h-[60vh] md:min-h-[80vh] w-full overflow-hidden flex flex-col justify-end">
+                <div ref={heroImageRef} className="absolute inset-0 w-full h-[120%] -top-[10%] will-change-transform z-0">
                     <Image
                         src={destination.image}
                         alt={destination.name}
@@ -107,20 +107,20 @@ export default function TripDetailsPage() {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#050505]" />
                 </div>
 
-                <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 pb-24 z-10">
+                <div className="relative z-10 w-full p-6 md:p-12 pb-12 md:pb-24 mt-24">
                     <div className="max-w-[1440px] mx-auto">
                         <div className="inline-block bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 mb-6">
                             {destination.location}
                         </div>
                         {/* Improved Heading for Mobile and Tablet */}
-                        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black uppercase tracking-tighter leading-[1.1] md:leading-[0.8] mb-8">
+                        <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black uppercase tracking-tighter leading-[1.0] md:leading-[0.8] mb-6 md:mb-8 break-words text-wrap">
                             {destination.name}
                         </h1>
-                        <div className="flex flex-wrap gap-4 text-sm font-bold uppercase tracking-widest opacity-80">
+                        <div className="flex flex-wrap gap-4 text-xs md:text-sm font-bold uppercase tracking-widest opacity-80 items-center">
                             <span>{destination.duration || "5 Days"}</span>
-                            <span className="w-1 h-1 bg-white rounded-full self-center" />
+                            <span className="w-1 h-1 bg-white rounded-full" />
                             <span>{destination.difficulty || "Moderate"}</span>
-                            <span className="w-1 h-1 bg-white rounded-full self-center" />
+                            <span className="w-1 h-1 bg-white rounded-full" />
                             <span>${destination.price || "2,400"}</span>
                         </div>
                     </div>
@@ -128,9 +128,9 @@ export default function TripDetailsPage() {
             </section>
 
             {/* Content Section */}
-            <main className="py-24 space-y-32">
+            <main className="py-12 md:py-24 space-y-16 md:space-y-24">
                 {/* Top Grid: Overview & Booking - Centered */}
-                <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+                <div className="max-w-[1440px] mx-auto px-4 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-24">
                     {/* Left Column: Details */}
                     <div ref={contentRef} className="lg:col-span-8 space-y-16">
                         {/* Description */}
@@ -212,7 +212,7 @@ export default function TripDetailsPage() {
                 </div>
 
                 {/* Truly Full Width Section: Inclusions & Exclusions */}
-                <div className="w-full bg-zinc-950/30 border-y border-white/5 py-32">
+                <div className="w-full bg-zinc-950/30 border-y border-white/5 py-16 md:py-24">
                     <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
                         {/* Included */}
                         <div className="space-y-6">
@@ -251,7 +251,7 @@ export default function TripDetailsPage() {
                 </div>
 
                 {/* Truly Full Width Section: Gallery */}
-                <div className="w-full space-y-12 py-24">
+                <div className="w-full space-y-8 md:space-y-12 py-12 md:py-24">
                     <div className="max-w-[1440px] mx-auto px-6 md:px-12">
                         <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.2em] mb-12">Gallery</h3>
                     </div>

@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FiArrowUpRight, FiMap, FiCompass, FiActivity, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { Oswald } from "next/font/google";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll } from "framer-motion";
+
 
 const heroHeadline = Oswald({
   subsets: ["latin"],
-  weight: ["600", "700"],
 });
 
 const slides = [
@@ -146,7 +147,7 @@ export default function HeroSection() {
           </motion.div>
 
           <h1
-            className={`${heroHeadline.className} text-3xl xs:text-4xl sm:text-6xl lg:text-8xl font-black leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
+            className={`${heroHeadline.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
           >
             CONQUER
             <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
@@ -186,7 +187,41 @@ export default function HeroSection() {
 
 function HeroCards() {
   const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true); // default visible
+  const [isMobile, setIsMobile] = useState(false);
 
+  const { scrollY } = useScroll();
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+  // Scroll-based visibility (ONLY mobile)
+  useEffect(() => {
+    if (!isMobile) {
+      setVisible(true); // always visible on desktop
+      return;
+    }
+
+    const unsubscribe = scrollY.on("change", (y) => {
+      if (y > 30) {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [scrollY, isMobile]);
+
+  // Image slider
   useEffect(() => {
     const id = setInterval(() => {
       setIdx((i) => (i + 1) % slides.length);
@@ -196,14 +231,22 @@ function HeroCards() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.4 }}
-      className="w-full max-w-xl lg:max-w-none lg:w-[400px] flex flex-col gap-4"
+      initial={false}
+      animate={{
+        opacity: visible ? 1 : 0,
+        y: visible ? 0 : 220,
+        scale: visible ? 1 : 0.85,
+        rotate: visible ? 0 : 6,
+      }}
+      transition={{
+        duration: 0.9,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="w-full lg:w-[420px] flex flex-col gap-4 pointer-events-auto"
     >
       {/* Main Glass Card */}
-      <div className="group bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl backdrop-blur-md relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-white/10">
+      <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
           <motion.div
             key={idx}
             initial={{ width: "0%" }}
@@ -213,59 +256,51 @@ function HeroCards() {
           />
         </div>
 
-        <div className="flex items-center justify-between text-white/80 mb-4 mt-2">
-          <span className="flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-            <FiActivity /> Live Peak View
+        <div className="flex justify-between items-center mb-6 mt-2">
+          <span className="flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest">
+            LIVE PEAK
           </span>
-          <span className="text-[10px] uppercase font-medium">{slides[idx].location}</span>
+          <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
+            {slides[idx].location}
+          </span>
         </div>
 
-        <div className="relative w-full h-48 sm:h-56 rounded-2xl overflow-hidden mb-4">
+        <div className="relative h-72 rounded-3xl overflow-hidden mb-5">
           <AnimatePresence mode="wait">
             <motion.div
               key={idx}
-              initial={{ scale: 1.2, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.7 }}
-              className="w-full h-full bg-cover bg-center"
+              initial={{ opacity: 0, scale: 1.15 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${slides[idx].url})` }}
             />
           </AnimatePresence>
-          <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-3 py-1 rounded-md border border-white/10">
-            <p className="text-white text-[10px] font-mono">ELV: {slides[idx].elevation}</p>
+
+          <div className="absolute bottom-5 left-5 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
+            <span className="text-white text-[11px] font-bold">
+              ALTITUDE: {slides[idx].elevation}
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Adventure Navigation Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: "Trail Maps", icon: <FiMap />, href: "/#destinations" },
-          { label: "Book Trip", icon: <FiActivity />, href: "/#trips" },
-        ].map((item, i) => (
-          <motion.div
-            whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.15)" }}
-            key={item.label}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => document.getElementById("destinations")?.scrollIntoView({ behavior: "smooth" })}
+            className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 py-4 rounded-2xl text-white text-xs font-bold border border-white/5"
           >
-            <Link
-              href={item.href}
-              className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-2xl py-4 text-white text-sm font-semibold transition"
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          </motion.div>
-        ))}
+            VIEW TRAILS
+          </button>
+          <button
+            onClick={() => document.getElementById("trips")?.scrollIntoView({ behavior: "smooth" })}
+            className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl text-white text-xs font-bold shadow-lg"
+          >
+            BOOK NOW
+          </button>
+        </div>
       </div>
-
-      <Link
-        href="/#trips"
-        className="relative group bg-emerald-600 rounded-2xl px-5 py-5 text-white font-bold hover:bg-emerald-500 transition shadow-xl overflow-hidden text-center uppercase tracking-widest text-xs"
-      >
-        <span className="relative z-10">Start Your Expedition</span>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-      </Link>
     </motion.div>
   );
 }
+

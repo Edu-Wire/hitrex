@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Oswald, Playfair_Display } from "next/font/google";
+import { Oswald } from "next/font/google";
 import {
   FaCompass,
   FaHiking,
@@ -28,8 +28,8 @@ import UpcomingTrips from "@/components/UpcomingTrips";
 import staticDestinations from "@/data/destinations";
 import { PageTransition, StaggerContainer } from "@/components/animations";
 
-const oswald = Oswald({ subsets: ["latin"], weight: ["400", "700"] });
-const displaySerif = Playfair_Display({ subsets: ["latin"], weight: ["600"] });
+const oswald = Oswald({ subsets: ["latin"] });
+
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -200,7 +200,7 @@ export default function Home() {
               <div className="lg:col-span-7">
                 <motion.div style={{ y: y1 }}>
                   <h2
-                    className={`${oswald.className} text-[12vw] sm:text-[10vw] lg:text-[10rem] font-bold text-zinc-900 uppercase leading-[0.9] sm:leading-[0.85] tracking-tighter`}
+                    className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-zinc-900 uppercase leading-[0.9] tracking-tighter`}
                   >
                     Prime <br />
                     <span className="text-emerald-600">Terrains</span>
@@ -218,7 +218,7 @@ export default function Home() {
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                    <span className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
+                    <span className="text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
                       Technical Intel
                     </span>
                   </div>
@@ -232,11 +232,11 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-8">
                     <div className="flex flex-col">
                       <span className="text-3xl font-black text-zinc-900 tracking-tighter">12+</span>
-                      <span className="text-[10px] font-mono uppercase text-zinc-400">Peak Zones</span>
+                      <span className="text-[10px] uppercase text-zinc-400">Peak Zones</span>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-3xl font-black text-zinc-900 tracking-tighter">100%</span>
-                      <span className="text-[10px] font-mono uppercase text-zinc-400">Verified Intel</span>
+                      <span className="text-[10px] uppercase text-zinc-400">Verified Intel</span>
                     </div>
                   </div>
                 </motion.div>
@@ -255,7 +255,7 @@ export default function Home() {
                 {destLoading && (
                   <div className="flex items-center gap-3 text-zinc-400">
                     <div className="w-4 h-4 border-2 border-zinc-200 border-t-emerald-500 rounded-full animate-spin" />
-                    <p className="text-[10px] font-mono uppercase tracking-[0.2em]">Syncing Archives...</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em]">Syncing Archives...</p>
                   </div>
                 )}
               </div>
@@ -267,7 +267,7 @@ export default function Home() {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6">
               {destinations.slice(0, 4).map((dest, index) => (
                 <div key={dest.id} className="relative group h-full">
-                  <div className="absolute top-4 left-4 z-30 font-mono text-[10px] text-white/50 group-hover:text-emerald-400 transition-colors">
+                  <div className="absolute top-4 left-4 z-30 text-[10px] text-white/50 group-hover:text-emerald-400 transition-colors">
                     [ 0{index + 1} ]
                   </div>
                   <DestinationCardFlip dest={dest} index={index} />
@@ -277,14 +277,7 @@ export default function Home() {
           </div>
 
           {/* Footer Action: Explore Catalog - Restored and Repositioned */}
-          <div className="mt-20 flex flex-col items-center px-4">
-            <div className="h-20 w-[1px] bg-gradient-to-b from-emerald-500 to-transparent mb-8 hidden sm:block" />
-            <button className="group relative flex items-center justify-center gap-4 px-10 py-5 bg-zinc-900 text-white rounded-full overflow-hidden hover:pr-12 transition-all duration-500 w-full sm:w-auto">
-              <span className="relative z-10 font-black uppercase text-[10px] tracking-[0.3em]">Explore Full Catalog</span>
-              <FaAngleRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-              <div className="absolute inset-0 bg-emerald-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-            </button>
-          </div>
+
         </section>
 
         {/* ================= UPCOMING TRIPS ================= */}
@@ -304,10 +297,10 @@ export default function Home() {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
+              <span className="text-emerald-600 text-sm tracking-[0.3em] uppercase block font-bold">
                 Technical Grading
               </span>
-              <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
+              <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-gray-900 leading-[0.9] tracking-tighter`}>
                 Measure Your <br /> Grit.
               </h2>
               <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
@@ -337,7 +330,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="text-right hidden sm:block">
-                    <span className="text-[10px] font-mono text-gray-400 block uppercase mb-1">Threshold</span>
+                    <span className="text-[10px] text-gray-400 block uppercase mb-1">Threshold</span>
                     <span className="text-sm font-bold text-zinc-900">{item.stats}</span>
                   </div>
                 </motion.div>
@@ -351,13 +344,13 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             <div className="space-y-6">
               <div className="space-y-2">
-                <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
+                <span className="text-emerald-500 text-sm uppercase font-bold tracking-widest">
                   Community Pulse
                 </span>
-                <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter`}>
                   Trail Voices
                 </h2>
-                <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
+                <p className="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-lg">
                   Hear from trekkers who trusted HITREX. Share your story to guide the next explorer—login is required to keep submissions authentic.
                 </p>
               </div>
@@ -499,14 +492,14 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
               <div className="space-y-4">
-                <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
+                <span className="text-emerald-500 text-sm uppercase font-bold tracking-widest">
                   Strategic Briefing
                 </span>
-                <h2 className={`${oswald.className} text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter`}>
                   Expedition Intel
                 </h2>
               </div>
-              <p className="text-zinc-400 max-w-xs text-sm leading-relaxed pb-2 border-b border-zinc-800">
+              <p className="text-zinc-400 max-w-xs text-base sm:text-lg leading-relaxed pb-2 border-b border-zinc-800">
                 Plan smarter with technical understanding and preparation tips from the HITREX lead explorers.
               </p>
             </div>

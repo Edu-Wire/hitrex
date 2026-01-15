@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { 
-  Mail, Phone, MapPin, Facebook, Twitter, 
+import Image from "next/image";
+import {
+  Mail, Phone, MapPin, Facebook, Twitter,
   Instagram, Youtube, Send
 } from "lucide-react";
 import { FadeInUp, StaggerContainer, StaggerItem } from "./animations";
@@ -11,21 +12,22 @@ export default function Footer() {
     <footer className="font-sans bg-emerald-950 text-emerald-50 mt-0 border-t border-emerald-900 text-xs lg:text-sm">
       {/* Reduced outer vertical padding to py-6 */}
       <div className="max-w-7xl mx-auto px-3 py-6">
-        
+
         {/* Grid: 1 col mobile (stacked blocks), 2 col tablet, 4 col desktop */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          
+
           {/* --- BLOCK 1: BRAND --- */}
           <StaggerItem className="bg-emerald-900/20 rounded-xl p-4 border border-white/5">
             <FadeInUp>
               <div className="flex flex-col h-full justify-between gap-3">
                 <div>
                   {/* Logo height: h-12 (48px) */}
-                  <div className="mb-3">
-                    <img 
-                      src="/logo.png" 
-                      alt="HITREX Logo" 
-                      className="h-12 w-auto object-contain" 
+                  <div className="relative h-12 w-32 mb-3">
+                    <Image
+                      src="/logo.png"
+                      alt="HITREX Logo"
+                      fill
+                      className="object-contain object-left"
                     />
                   </div>
                   {/* Text: small on mobile, standard on desktop */}
@@ -54,8 +56,8 @@ export default function Footer() {
               <ul className="grid grid-cols-2 lg:grid-cols-1 gap-y-1.5 lg:gap-y-2 gap-x-2">
                 {['Home', 'About Us', 'Destinations', 'Activities', 'Blog', 'Contact'].map((item) => (
                   <li key={item}>
-                    <Link 
-                      href={item === 'Home' ? '/' : `/page/${item.toLowerCase().replace(' ', '')}`} 
+                    <Link
+                      href={item === 'Home' ? '/' : `/page/${item.toLowerCase().replace(' ', '')}`}
                       className="text-emerald-200/60 hover:text-emerald-400 transition-colors font-medium block text-[11px] lg:text-sm"
                     >
                       {item}
@@ -90,7 +92,7 @@ export default function Footer() {
               <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-[10px] lg:text-xs">
                 Contact
               </h4>
-              
+
               <div className="space-y-2 mb-3">
                 <div className="flex items-start gap-2">
                   <MapPin className="text-emerald-500 shrink-0 mt-0.5 w-3 h-3 lg:w-4 lg:h-4" />
