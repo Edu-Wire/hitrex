@@ -39,70 +39,70 @@ export default function HeroSection() {
   const audioRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
-useEffect(() => {
-  const videoEl = videoRef.current;
-  const audioEl = audioRef.current;
-  if (!videoEl || !audioEl) return;
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    const audioEl = audioRef.current;
+    if (!videoEl || !audioEl) return;
 
-  const handlePause = () => {
-    audioEl.pause();
-    setSoundOn(false);
-  };
-
-  videoEl.addEventListener("pause", handlePause);
-
-  return () => {
-    videoEl.removeEventListener("pause", handlePause);
-  };
-}, []);
-
-
-
-const toggleSound = async () => {
-  const audioEl = audioRef.current;
-  const videoEl = videoRef.current;
-  if (!audioEl || !videoEl) return;
-
-  try {
-    if (soundOn) {
+    const handlePause = () => {
       audioEl.pause();
       setSoundOn(false);
-    } else {
-      audioEl.currentTime = videoEl.currentTime;
-      audioEl.volume = 0.18;
-      await audioEl.play(); // ✅ user interaction → allowed
-      setSoundOn(true);
+    };
+
+    videoEl.addEventListener("pause", handlePause);
+
+    return () => {
+      videoEl.removeEventListener("pause", handlePause);
+    };
+  }, []);
+
+
+
+  const toggleSound = async () => {
+    const audioEl = audioRef.current;
+    const videoEl = videoRef.current;
+    if (!audioEl || !videoEl) return;
+
+    try {
+      if (soundOn) {
+        audioEl.pause();
+        setSoundOn(false);
+      } else {
+        audioEl.currentTime = videoEl.currentTime;
+        audioEl.volume = 0.18;
+        await audioEl.play(); // ✅ user interaction → allowed
+        setSoundOn(true);
+      }
+    } catch (err) {
+      console.error("Audio play failed:", err);
+      setSoundOn(false);
     }
-  } catch (err) {
-    console.error("Audio play failed:", err);
-    setSoundOn(false);
-  }
-};
+  };
 
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
       {/* Background Video with subtle zoom effect */}
-      <motion.div 
+      <motion.div
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
         transition={{ duration: 10, ease: "easeOut" }}
         className="absolute inset-0"
       >
-<video
-  ref={videoRef}
-  className="w-full h-full object-cover"
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
->
-  <source
-    src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768304612/258658_medium_mncdkm.mp4"
-    type="video/mp4"
-  />
-</video>
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
+          <source
+            src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768304612/258658_medium_mncdkm.mp4"
+            type="video/mp4"
+          />
+        </video>
 
 
         <audio
@@ -112,7 +112,7 @@ const toggleSound = async () => {
           preload="auto"
         />
       </motion.div>
-      
+
       {/* Dynamic Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
 
@@ -127,34 +127,34 @@ const toggleSound = async () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-24 sm:pt-32 md:pt-40">
-        
+
         {/* Left copy */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           className="max-w-2xl text-left"
         >
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="flex items-center gap-2 text-emerald-400 font-bold tracking-widest uppercase text-xs mb-4"
           >
-            <FiCompass className="animate-spin-slow" /> 
+            <FiCompass className="animate-spin-slow" />
             Adventure Awaits
           </motion.div>
-          
-         <h1
-  className={`${heroHeadline.className} text-4xl sm:text-6xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase`}
->
-  CONQUER
-  <span className="block mt-[10px] text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
-    THE UNKNOWN
-  </span>
-</h1>
 
-          
+          <h1
+            className={`${heroHeadline.className} text-3xl xs:text-4xl sm:text-6xl lg:text-8xl font-black leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
+          >
+            CONQUER
+            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
+              THE UNKNOWN
+            </span>
+          </h1>
+
+
           <p className="text-base sm:text-lg text-gray-300 max-w-xl mb-8 sm:mb-10 font-light leading-relaxed">
             From vertical ascents to hidden valley trails, HITREX provides the gear and the guides to push your limits.
           </p>
@@ -167,7 +167,7 @@ const toggleSound = async () => {
               Start Trekking
               <FiArrowUpRight className="text-xl group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
-            
+
             {/* <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all">
               Watch Expedition
             </button> */}
@@ -179,7 +179,7 @@ const toggleSound = async () => {
       </div>
 
       {/* Bottom decorative stats for 'Hiking' vibe */}
- 
+
     </section>
   );
 }
@@ -195,7 +195,7 @@ function HeroCards() {
   }, []);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.4 }}
@@ -204,13 +204,13 @@ function HeroCards() {
       {/* Main Glass Card */}
       <div className="group bg-white/5 border border-white/10 rounded-3xl p-4 shadow-2xl backdrop-blur-md relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-white/10">
-            <motion.div 
-                key={idx}
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 4.5, ease: "linear" }}
-                className="h-full bg-emerald-500"
-            />
+          <motion.div
+            key={idx}
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 4.5, ease: "linear" }}
+            className="h-full bg-emerald-500"
+          />
         </div>
 
         <div className="flex items-center justify-between text-white/80 mb-4 mt-2">
@@ -233,7 +233,7 @@ function HeroCards() {
             />
           </AnimatePresence>
           <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-3 py-1 rounded-md border border-white/10">
-             <p className="text-white text-[10px] font-mono">ELV: {slides[idx].elevation}</p>
+            <p className="text-white text-[10px] font-mono">ELV: {slides[idx].elevation}</p>
           </div>
         </div>
       </div>
@@ -249,11 +249,11 @@ function HeroCards() {
             key={item.label}
           >
             <Link
-                href={item.href}
-                className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-2xl py-4 text-white text-sm font-semibold transition"
+              href={item.href}
+              className="flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-2xl py-4 text-white text-sm font-semibold transition"
             >
-                {item.icon}
-                {item.label}
+              {item.icon}
+              {item.label}
             </Link>
           </motion.div>
         ))}

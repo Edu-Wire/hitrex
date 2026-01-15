@@ -60,12 +60,23 @@ export default function UpcomingTrips() {
   const total = trips.length;
   const visibleCount = Math.min(total, 4);
 
-  // Advanced Stack Physics
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Responsive Stack Physics
   const getCardStyle = (offset) => {
+    const isMobile = windowWidth < 640;
     const depth = Math.min(offset, 3);
+
     return {
-      x: offset === 0 ? 0 : offset * 40, // Stagger to the right
-      y: offset === 0 ? 0 : offset * -15, // Lift up slightly
+      x: offset === 0 ? 0 : offset * (isMobile ? 15 : 40), // Less stagger on mobile
+      y: offset === 0 ? 0 : offset * (isMobile ? -8 : -15), // Less lift on mobile
       scale: 1 - offset * 0.05,
       rotate: offset === 0 ? 0 : offset * 2,
       opacity: offset === 0 ? 1 : 0.4 - offset * 0.1,
@@ -80,11 +91,11 @@ export default function UpcomingTrips() {
     <section className="relative py-20 sm:py-24 px-4 sm:px-6 overflow-hidden bg-zinc-950">
       {/* Cinematic Background with Topo Pattern Overlay */}
       <div className="absolute inset-0 z-0">
-        <Image 
-            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000" 
-            fill 
-            className="object-cover opacity-20 grayscale"
-            alt="Mountain Background"
+        <Image
+          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000"
+          fill
+          className="object-cover opacity-20 grayscale"
+          alt="Mountain Background"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent" />
         <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
@@ -92,21 +103,21 @@ export default function UpcomingTrips() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-[0.8fr_1.2fr] items-center gap-12 lg:gap-16">
-          
+
           {/* Left Content */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
             <div className="flex items-center gap-3 text-emerald-500 font-mono text-xs tracking-widest uppercase">
-                <FaCompass className="animate-spin-slow" />
-                Next Deployment
+              <FaCompass className="animate-spin-slow" />
+              Next Deployment
             </div>
             <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white uppercase leading-[0.9]`}>
               Live <br /> <span className="text-emerald-500">Expeditions</span>
             </h2>
-              <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
+            <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
               Real-time upcoming departures. Our technical teams are currently prepping gear for these high-altitude routes.
             </p>
             {error && (
@@ -115,7 +126,7 @@ export default function UpcomingTrips() {
             {loading && (
               <p className="text-zinc-500 text-xs">Refreshing itineraries...</p>
             )}
-            
+
             {/* Custom Navigation Bricks */}
             <div className="flex gap-4 pt-6">
               <button
@@ -152,7 +163,7 @@ export default function UpcomingTrips() {
                     className="absolute w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px]"
                   >
                     <div className={`relative h-[420px] sm:h-[460px] lg:h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
-                      
+
                       {/* Card Visual */}
                       <div className="relative h-52 sm:h-64 w-full">
                         <Image
@@ -162,41 +173,41 @@ export default function UpcomingTrips() {
                           className={`object-cover ${!isTop && 'grayscale opacity-50'}`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
-                        
+
                         {isTop && (
-                            <div className="absolute top-6 right-6 bg-emerald-500 text-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter flex items-center gap-2">
-                                <FiActivity className="animate-pulse" /> Limited Slots
-                            </div>
+                          <div className="absolute top-6 right-6 bg-emerald-500 text-black px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter flex items-center gap-2">
+                            <FiActivity className="animate-pulse" /> Limited Slots
+                          </div>
                         )}
                       </div>
 
                       {/* Card Content */}
                       <div className="p-8 space-y-4">
                         <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-                            <FiMapPin /> {trip.location}
+                          <FiMapPin /> {trip.location}
                         </div>
                         <h3 className={`${oswald.className} text-3xl font-bold text-white uppercase tracking-tight`}>
                           {trip.name}
                         </h3>
-                        
+
                         {isTop && (
                           <>
                             <p className="text-zinc-400 text-sm line-clamp-2 font-light leading-relaxed">
-                                {trip.description}
+                              {trip.description}
                             </p>
                             <div className="flex items-center gap-6 pt-2">
-                                <div className="flex flex-col">
-                                    <span className="text-zinc-600 text-[10px] uppercase font-bold">Departure</span>
-                                    <span className="text-white text-xs font-mono">{trip.date}</span>
-                                </div>
-                                <div className="h-8 w-px bg-white/10" />
-                                <div className="flex flex-col">
-                                    <span className="text-zinc-600 text-[10px] uppercase font-bold">Duration</span>
-                                    <span className="text-white text-xs font-mono">{trip.duration}</span>
-                                </div>
+                              <div className="flex flex-col">
+                                <span className="text-zinc-600 text-[10px] uppercase font-bold">Departure</span>
+                                <span className="text-white text-xs font-mono">{trip.date}</span>
+                              </div>
+                              <div className="h-8 w-px bg-white/10" />
+                              <div className="flex flex-col">
+                                <span className="text-zinc-600 text-[10px] uppercase font-bold">Duration</span>
+                                <span className="text-white text-xs font-mono">{trip.duration}</span>
+                              </div>
                             </div>
                             <button className="w-full mt-4 py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
-                                Reserve Gear Spot
+                              Reserve Gear Spot
                             </button>
                           </>
                         )}

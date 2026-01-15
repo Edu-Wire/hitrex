@@ -130,9 +130,8 @@ export default function Home() {
     return Array.from({ length: 5 }).map((_, idx) => (
       <FaStar
         key={idx}
-        className={`h-4 w-4 ${
-          idx < rating ? "text-amber-400" : "text-zinc-600"
-        }`}
+        className={`h-4 w-4 ${idx < rating ? "text-amber-400" : "text-zinc-600"
+          }`}
       />
     ));
   };
@@ -191,32 +190,101 @@ export default function Home() {
         {/* ================= DESTINATIONS ================= */}
         <section
           id="destinations"
-          className="relative w-full pt-28 sm:pt-32 lg:pt-40 pb-20 md:pb-28 lg:pb-32 bg-zinc-100 rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20"
+          className="relative w-full pt-28 sm:pt-32 lg:pt-40 pb-20 md:pb-28 lg:pb-32 bg-white rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20 border-t border-zinc-200"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-12 md:mb-16">
-            <motion.div style={{ y: y1 }}>
-              <h2
-                className={`${oswald.className} text-4xl sm:text-6xl lg:text-8xl font-bold text-zinc-900 uppercase tracking-tight`}
-              >
-                Prime <br />
-                <span className="text-emerald-600">Terrains</span>
-              </h2>
-            </motion.div>
-            {destError && (
-              <p className="text-amber-600 text-sm mt-3">{destError}</p>
-            )}
-            {destLoading && (
-              <p className="text-zinc-500 text-xs mt-2">
-                Refreshing destinations...
-              </p>
+          {/* Header Grid: Balanced Design */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 md:mb-24">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+
+              {/* Left Side: Massive Typography */}
+              <div className="lg:col-span-7">
+                <motion.div style={{ y: y1 }}>
+                  <h2
+                    className={`${oswald.className} text-[12vw] sm:text-[10vw] lg:text-[10rem] font-bold text-zinc-900 uppercase leading-[0.9] sm:leading-[0.85] tracking-tighter`}
+                  >
+                    Prime <br />
+                    <span className="text-emerald-600">Terrains</span>
+                  </h2>
+                </motion.div>
+              </div>
+
+              {/* Right Side: Descriptive Panel (Fills Empty Space) */}
+              <div className="lg:col-span-5 pb-2">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="flex flex-col gap-6"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
+                      Technical Intel
+                    </span>
+                  </div>
+
+                  <p className="text-zinc-600 text-lg md:text-xl leading-relaxed font-light">
+                    Analyzing high-altitude glacial lakes and hidden massifs across the
+                    Himalayan range. We provide verified data and exclusive access for explorers
+                    seeking raw, untamed nature in its purest form.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-8">
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">12+</span>
+                      <span className="text-[10px] font-mono uppercase text-zinc-400">Peak Zones</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">100%</span>
+                      <span className="text-[10px] font-mono uppercase text-zinc-400">Verified Intel</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Status Indicators */}
+            {(destError || destLoading) && (
+              <div className="mt-12 flex gap-6 items-center border-y border-zinc-100 py-4">
+                {destError && (
+                  <div className="flex items-center gap-2 text-amber-600">
+                    <FaExclamationTriangle size={14} />
+                    <p className="text-xs font-medium uppercase tracking-widest">{destError}</p>
+                  </div>
+                )}
+                {destLoading && (
+                  <div className="flex items-center gap-3 text-zinc-400">
+                    <div className="w-4 h-4 border-2 border-zinc-200 border-t-emerald-500 rounded-full animate-spin" />
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em]">Syncing Archives...</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-6 max-w-7xl mx-auto">
-            {destinations.slice(0, 4).map((dest, index) => (
-              <DestinationCardFlip key={dest.id} dest={dest} index={index} />
-            ))}
-          </StaggerContainer>
+          {/* Cards Grid */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6">
+              {destinations.slice(0, 4).map((dest, index) => (
+                <div key={dest.id} className="relative group h-full">
+                  <div className="absolute top-4 left-4 z-30 font-mono text-[10px] text-white/50 group-hover:text-emerald-400 transition-colors">
+                    [ 0{index + 1} ]
+                  </div>
+                  <DestinationCardFlip dest={dest} index={index} />
+                </div>
+              ))}
+            </StaggerContainer>
+          </div>
+
+          {/* Footer Action: Explore Catalog - Restored and Repositioned */}
+          <div className="mt-20 flex flex-col items-center px-4">
+            <div className="h-20 w-[1px] bg-gradient-to-b from-emerald-500 to-transparent mb-8 hidden sm:block" />
+            <button className="group relative flex items-center justify-center gap-4 px-10 py-5 bg-zinc-900 text-white rounded-full overflow-hidden hover:pr-12 transition-all duration-500 w-full sm:w-auto">
+              <span className="relative z-10 font-black uppercase text-[10px] tracking-[0.3em]">Explore Full Catalog</span>
+              <FaAngleRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 bg-emerald-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            </button>
+          </div>
         </section>
 
         {/* ================= UPCOMING TRIPS ================= */}
@@ -226,57 +294,57 @@ export default function Home() {
 
         {/* ================= DIFFICULTY ================= */}
         <section id="difficulty" className="relative py-24 sm:py-32 bg-white overflow-hidden">
-               {/* Decorative Topography Pattern */}
-               <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
-               
-               <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-                 <motion.div 
-                   initial={{ opacity: 0, x: -30 }}
-                   whileInView={{ opacity: 1, x: 0 }}
-                   viewport={{ once: true }}
-                   className="space-y-6"
-                 >
-                  <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
-                    Technical Grading
-                  </span>
-                   <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
-                     Measure Your <br /> Grit.
-                   </h2>
-                   <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
-                     Our trails are rated using the HITREX standard, analyzing vertical gain, oxygen levels, and technical demand.
-                   </p>
-                   <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100 max-w-sm">
-                       <FaExclamationTriangle className="text-amber-500" />
-                       <p className="text-xs text-amber-800 font-medium">Always check local weather warnings before departure.</p>
-                   </div>
-                 </motion.div>
-       
-                 <div className="space-y-4">
-                   {difficultyData.map((item, idx) => (
-                     <motion.div
-                       key={item.title}
-                       initial={{ opacity: 0, y: 20 }}
-                       whileInView={{ opacity: 1, y: 0 }}
-                       transition={{ delay: idx * 0.1 }}
-                       viewport={{ once: true }}
-                       className={`group relative flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${item.color}`}
-                     >
-                       <div className="flex items-start gap-4">
-                         <span className={`h-3 w-3 mt-2 rounded-full ${item.dot} shadow-lg`} />
-                         <div>
-                           <h4 className={`${oswald.className} text-xl uppercase font-bold text-zinc-900`}>{item.title}</h4>
-                           <p className="text-sm text-gray-600 mt-1 max-w-xs">{item.text}</p>
-                         </div>
-                       </div>
-                       <div className="text-right hidden sm:block">
-                           <span className="text-[10px] font-mono text-gray-400 block uppercase mb-1">Threshold</span>
-                           <span className="text-sm font-bold text-zinc-900">{item.stats}</span>
-                       </div>
-                     </motion.div>
-                   ))}
-                 </div>
-               </div>
-             </section>
+          {/* Decorative Topography Pattern */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <span className="text-emerald-600 font-mono text-sm tracking-[0.3em] uppercase block font-bold">
+                Technical Grading
+              </span>
+              <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight`}>
+                Measure Your <br /> Grit.
+              </h2>
+              <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
+                Our trails are rated using the HITREX standard, analyzing vertical gain, oxygen levels, and technical demand.
+              </p>
+              <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100 max-w-sm">
+                <FaExclamationTriangle className="text-amber-500" />
+                <p className="text-xs text-amber-800 font-medium">Always check local weather warnings before departure.</p>
+              </div>
+            </motion.div>
+
+            <div className="space-y-4">
+              {difficultyData.map((item, idx) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className={`group relative flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${item.color}`}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className={`h-3 w-3 mt-2 rounded-full ${item.dot} shadow-lg`} />
+                    <div>
+                      <h4 className={`${oswald.className} text-xl uppercase font-bold text-zinc-900`}>{item.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1 max-w-xs">{item.text}</p>
+                    </div>
+                  </div>
+                  <div className="text-right hidden sm:block">
+                    <span className="text-[10px] font-mono text-gray-400 block uppercase mb-1">Threshold</span>
+                    <span className="text-sm font-bold text-zinc-900">{item.stats}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* ================= REVIEWS ================= */}
         <section id="reviews" className="bg-zinc-950 py-24 sm:py-32 text-white">
@@ -286,7 +354,7 @@ export default function Home() {
                 <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
                   Community Pulse
                 </span>
-                <h2 className={`${oswald.className}text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                <h2 className={`${oswald.className} text-3xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
                   Trail Voices
                 </h2>
                 <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
@@ -303,11 +371,10 @@ export default function Home() {
                         key={val}
                         type="button"
                         onClick={() => setReviewForm((prev) => ({ ...prev, rating: val }))}
-                        className={`h-9 w-9 rounded-full border flex items-center justify-center transition ${
-                          reviewForm.rating >= val
-                            ? "bg-amber-500 border-amber-400 text-black"
-                            : "border-zinc-700 text-zinc-400 hover:border-amber-500/60"
-                        }`}
+                        className={`h-9 w-9 rounded-full border flex items-center justify-center transition ${reviewForm.rating >= val
+                          ? "bg-amber-500 border-amber-400 text-black"
+                          : "border-zinc-700 text-zinc-400 hover:border-amber-500/60"
+                          }`}
                       >
                         {val}
                       </button>
@@ -361,14 +428,13 @@ export default function Home() {
                     !session ||
                     reviewWordCount > 100
                   }
-                  className={`w-full text-sm font-bold uppercase tracking-widest rounded-xl py-3 transition ${
-                    submittingReview ||
+                  className={`w-full text-sm font-bold uppercase tracking-widest rounded-xl py-3 transition ${submittingReview ||
                     !reviewForm.comment.trim() ||
                     !session ||
                     reviewWordCount > 100
-                      ? "bg-zinc-700 text-zinc-400 cursor-not-allowed"
-                      : "bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20"
-                  }`}
+                    ? "bg-zinc-700 text-zinc-400 cursor-not-allowed"
+                    : "bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20"
+                    }`}
                 >
                   {submittingReview ? "Submitting..." : "Post Review"}
                 </button>
@@ -384,7 +450,7 @@ export default function Home() {
               </div>
 
               {loadingReviews ? (
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {[1, 2, 3].map((idx) => (
                     <div
                       key={idx}
@@ -393,7 +459,7 @@ export default function Home() {
                   ))}
                 </div>
               ) : displayedReviews.length ? (
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {displayedReviews.map((review) => (
                     <div
                       key={review._id || review.id}
@@ -410,7 +476,7 @@ export default function Home() {
                           </div>
                         </div>
                       </div>
-                      <p className="text-sm text-zinc-300 leading-relaxed">
+                      <p className="text-sm text-zinc-300 leading-relaxed line-clamp-4">
                         {review.comment}
                       </p>
                       <p className="text-[11px] text-zinc-500">
@@ -430,50 +496,50 @@ export default function Home() {
 
         {/* ================= INSIGHTS ================= */}
         <section id="insights" className="relative py-24 sm:py-32 bg-zinc-950 text-white">
-             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-               <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16 gap-6">
-                 <div className="space-y-4">
-                  <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
-                    Strategic Briefing
-                  </span>
-                   <h2 className={`${oswald.className}text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
-                     Expedition Intel
-                   </h2>
-                 </div>
-                 <p className="text-zinc-400 max-w-xs text-sm leading-relaxed pb-2 border-b border-zinc-800">
-                     Plan smarter with technical understanding and preparation tips from the HITREX lead explorers.
-                 </p>
-               </div>
-     
-               <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-                 {insightData.map((item, idx) => (
-                   <motion.div
-                     key={item.title}
-                     initial={{ opacity: 0, scale: 0.95 }}
-                     whileInView={{ opacity: 1, scale: 1 }}
-                     transition={{ delay: idx * 0.1 }}
-                     viewport={{ once: true }}
-                     className={`group p-8 rounded-3xl border-2 ${item.color} hover:border-emerald-500/50 transition-all duration-500 flex flex-col justify-between h-full`}
-                   >
-                     <div>
-                       <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-2xl mb-6 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500">
-                         {item.icon}
-                       </div>
-                       <h4 className={`${oswald.className} text-2xl uppercase font-bold mb-3`}>{item.title}</h4>
-                       <p className="text-zinc-400 text-sm leading-relaxed">{item.text}</p>
-                     </div>
-                     
-                     <button className="mt-8 flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-widest group-hover:gap-4 transition-all">
-                         Full Protocol <FaAngleRight />
-                     </button>
-                   </motion.div>
-                 ))}
-               </div>
-             </div>
-           </section>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
+              <div className="space-y-4">
+                <span className="text-emerald-500 font-mono text-sm uppercase font-bold tracking-widest">
+                  Strategic Briefing
+                </span>
+                <h2 className={`${oswald.className} text-4xl sm:text-5xl md:text-6xl font-bold leading-tight`}>
+                  Expedition Intel
+                </h2>
+              </div>
+              <p className="text-zinc-400 max-w-xs text-sm leading-relaxed pb-2 border-b border-zinc-800">
+                Plan smarter with technical understanding and preparation tips from the HITREX lead explorers.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+              {insightData.map((item, idx) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className={`group p-8 rounded-3xl border-2 ${item.color} hover:border-emerald-500/50 transition-all duration-500 flex flex-col justify-between h-full ${idx === 2 ? 'sm:col-span-2 md:col-span-1' : ''}`}
+                >
+                  <div>
+                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-2xl mb-6 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500">
+                      {item.icon}
+                    </div>
+                    <h4 className={`${oswald.className} text-xl sm:text-2xl uppercase font-bold mb-3`}>{item.title}</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed">{item.text}</p>
+                  </div>
+
+                  <button className="mt-8 flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-widest group-hover:gap-4 transition-all">
+                    Full Protocol <FaAngleRight />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
 
-       <Footer />
+      <Footer />
     </PageTransition>
   );
 }
@@ -486,7 +552,7 @@ function DestinationCardFlip({ dest, index }) {
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group h-[420px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
+      className="group h-[480px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
     >
       <div className="relative h-full w-full transition-transform duration-700 transform-3d group-hover:transform-[rotateY(180deg)]">
         {/* FRONT */}
@@ -516,7 +582,7 @@ function DestinationCardFlip({ dest, index }) {
               Technical Intel
             </h4>
 
-            <p className="text-sm text-zinc-400 italic">
+            <p className="text-sm text-zinc-400 italic line-clamp-4">
               {dest.description}
             </p>
 
@@ -532,15 +598,15 @@ function DestinationCardFlip({ dest, index }) {
         </div>
       </div>
 
-      
 
-     
+
+
 
     </motion.div>
 
 
- 
- 
+
+
   );
 }
 
@@ -557,46 +623,46 @@ function Info({ icon, label, value }) {
 /* ================= DATA ================= */
 
 const difficultyData = [
-  { 
-    title: "Class 1: Casual", 
-    color: "border-green-500/20 bg-green-500/5", 
-    dot: "bg-green-500", 
+  {
+    title: "Class 1: Casual",
+    color: "border-green-500/20 bg-green-500/5",
+    dot: "bg-green-500",
     text: "Well-marked trails with flat terrain. Suitable for all fitness levels and families.",
     stats: "0-200m Elevation"
   },
-  { 
-    title: "Class 3: Technical", 
-    color: "border-yellow-500/20 bg-yellow-500/5", 
-    dot: "bg-yellow-500", 
+  {
+    title: "Class 3: Technical",
+    color: "border-yellow-500/20 bg-yellow-500/5",
+    dot: "bg-yellow-500",
     text: "Scrambling required. Steep inclines with uneven surfaces. High fitness required.",
     stats: "500-1200m Elevation"
   },
-  { 
-    title: "Class 5: Extreme", 
-    color: "border-red-500/20 bg-red-500/5", 
-    dot: "bg-red-500", 
+  {
+    title: "Class 5: Extreme",
+    color: "border-red-500/20 bg-red-500/5",
+    dot: "bg-red-500",
     text: "Vertical ascents and technical gear required. Only for certified mountaineers.",
     stats: "2000m+ Vertical"
   },
 ];
 
 const insightData = [
-  { 
-    title: "Atmospheric Gear", 
+  {
+    title: "Atmospheric Gear",
     icon: <FaCloudSun />,
-    color: "bg-zinc-900 border-zinc-800", 
-    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour." 
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour."
   },
-  { 
-    title: "Maintenance Kit", 
+  {
+    title: "Maintenance Kit",
     icon: <FaTools />,
-    color: "bg-zinc-900 border-zinc-800", 
-    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones." 
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones."
   },
-  { 
-    title: "Wilderness First Aid", 
+  {
+    title: "Wilderness First Aid",
     icon: <FaFirstAid />,
-    color: "bg-zinc-900 border-zinc-800", 
-    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails." 
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails."
   },
 ];

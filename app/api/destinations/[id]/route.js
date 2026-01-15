@@ -8,16 +8,17 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
     const { id } = params;
-    
-    const destination = await Destination.findById(id);
-    
+
+    const destination = await Destination.findById(id).lean();
+
     if (!destination) {
       return NextResponse.json(
         { error: "Destination not found" },
         { status: 404 }
       );
     }
-    
+
+    console.log("GET /api/destinations/[id] - Found destination:", destination);
     return NextResponse.json({ destination }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -33,23 +34,25 @@ export async function PUT(request, { params }) {
     // Temporarily disabled admin check for testing
     // await requireAdmin();
     await connectDB();
-    
+
     const { id } = params;
     const data = await request.json();
-    
+    console.log(`PUT /api/destinations/${id} - Received data:`, data);
+
     const destination = await Destination.findByIdAndUpdate(
       id,
       data,
       { new: true, runValidators: true }
     );
-    
+    console.log(`PUT /api/destinations/${id} - Updated destination:`, destination);
+
     if (!destination) {
       return NextResponse.json(
         { error: "Destination not found" },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json(
       { message: "Destination updated successfully", destination },
       { status: 200 }
@@ -69,18 +72,18 @@ export async function DELETE(request, { params }) {
     // Temporarily disabled admin check for testing
     // await requireAdmin();
     await connectDB();
-    
+
     const { id } = params;
-    
+
     const destination = await Destination.findByIdAndDelete(id);
-    
+
     if (!destination) {
       return NextResponse.json(
         { error: "Destination not found" },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json(
       { message: "Destination deleted successfully" },
       { status: 200 }
