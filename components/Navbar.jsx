@@ -83,14 +83,15 @@ export default function Navbar() {
         }`}
       >
         <div 
-          // REMOVED: 'border', 'border-white/10', 'border-white/20'
-          className={`max-w-7xl mx-auto transition-all duration-500 rounded-full ${
+          // UPDATED: 'max-w-[90rem]' increases width beyond standard 7xl
+          className={`max-w-[90rem] mx-auto transition-all duration-500 rounded-full ${
             scrolled || isAdminPage
               ? "bg-black/90 backdrop-blur-2xl py-1.5 sm:py-2 shadow-2xl" 
               : "bg-black/40 backdrop-blur-md py-2 sm:py-3"
           }`}
         >
-          <div className="flex items-center justify-between px-4 sm:px-6">
+          {/* UPDATED: Increased padding to 'px-8' for better spacing */}
+          <div className="flex items-center justify-between px-6 sm:px-8">
             
             {/* 1. BRAND LOGO */}
             <Link href="/" className="flex items-center gap-2 group z-50">
@@ -106,7 +107,7 @@ export default function Navbar() {
             {/* 2. DESKTOP NAV - Hidden on Mobile/Tablet */}
             <div 
               ref={navLinksContainerRef}
-              className="hidden lg:flex relative items-center justify-center h-10"
+              className="hidden lg:flex relative items-center justify-center h-10 gap-1"
             >
               <div
                 className="absolute bottom-1 h-[2px] bg-[#00c985] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] pointer-events-none"
@@ -118,7 +119,7 @@ export default function Navbar() {
                   href={link.href}
                   onMouseEnter={moveHighlight}
                   onMouseLeave={hideHighlight}
-                  className={`relative px-4 py-2 text-[13px] font-black uppercase tracking-widest transition-colors duration-300 z-10 ${
+                  className={`relative px-5 py-2 text-[13px] font-black uppercase tracking-widest transition-colors duration-300 z-10 ${
                     pathname === link.href ? "text-[#00c985]" : "text-gray-300 hover:text-white"
                   }`}
                 >
@@ -128,10 +129,10 @@ export default function Navbar() {
             </div>
 
             {/* 3. RIGHT SECTION */}
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3 sm:gap-6">
               
               {/* DESKTOP ONLY GROUP */}
-              <div className="hidden lg:flex items-center gap-4">
+              <div className="hidden lg:flex items-center gap-5">
                 {session ? (
                   <div className="relative" ref={dropdownRef}>
                     <button
@@ -209,20 +210,20 @@ export default function Navbar() {
           <div className="mt-8 flex flex-col space-y-6">
             <p className="text-[10px] font-black text-[#ff4d00] uppercase tracking-[0.3em] mb-2 border-b border-white/10 pb-2">Explore</p>
             {menuLinks.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setIsMenuOpen(false)} className={`text-2xl font-black italic uppercase tracking-tighter transition-colors ${pathname === link.href ? "text-[#00c985]" : "text-white hover:text-[#00c985]"}`}>
+              <Link 
+                key={link.href} 
+                href={link.href} 
+                onClick={() => setIsMenuOpen(false)} 
+                // ITALIC REMOVED BELOW
+                className={`text-2xl font-black uppercase tracking-tighter transition-colors ${pathname === link.href ? "text-[#00c985]" : "text-white hover:text-[#00c985]"}`}
+              >
                 {link.label}
               </Link>
             ))}
           </div>
 
           <div className="mt-auto pt-8">
-            
-            {/* SIDEBAR BOOK NOW: Green Border, Transparent BG */}
-            <Link 
-              href="/page/destination" 
-              onClick={() => setIsMenuOpen(false)} 
-              className="block w-full text-center border border-[#00c985] text-[#00c985] py-4 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-[#00c985] hover:text-black mb-4 transition-all"
-            >
+            <Link href="/page/destination" onClick={() => setIsMenuOpen(false)} className="block w-full text-center border border-[#00c985] text-[#00c985] py-4 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-[#00c985] hover:text-black mb-4 transition-all">
                Book Now
              </Link>
 
@@ -245,13 +246,7 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                
-                // SIDEBAR LOGIN: Solid Emerald Color
-                <Link 
-                  href="/login" 
-                  onClick={() => setIsMenuOpen(false)} 
-                  className="block w-full text-center py-4 rounded-full bg-[#00c985] text-black text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(0,201,133,0.4)] hover:scale-105 transition-all duration-300"
-                >
+                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="block w-full text-center py-4 rounded-full bg-[#00c985] text-black text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(0,201,133,0.4)] hover:scale-105 transition-all duration-300">
                   Login / Sign Up
                 </Link>
               )}

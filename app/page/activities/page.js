@@ -52,18 +52,34 @@ export default function TripsPage() {
   // Hero animation and global scroll effects run immediately on mount
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const chars = gsap.utils.toArray(".char");
-
+      
+      // 1. Animate "OUR" from Top (Upwards) - SMOOTHED
+      const charsUp = gsap.utils.toArray(".char-up");
       gsap.fromTo(
-        chars,
-        { y: "100%", opacity: 0 },
+        charsUp,
+        { yPercent: -110, opacity: 0 }, // Using yPercent for better performance
         {
-          y: "0%",
+          yPercent: 0,
           opacity: 1,
-          duration: 1.2,
-          stagger: 0.05,
-          ease: "expo.out",
-          delay: 0, // fire as soon as page loads
+          duration: 1.5, // Slower for smoothness
+          stagger: 0.08, // More distinct wave
+          ease: "power4.out", // Ultra smooth deceleration
+          delay: 0.2,
+        }
+      );
+
+      // 2. Animate "TRIPS" from Bottom (Downwards) - SMOOTHED
+      const charsDown = gsap.utils.toArray(".char-down");
+      gsap.fromTo(
+        charsDown,
+        { yPercent: 110, opacity: 0 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          duration: 1.5,
+          stagger: 0.08,
+          ease: "power4.out",
+          delay: 0.2, 
         }
       );
 
@@ -124,18 +140,18 @@ export default function TripsPage() {
         tl.fromTo(
           revealText,
           { x: -50, opacity: 0 },
-          { x: 0, opacity: 1, duration: 1, ease: "expo.out" }
+          { x: 0, opacity: 1, duration: 1.2, ease: "power3.out" } // Smoothed
         ).fromTo(
           revealImages,
           { clipPath: "inset(0 100% 0 0)", scale: 1.3 },
           {
             clipPath: "inset(0 0% 0 0)",
             scale: 1,
-            duration: 1.2,
-            ease: "expo.inOut",
-            stagger: 0.15,
+            duration: 1.4, // Smoothed
+            ease: "power4.inOut",
+            stagger: 0.2,
           },
-          "-=0.8"
+          "-=1.0"
         );
       });
     }, containerRef);
@@ -143,11 +159,12 @@ export default function TripsPage() {
     return () => ctx.revert();
   }, [trips]);
 
-  // Helper function to split text into characters
-  const splitText = (text) => {
+  // Helper function to split text into characters with custom class support
+  const splitText = (text, customClass) => {
     return text.split("").map((char, i) => (
-      <span key={i} className="inline-block overflow-hidden h-fit leading-none px-2">
-        <span className="char inline-block translate-y-full">
+      <span key={i} className="inline-block overflow-hidden h-fit leading-none px-1 md:px-2">
+        {/* Added will-change-transform for performance */}
+        <span className={`${customClass} inline-block will-change-transform`}>
           {char === " " ? "\u00A0" : char}
         </span>
       </span>
@@ -159,46 +176,37 @@ export default function TripsPage() {
       
       {/* 1. ULTRA HERO SECTION */}
       <section ref={heroRef} className="relative h-[110vh] w-full flex items-center justify-center overflow-hidden -mt-24 md:-mt-28">
-       
-
-       <video
-  autoPlay
-  loop
-  muted
-  playsInline
-  preload="auto"
-  className="absolute inset-0 w-full h-full object-cover opacity-90 scale-110"
->
-  <source
-    src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
-    type="video/mp4"
-  />
-</video>
-
-{/* Overlay for contrast */}
-<div className="absolute inset-0 bg-linear-to-b from-transparent via-black/1000 to-[#0a0a0a]" />
-
-       
-       
-
-
-        {/* <Image
-          src="/images/trip-hero.avif"
-          alt="Trips banner"
-          fill
-          className="object-cover opacity-90 scale-110"
-          priority
-        />
-        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/20 to-[#0a0a0a]" /> */}
         
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover opacity-90 scale-110"
+        >
+          <source
+            src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* Overlay for contrast */}
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/1000 to-[#0a0a0a]" />
+
         <div className="relative z-10 text-center skew-elem">
-          <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col items-center">
-            <span className="flex overflow-hidden">
-              {splitText("OUR")}
+          <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            
+            {/* 'OUR' - Solid Text, Animates from Top */}
+            <span className="flex overflow-hidden py-4">
+              {splitText("OUR", "char-up")}
             </span>
-            <span className="flex overflow-hidden text-transparent stroke-text">
-              {splitText("TRIPS")}
+
+            {/* 'TRIPS' - Stroke/Border Only, Animates from Bottom */}
+            <span className="flex overflow-hidden text-transparent stroke-text py-4">
+              {splitText("TRIPS", "char-down")}
             </span>
+
           </h1>
         </div>
 
@@ -260,18 +268,19 @@ export default function TripsPage() {
       </div>
 
       <style jsx global>{`
+        .will-change-transform {
+          will-change: transform, opacity;
+        }
         .stroke-text {
           -webkit-text-stroke: 2px white;
+          color: transparent;
         }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease forwards 0.5s;
+        @media (max-width: 768px) {
+           .stroke-text {
+            -webkit-text-stroke: 1px white;
+          }
         }
       `}</style>
-
 
        <Footer />
     </div>
