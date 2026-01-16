@@ -128,7 +128,7 @@ export default function UpcomingTrips() {
             )}
 
             {/* Custom Navigation Bricks */}
-            <div className="flex gap-4 pt-6">
+            <div className="hidden sm:flex gap-4 pt-6">
               <button
                 onClick={handlePrev}
                 className="group h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white transition-all hover:bg-emerald-600 hover:border-emerald-500"
@@ -160,12 +160,20 @@ export default function UpcomingTrips() {
                     animate={style}
                     exit={{ opacity: 0, scale: 1.1, x: -200, rotate: -10 }}
                     transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    className="absolute w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px]"
+                    drag={isTop ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.6}
+                    onDragEnd={(e, { offset }) => {
+                      if (offset.x < -100) handleNext();
+                      else if (offset.x > 100) handlePrev();
+                    }}
+                    whileTap={isTop ? { cursor: "grabbing" } : {}}
+                    className={`absolute w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] ${isTop ? 'cursor-grab touch-pan-y' : ''}`}
                   >
-                    <div className={`relative h-[420px] sm:h-[460px] lg:h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
+                    <div className={`relative h-[440px] sm:h-[460px] lg:h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
 
                       {/* Card Visual */}
-                      <div className="relative h-52 sm:h-64 w-full">
+                      <div className="relative h-48 sm:h-64 w-full">
                         <Image
                           src={trip.image}
                           alt={trip.name}
@@ -182,7 +190,7 @@ export default function UpcomingTrips() {
                       </div>
 
                       {/* Card Content */}
-                      <div className="p-8 space-y-4">
+                      <div className="p-5 sm:p-8 space-y-2 sm:space-y-4">
                         <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em]">
                           <FiMapPin /> {trip.location}
                         </div>
@@ -206,7 +214,7 @@ export default function UpcomingTrips() {
                                 <span className="text-white text-xs">{trip.duration}</span>
                               </div>
                             </div>
-                            <button className="w-full mt-4 py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
+                            <button className="w-full mt-2 sm:mt-4 py-3 sm:py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
                               Reserve Gear Spot
                             </button>
                           </>

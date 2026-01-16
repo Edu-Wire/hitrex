@@ -38,6 +38,7 @@ const slides = [
 export default function HeroSection() {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
+  const sectionRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
 
   useEffect(() => {
@@ -54,6 +55,55 @@ export default function HeroSection() {
 
     return () => {
       videoEl.removeEventListener("pause", handlePause);
+    };
+  }, []);
+
+  // Intersection Observer for handling Autoplay/Pause on Playback Visibility
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const audioEl = audioRef.current;
+          const videoEl = videoRef.current;
+          if (!audioEl) return;
+
+          if (entry.isIntersecting) {
+            // Attempt to autoplay when visible
+            // Sync with video time if possible
+            if (videoEl) {
+              audioEl.currentTime = videoEl.currentTime;
+            }
+            audioEl.volume = 0.18;
+
+            const playPromise = audioEl.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  setSoundOn(true);
+                })
+                .catch((err) => {
+                  console.log("Autoplay prevented by browser:", err);
+                  setSoundOn(false);
+                });
+            }
+          } else {
+            // Pause when not visible
+            audioEl.pause();
+            setSoundOn(false);
+          }
+        });
+      },
+      { threshold: 0.4 } // 40% visibility required to trigger
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
     };
   }, []);
 
@@ -82,7 +132,7 @@ export default function HeroSection() {
 
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
+    <section ref={sectionRef} className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
       {/* Background Video with subtle zoom effect */}
       <motion.div
         initial={{ scale: 1.1 }}
@@ -118,7 +168,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
 
       {/* Sound toggle overlay */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
+      <div className="absolute bottom-8 right-4 sm:bottom-12 sm:right-12 z-50">
         <button
           onClick={toggleSound}
           className="flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-full bg-white text-black text-sm font-semibold shadow-lg hover:bg-emerald-100 border border-emerald-200"
