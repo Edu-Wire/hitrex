@@ -6,12 +6,12 @@ import Image from "next/image";
 import { FiArrowLeft, FiArrowRight, FiCalendar, FiMapPin, FiActivity } from "react-icons/fi";
 import { FaMountain, FaCompass } from "react-icons/fa";
 import { Oswald } from "next/font/google";
-import staticUpcomingTrips from "../data/upcomingTrips";
+
 
 const oswald = Oswald({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function UpcomingTrips() {
-  const [trips, setTrips] = useState(staticUpcomingTrips);
+  const [trips, setTrips] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,14 +37,14 @@ export default function UpcomingTrips() {
           setCurrent(0);
           setError(null);
         } else {
-          setTrips(staticUpcomingTrips);
-          setError("Live trips unavailable, showing defaults.");
+          setTrips([]);
+          setError("No active expeditions found.");
         }
       } catch (err) {
         if (!isMounted) return;
         console.error(err);
-        setTrips(staticUpcomingTrips);
-        setError("Live trips unavailable, showing defaults.");
+        setTrips([]);
+        setError("Unable to load expeditions.");
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -145,7 +145,7 @@ export default function UpcomingTrips() {
           </motion.div>
 
           {/* Right Card Stack */}
-          <div className="relative min-h-[420px] sm:min-h-[500px] lg:h-[550px] w-full flex items-center justify-center lg:justify-start md:pl-12 lg:pl-20">
+          <div className="relative min-h-[560px] sm:min-h-[600px] lg:h-[650px] w-full flex items-center justify-center lg:justify-start md:pl-12 lg:pl-20">
             <AnimatePresence mode="popLayout">
               {Array.from({ length: visibleCount }).map((_, layerIdx) => {
                 const tripIndex = (current + layerIdx) % total;
@@ -170,10 +170,10 @@ export default function UpcomingTrips() {
                     whileTap={isTop ? { cursor: "grabbing" } : {}}
                     className={`absolute w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] ${isTop ? 'cursor-grab touch-pan-y' : ''}`}
                   >
-                    <div className={`relative h-[440px] sm:h-[460px] lg:h-[480px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900`}>
+                    <div className={`relative h-[500px] sm:h-[550px] lg:h-[600px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900 flex flex-col`}>
 
                       {/* Card Visual */}
-                      <div className="relative h-48 sm:h-64 w-full">
+                      <div className="relative h-44 sm:h-64 w-full flex-none">
                         <Image
                           src={trip.image}
                           alt={trip.name}
@@ -190,7 +190,7 @@ export default function UpcomingTrips() {
                       </div>
 
                       {/* Card Content */}
-                      <div className="p-5 sm:p-8 space-y-2 sm:space-y-4">
+                      <div className="p-5 sm:p-8 space-y-2 sm:space-y-4 flex flex-col flex-1">
                         <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em]">
                           <FiMapPin /> {trip.location}
                         </div>
@@ -214,7 +214,7 @@ export default function UpcomingTrips() {
                                 <span className="text-white text-xs">{trip.duration}</span>
                               </div>
                             </div>
-                            <button className="w-full mt-2 sm:mt-4 py-3 sm:py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
+                            <button className="w-full mt-auto py-3 sm:py-4 rounded-xl bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
                               Reserve Gear Spot
                             </button>
                           </>

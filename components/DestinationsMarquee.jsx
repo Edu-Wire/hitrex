@@ -6,17 +6,16 @@ export default function DestinationsMarquee({ destinations }) {
     const scrollRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
 
-    // Repeat data 4 times to ensure we have enough content to loop seamlessly on wide screens
-    const displayDestinations = [
-        ...destinations,
-        ...destinations,
-        ...destinations,
-        ...destinations,
-    ];
+    // Only duplicate for marquee effect if we have enough items
+    const shouldMarquee = destinations.length > 3;
+
+    const displayDestinations = shouldMarquee
+        ? [...destinations, ...destinations, ...destinations, ...destinations]
+        : destinations;
 
     useEffect(() => {
         const scrollContainer = scrollRef.current;
-        if (!scrollContainer) return;
+        if (!scrollContainer || !shouldMarquee) return;
 
         let animationFrameId;
         let speed = 0.8; // Adjusted speed for better readability
@@ -43,7 +42,8 @@ export default function DestinationsMarquee({ destinations }) {
         animationFrameId = requestAnimationFrame(animate);
 
         return () => cancelAnimationFrame(animationFrameId);
-    }, [isPaused, destinations]);
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [isPaused, destinations, shouldMarquee]);
 
     return (
         <div
@@ -71,9 +71,7 @@ export default function DestinationsMarquee({ destinations }) {
                         key={`${dest.id}-${index}`}
                         className="relative shrink-0 w-[85vw] sm:w-[300px] h-full"
                     >
-                        <div className="absolute top-4 left-4 z-30 text-[10px] text-white/50 group-hover:text-emerald-400 transition-colors">
-                            [ 0{(index % destinations.length) + 1} ]
-                        </div>
+
                         <div className="w-full">
                             <DestinationCardFlip dest={dest} index={index} />
                         </div>

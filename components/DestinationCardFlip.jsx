@@ -9,10 +9,7 @@ const oswald = Oswald({ subsets: ["latin"] });
 
 export default function DestinationCardFlip({ dest, index }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+        <div
             className="group/card h-[480px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
         >
             <div className="relative h-full w-full transition-transform duration-700 transform-3d group-hover/card:transform-[rotateY(180deg)]">
@@ -61,7 +58,7 @@ export default function DestinationCardFlip({ dest, index }) {
                     </Link>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
 

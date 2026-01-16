@@ -27,7 +27,7 @@ import {
 
 import HeroSection from "@/components/HeroSection";
 import UpcomingTrips from "@/components/UpcomingTrips";
-import staticDestinations from "@/data/destinations";
+
 import { PageTransition } from "@/components/animations";
 
 const oswald = Oswald({ subsets: ["latin"] });
@@ -35,7 +35,7 @@ const oswald = Oswald({ subsets: ["latin"] });
 
 export default function Home() {
   const containerRef = useRef(null);
-  const [destinations, setDestinations] = useState(staticDestinations);
+  const [destinations, setDestinations] = useState([]);
   const [destError, setDestError] = useState(null);
   const [destLoading, setDestLoading] = useState(true);
   const { data: session } = useSession();
@@ -77,14 +77,14 @@ export default function Home() {
           setDestinations(apiDestinations);
           setDestError(null);
         } else if (!controller.signal.aborted) {
-          setDestinations(staticDestinations);
-          setDestError("Live destinations unavailable, showing defaults.");
+          setDestinations([]);
+          setDestError("No active destinations found.");
         }
       } catch (err) {
         if (!controller.signal.aborted) {
           console.error(err);
-          setDestinations(staticDestinations);
-          setDestError("Live destinations unavailable, showing defaults.");
+          setDestinations([]);
+          setDestError("Live destinations unavailable.");
         }
       } finally {
         if (!controller.signal.aborted) {
