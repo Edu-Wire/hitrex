@@ -457,7 +457,7 @@ export default function DestinationsPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Est.</p>
-                        <p className="text-2xl font-black">${dest.price || "2,400"}</p>
+                        <p className="text-2xl font-black">€{dest.price || "2,400"}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">

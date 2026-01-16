@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PageTransition, FadeInUp, ScaleIn } from "@/components/animations";
 import { FaCompass, FaMountain, FaHiking } from "react-icons/fa";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,7 +33,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push("/");
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch (error) {
@@ -151,5 +153,13 @@ export default function LoginPage() {
         </div>
       </div>
     </PageTransition>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#061826]" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

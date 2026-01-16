@@ -122,7 +122,7 @@ export default function TripDetailsPage() {
                             <span className="w-1 h-1 bg-white rounded-full" />
                             <span>{destination.difficulty || "Moderate"}</span>
                             <span className="w-1 h-1 bg-white rounded-full" />
-                            <span>${destination.price || "2,400"}</span>
+                            <span>€{destination.price || "2,400"}</span>
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@ export default function TripDetailsPage() {
                             <div className="mb-8 pb-8 border-b border-white/5">
                                 <p className="text-sm text-zinc-400 font-bold uppercase tracking-widest mb-2">Total Price</p>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-5xl font-black">${destination.price || "2,400"}</span>
+                                    <span className="text-5xl font-black">€{destination.price || "2,400"}</span>
                                     <span className="text-zinc-500 text-sm font-bold uppercase">/ Person</span>
                                 </div>
                             </div>

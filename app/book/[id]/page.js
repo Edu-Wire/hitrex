@@ -25,7 +25,7 @@ export default function BookDestination() {
   useEffect(() => {
     if (status === "loading") return;
     if (!session) {
-      router.push("/login");
+      router.push(`/login?callbackUrl=/book/${params.id}`);
       return;
     }
     fetchDestination();
@@ -79,7 +79,7 @@ export default function BookDestination() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: totalAmount,
-            currency: "inr",
+            currency: "eur",
             customerEmail: session?.user?.email,
             metadata: {
               destinationId: params.id,
@@ -176,7 +176,7 @@ export default function BookDestination() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#ff4d00] -mt-24">
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-12">
-        
+
         {/* Header Section */}
         <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
           <p className="text-[#ff4d00] font-black uppercase tracking-widest mb-2 text-sm">Adventure Ready</p>
@@ -186,7 +186,7 @@ export default function BookDestination() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
+
           {/* Left Side: Destination Preview */}
           <div className="lg:col-span-5 space-y-8 animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
             <div className="group relative h-[500px] w-full rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl">
@@ -207,7 +207,7 @@ export default function BookDestination() {
 
             <div className="space-y-6 px-2">
               <p className="text-gray-400 font-medium leading-relaxed">{destination.description}</p>
-              
+
               <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
                 <div>
                   <p className="text-[#ff4d00] text-[10px] font-black uppercase mb-1">Duration</p>
@@ -219,7 +219,7 @@ export default function BookDestination() {
                 </div>
                 <div>
                   <p className="text-[#ff4d00] text-[10px] font-black uppercase mb-1">Per Person</p>
-                  <p className="font-bold text-lg">₹{destination.price || 5000}</p>
+                  <p className="font-bold text-lg">€{destination.price || 5000}</p>
                 </div>
               </div>
             </div>
@@ -229,7 +229,7 @@ export default function BookDestination() {
           <div className="lg:col-span-7 animate-in fade-in slide-in-from-right-4 duration-700 delay-200">
             <div className="bg-[#0f0f0f] rounded-[2.5rem] p-8 md:p-12 border border-white/5 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)]">
               <h3 className="text-2xl font-black uppercase italic mb-8 tracking-tight">Reservation Details</h3>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -296,9 +296,9 @@ export default function BookDestination() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                       <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Total Investment</p>
-                      <p className="text-4xl font-black italic text-white tracking-tighter mt-1">₹{totalAmount}</p>
+                      <p className="text-4xl font-black italic text-white tracking-tighter mt-1">€{totalAmount}</p>
                     </div>
-                    
+
                     <button
                       type="submit"
                       disabled={submitting}
