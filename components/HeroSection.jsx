@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FiArrowUpRight, FiMap, FiCompass, FiActivity, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { Oswald } from "next/font/google";
 // import { motion, AnimatePresence } from "framer-motion";
-import { motion, AnimatePresence, useScroll } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 
 const heroHeadline = Oswald({
@@ -187,10 +187,15 @@ export default function HeroSection() {
 
 function HeroCards() {
   const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true); // default visible
+  const [visible, setVisible] = useState(false); // Init false for smoother entry
   const [isMobile, setIsMobile] = useState(false);
 
   const { scrollY } = useScroll();
+
+  // Mobile Scroll Transforms: "Come from bottom dead"
+  // Maps scroll: Arrives faster (by 250px scroll) and starts slightly closer (400px) so it's seen "before"
+  const mobileY = useTransform(scrollY, [0, 250], [400, 0]);
+  const mobileOpacity = useTransform(scrollY, [0, 150], [0, 1]);
 
   // Detect mobile screen
   useEffect(() => {
@@ -203,23 +208,12 @@ function HeroCards() {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  // Scroll-based visibility (ONLY mobile)
+  // Desktop Visibility Logic
   useEffect(() => {
     if (!isMobile) {
       setVisible(true); // always visible on desktop
-      return;
     }
-
-    const unsubscribe = scrollY.on("change", (y) => {
-      if (y > 30) {
-        setVisible(true);
-      } else {
-        setVisible(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [scrollY, isMobile]);
+  }, [isMobile]);
 
   // Image slider
   useEffect(() => {
@@ -232,12 +226,17 @@ function HeroCards() {
   return (
     <motion.div
       initial={false}
-      animate={{
+      // DESKTOP: triggers based on 'visible' state
+      animate={!isMobile ? {
         opacity: visible ? 1 : 0,
         y: visible ? 0 : 220,
         scale: visible ? 1 : 0.85,
         rotate: visible ? 0 : 6,
-      }}
+      } : undefined} // Disable animate on mobile to let style take over
+
+      // MOBILE: mapped directly to scroll position - Enforcing rotate: 0
+      style={isMobile ? { y: mobileY, opacity: mobileOpacity, rotate: 0 } : {}}
+
       transition={{
         duration: 0.9,
         ease: [0.22, 1, 0.36, 1],
