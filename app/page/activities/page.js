@@ -186,7 +186,7 @@ export default function TripsPage() {
           className="absolute inset-0 w-full h-full object-cover opacity-90 scale-110"
         >
           <source
-            src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+            src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768303199/22609-328810354_medium_utmf26.mp4"
             type="video/mp4"
           />
         </video>

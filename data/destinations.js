@@ -27,188 +27,62 @@ const destinations = [
     image: "/images/black.avif",
     description: "Peaceful forest trekking with picturesque villages and dense greenery."
   },
-//   {
-//     id: "lofoten-islands-trek",
-//     name: "Lofoten Islands Trek",
-//     location: "Norway",
-//     image: "/images/Lofoten.avif",
-//     description: "Stunning coastal trekking with fjords, mountains, and Arctic landscapes."
-//   },
-//   {
-//     id: "camino-de-santiago",
-//     name: "Camino de Santiago",
-//     location: "Spain",
-//     image: "/images/camino-santiago.jpg",
-//     description: "Historic pilgrimage route across northern Spain through towns and mountains."
-//   },
-//   {
-//     id: "tour-of-the-anns",
-//     name: "Tour of the Ann Mountains",
-//     location: "Austria",
-//     image: "/images/ann-mountains.jpg",
-//     description: "Challenging alpine trekking with gorgeous meadows and peaks."
-//   },
-//   {
-//     id: "grossglockner-high-alpine",
-//     name: "Grossglockner High Alpine Trail",
-//     location: "Austria",
-//     image: "/images/grossglockner.jpg",
-//     description: "High-altitude trail along Austria's highest peak."
-//   },
-//   {
-//     id: "fjadrargljufur-canyon",
-//     name: "Fjaðrárgljúfur Canyon Trek",
-//     location: "Iceland",
-//     image: "/images/fjord-canyon.jpg",
-//     description: "Trek along dramatic canyon landscapes in Iceland."
-//   },
-//   {
-//     id: "kinabalu-peak",
-//     name: "Mount Kinabalu Trek",
-//     location: "Malaysia",
-//     image: "/images/kinabalu.jpg",
-//     description: "Trek to the highest peak of Borneo with sunrise views."
-//   },
-//   {
-//     id: "inca-trail",
-//     name: "Inca Trail",
-//     location: "Peru",
-//     image: "/images/inca-trail.jpg",
-//     description: "Famous trail to Machu Picchu through the Andes."
-//   },
-//   {
-//     id: "torres-del-paine",
-//     name: "Torres del Paine Circuit",
-//     location: "Chile",
-//     image: "/images/torres-paine.jpg",
-//     description: "Patagonia trek with glaciers, mountains, and turquoise lakes."
-//   },
-//   {
-//     id: "w-trek",
-//     name: "W Trek",
-//     location: "Chile",
-//     image: "/images/w-trek.jpg",
-//     description: "Iconic short trek in Torres del Paine with breathtaking views."
-//   },
-//   {
-//     id: "patagonian-explorer",
-//     name: "Patagonian Explorer Trek",
-//     location: "Argentina/Chile",
-//     image: "/images/patagonia.jpg",
-//     description: "Long-distance trek through glaciers, mountains, and open plains."
-//   },
-//   {
-//     id: "mount-rainier",
-//     name: "Mount Rainier Trek",
-//     location: "USA",
-//     image: "/images/rainier.jpg",
-//     description: "Challenging alpine trek in Washington state with glacier views."
-//   },
-//   {
-//     id: "appalachian-trail",
-//     name: "Appalachian Trail",
-//     location: "USA",
-//     image: "/images/appalachian.jpg",
-//     description: "Historic long-distance trail along the eastern US mountains."
-//   },
-//   {
-//     id: "grand-canyon-rim-to-rim",
-//     name: "Grand Canyon Rim-to-Rim",
-//     location: "USA",
-//     image: "/images/grand-canyon.jpg",
-//     description: "Epic trek across the Grand Canyon from North Rim to South Rim."
-//   },
-//   {
-//     id: "kilimanjaro",
-//     name: "Mount Kilimanjaro Trek",
-//     location: "Tanzania",
-//     image: "/images/kilimanjaro.jpg",
-//     description: "Africa's highest peak trek with varied ecosystems."
-//   },
-//   {
-//     id: "rwanda-volcanoes",
-//     name: "Rwanda Volcanoes Trek",
-//     location: "Rwanda",
-//     image: "/images/rwanda-volcanoes.jpg",
-//     description: "Trek the Virunga volcanoes with mountain gorilla experience."
-//   },
-//   {
-//     id: "annapurna-circuit",
-//     name: "Annapurna Circuit",
-//     location: "Nepal",
-//     image: "/images/annapurna.jpg",
-//     description: "Classic Himalayan trek with diverse landscapes and villages."
-//   },
-//   {
-//     id: "everest-base-camp",
-//     name: "Everest Base Camp",
-//     location: "Nepal",
-//     image: "/images/everest-base.jpg",
-//     description: "The legendary trek to the base of Mount Everest."
-//   },
-//   {
-//     id: "gore-tex-ladakh",
-//     name: "Markha Valley Trek",
-//     location: "Ladakh, India", 
-//     image: "/images/markha.jpg",
-//     description: "High-altitude trekking with stunning Himalayan valleys." 
-//   },
-//   {
-//     id: "alps-haute-route",
-//     name: "Haute Route",
-//     location: "France/Switzerland",
-//     image: "/images/haute-route.jpg",
-//     description: "Classic high-mountain trek connecting Chamonix to Zermatt."
-//   },
-//   {
-//     id: "lyngen-alps",
-//     name: "Lyngen Alps Trek",
-//     location: "Norway",
-//     image: "/images/lyngen.jpg",
-//     description: "Arctic alpine trekking with fjords and glaciers."
-//   },
-//   {
-//     id: "madeira-coastal",
-//     name: "Madeira Coastal Trail",
-//     location: "Portugal",
-//     image: "/images/madeira.jpg",
-//     description: "Scenic coastal trek with cliffs, waterfalls, and ocean views."
-//   },
-//   {
-//     id: "cordillera-blanca",
-//     name: "Cordillera Blanca Trek",
-//     location: "Peru",
-//     image: "/images/cordillera-blanca.jpg",
-//     description: "High-altitude Andean trek with snow-capped peaks and lakes."
-//   },
-//   {
-//     id: "sierra-nevada",
-//     name: "Sierra Nevada Trek",
-//     location: "Spain",
-//     image: "/images/sierra-nevada.jpg",
-//     description: "Trekking in southern Spain with mountain peaks and valleys."
-//   },
-//   {
-//     id: "banff-lakes-trek",
-//     name: "Banff Lakes Trek",
-//     location: "Canada",
-//     image: "/images/banff-lakes.jpg",
-//     description: "Rocky Mountains trek with alpine lakes and forests."
-//   },
-//   {
-//     id: "jotunheimen",
-//     name: "Jotunheimen Trek",
-//     location: "Norway",
-//     image: "/images/jotunheimen.jpg",
-//     description: "Scenic trek through Norway's highest mountains and glaciers."
-//   },
-//   {
-//     id: "grossglockner",
-//     name: "Grossglockner High Alpine Trail",
-//     location: "Austria",
-//     image: "/images/grossglockner.jpg",
-//     description: "High-altitude trek along Austria's tallest peak."
-//   }
+  {
+    id: "lofoten-islands-trek",
+    name: "Lofoten Islands Trek",
+    location: "Norway",
+    image: "/images/Lofoten.avif",
+    description: "Stunning coastal trekking with fjords, mountains, and Arctic landscapes."
+  },
+  {
+    id: "alpine-lakes-circuit",
+    name: "Alpine Lakes Circuit",
+    location: "Austria",
+    image: "/images/trip-1.avif",
+    description: "A loop trail visiting crystal clear high-altitude lakes."
+  },
+  {
+    id: "pyrenees-traverse",
+    name: "Pyrenees Traverse",
+    location: "Spain/France",
+    image: "/images/trip-2.avif",
+    description: "Crossing the rugged border mountains between Spain and France."
+  },
+  {
+    id: "julian-alps",
+    name: "Julian Alps Explorer",
+    location: "Slovenia",
+    image: "/images/trip-3.avif",
+    description: "Discover the limestone peaks and turquoise rivers of Slovenia."
+  },
+  {
+    id: "high-tatras",
+    name: "High Tatras Adventure",
+    location: "Slovakia",
+    image: "/images/trip-4.avif",
+    description: "Dramatic rocky peaks and waterfalls in the Carpathian range."
+  },
+  {
+    id: "picos-de-europa",
+    name: "Picos de Europa",
+    location: "Spain",
+    image: "/images/trip-5.avif",
+    description: "Limestone spires and deep gorges in northern Spain."
+  },
+  {
+    id: "olympus-range",
+    name: "Mount Olympus Route",
+    location: "Greece",
+    image: "/images/trip-6.avif",
+    description: "Trek the mythical home of the gods with Mediterranean views."
+  },
+  {
+    id: "rila-mountains",
+    name: "Rila Lakes Trek",
+    location: "Bulgaria",
+    image: "/images/trip-7.avif",
+    description: "Visit the Seven Rila Lakes in this pristine mountain wilderness."
+  }
 ];
 
 export default destinations;

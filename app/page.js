@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import DestinationsMarquee from "@/components/DestinationsMarquee";
 import { useSession } from "next-auth/react";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Oswald } from "next/font/google";
@@ -26,7 +28,7 @@ import {
 import HeroSection from "@/components/HeroSection";
 import UpcomingTrips from "@/components/UpcomingTrips";
 import staticDestinations from "@/data/destinations";
-import { PageTransition, StaggerContainer } from "@/components/animations";
+import { PageTransition } from "@/components/animations";
 
 const oswald = Oswald({ subsets: ["latin"] });
 
@@ -190,10 +192,10 @@ export default function Home() {
         {/* ================= DESTINATIONS ================= */}
         <section
           id="destinations"
-          className="relative w-full pt-28 sm:pt-32 lg:pt-40 pb-20 md:pb-28 lg:pb-32 bg-white rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20 border-t border-zinc-200"
+          className="relative w-full pt-18 sm:pt-12 lg:pt-10 pb-20 md:pb-18 lg:pb-12 bg-white rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20 border-t border-zinc-200"
         >
           {/* Header Grid: Balanced Design */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 md:mb-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 md:mb-14">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
 
               {/* Left Side: Massive Typography */}
@@ -262,19 +264,9 @@ export default function Home() {
             )}
           </div>
 
-          {/* Cards Grid */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6">
-              {destinations.slice(0, 4).map((dest, index) => (
-                <div key={dest.id} className="relative group h-full">
-                  <div className="absolute top-4 left-4 z-30 text-[10px] text-white/50 group-hover:text-emerald-400 transition-colors">
-                    [ 0{index + 1} ]
-                  </div>
-                  <DestinationCardFlip dest={dest} index={index} />
-                </div>
-              ))}
-            </StaggerContainer>
-          </div>
+          {/* Cards Auto-Scroll Marquee (Hybrid: JS-driven + Manual) */}
+          <DestinationsMarquee destinations={destinations} />
+
 
           {/* Footer Action: Explore Catalog - Restored and Repositioned */}
 
@@ -533,85 +525,11 @@ export default function Home() {
       </main>
 
       <Footer />
-    </PageTransition>
+    </PageTransition >
   );
 }
 
-/* ================= DESTINATION CARD ================= */
 
-function DestinationCardFlip({ dest, index }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group h-[480px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
-    >
-      <div className="relative h-full w-full transition-transform duration-700 transform-3d group-hover:transform-[rotateY(180deg)]">
-        {/* FRONT */}
-        <div className="absolute inset-0 backface-hidden rounded-3xl overflow-hidden shadow-xl">
-          <Image
-            src={dest.image}
-            alt={dest.name}
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
-          <div className="absolute bottom-6 sm:bottom-8 left-5 sm:left-6">
-            <h3
-              className={`${oswald.className} text-2xl sm:text-3xl text-white font-bold`}
-            >
-              {dest.name}
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-300">{dest.location}</p>
-          </div>
-        </div>
-
-        {/* BACK */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-3xl bg-zinc-900 p-6 flex flex-col justify-between">
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <FaMountain className="text-emerald-500" />
-              Technical Intel
-            </h4>
-
-            <p className="text-sm text-zinc-400 italic line-clamp-4">
-              {dest.description}
-            </p>
-
-            <div className="mt-6 space-y-3">
-              <Info icon={<FaRoute />} label="Route" value="Scrambling" />
-              <Info icon={<FaClock />} label="Duration" value="14–18 Days" />
-            </div>
-          </div>
-
-          <button className="bg-emerald-600 hover:bg-emerald-500 transition text-white py-3 rounded-lg text-xs uppercase tracking-widest">
-            Initialize Booking
-          </button>
-        </div>
-      </div>
-
-
-
-
-
-    </motion.div>
-
-
-
-
-  );
-}
-
-function Info({ icon, label, value }) {
-  return (
-    <div className="flex items-center gap-3 text-sm text-white">
-      <span className="text-emerald-500">{icon}</span>
-      <span className="text-zinc-400">{label}:</span>
-      <span>{value}</span>
-    </div>
-  );
-}
 
 /* ================= DATA ================= */
 

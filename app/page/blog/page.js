@@ -110,7 +110,7 @@ export default function BlogPage() {
             className="absolute inset-0 w-full h-full object-cover opacity-100 scale-105"
           >
             <source
-              src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768302708/181376-866506956_medium_yhghe3.mp4"
+              src="https://res.cloudinary.com/dj5imyo2n/video/upload/v1768546401/12683975_1920_1080_30fps_qdvkya.mp4"
               type="video/mp4"
             />
           </video>

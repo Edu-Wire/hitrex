@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import SmoothScroll from "@/components/SmoothScroll";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -12,9 +13,11 @@ export default function ClientLayout({ children }) {
   return (
     <>
       {!hideNavbar && <Navbar />}
-      <div className={!hideNavbar ? "pt-24" : ""}>
-        {children}
-      </div>
+      <SmoothScroll>
+        <div className={!hideNavbar ? "pt-24" : ""}>
+          {children}
+        </div>
+      </SmoothScroll>
     </>
   );
 }

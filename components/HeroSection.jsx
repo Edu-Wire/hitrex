@@ -291,12 +291,12 @@ function HeroCards() {
           >
             VIEW TRAILS
           </button>
-          <button
-            onClick={() => document.getElementById("trips")?.scrollIntoView({ behavior: "smooth" })}
+          <Link
+            href="/page/destination"
             className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl text-white text-xs font-bold shadow-lg"
           >
             BOOK NOW
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>

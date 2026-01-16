@@ -272,6 +272,18 @@ export default function DestinationsPage() {
           </h1>
 
           {/* --- REDESIGNED COMPACT FILTER BAR --- */}
+          {/* Filter Bar Moved to Main Content */}
+        </div >
+      </section >
+
+      <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-32">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+          <div className="space-y-4">
+            <p className="text-orange-500 font-bold text-xs tracking-[0.3em] uppercase">Selection / 2026</p>
+            {/* CHANGED: Added text-orange-500 */}
+            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-orange-500">PREMIUM<br />ROUTES</h2>
+          </div>
+
           <div className="bg-white/1 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl w-full max-w-[90%] md:max-w-fit mx-auto transition-all hover:bg-white/5 relative z-50">
 
             {/* 1. CUSTOM REGION SELECT (NOW THEMED LIKE REFINE) */}
@@ -297,7 +309,7 @@ export default function DestinationsPage() {
 
               {/* REGION DROPDOWN PANEL */}
               {isRegionOpen && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:top-full md:mt-4 md:left-0 md:w-[260px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-top-left z-[70]">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:bottom-full md:mb-4 md:left-0 md:w-[260px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-bottom-left z-[70]">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 md:hidden">
                     <span className="text-sm font-black uppercase tracking-widest text-white">Select Region</span>
                     <button onClick={() => setIsRegionOpen(false)} className="text-zinc-500 hover:text-white"><X size={14} /></button>
@@ -343,7 +355,7 @@ export default function DestinationsPage() {
 
               {/* --- THE DROP DOWN PANEL (UPDATED: LIFTED FOR DISCOVER BUTTON) --- */}
               {isFilterOpen && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:translate-x-0 md:top-full md:mt-4 md:left-0 md:w-[400px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-top-left z-[70]">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:bottom-full md:mb-4 md:left-0 md:w-[400px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-bottom-left z-[70]">
 
                   {/* Header */}
                   <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/10">
@@ -412,20 +424,7 @@ export default function DestinationsPage() {
               )}
             </div>
 
-            {/* 3. Action Button */}
-            <button className="w-full md:w-auto bg-white text-black hover:bg-orange-600 hover:text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold uppercase text-[10px] tracking-widest transition-all duration-300 shadow-xl whitespace-nowrap mt-2 md:mt-0 relative z-[80]">
-              Discover
-            </button>
-          </div>
-        </div >
-      </section >
-
-      <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-32">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
-          <div className="space-y-4">
-            <p className="text-orange-500 font-bold text-xs tracking-[0.3em] uppercase">Selection / 2026</p>
-            {/* CHANGED: Added text-orange-500 */}
-            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-orange-500">PREMIUM<br />ROUTES</h2>
+            {/* 3. Action Button Removed */}
           </div>
           <div className="text-right">
             <span className="text-8xl font-light text-white/5 tracking-tighter">{filtered.length}</span>

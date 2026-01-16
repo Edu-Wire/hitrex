@@ -88,7 +88,7 @@ export default function UpcomingTrips() {
   const handlePrev = () => setCurrent((c) => (c - 1 + total) % total);
 
   return (
-    <section className="relative py-20 sm:py-24 px-4 sm:px-6 overflow-hidden bg-zinc-950">
+    <section className="relative py-10 sm:py-14 px-4 sm:px-6 overflow-hidden bg-zinc-950">
       {/* Cinematic Background with Topo Pattern Overlay */}
       <div className="absolute inset-0 z-0">
         <Image

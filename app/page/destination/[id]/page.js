@@ -18,6 +18,7 @@ export default function TripDetailsPage() {
     const contentRef = useRef(null);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchDestination();
     }, [params.id]);
 
