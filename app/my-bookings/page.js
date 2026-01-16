@@ -157,7 +157,7 @@ export default function MyBookings() {
                       <div>
                         <p className="text-[#ff4d00] text-[10px] uppercase">Amount</p>
                         <p className="text-2xl font-black italic">
-                          ₹{booking.totalAmount}
+                          €{booking.totalAmount}
                         </p>
                       </div>
                     </div>
