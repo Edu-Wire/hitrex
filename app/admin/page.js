@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     loadStats();
     return () => controller.abort();
   }, [session, isAdmin]);
-  
+
   if (loading) {
     return (
       <PageTransition>
@@ -146,20 +146,20 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </FadeInUp>
 
-          <FadeInUp delay={0.2}>
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((item) => (
-                <StaggerItem key={item.label}>
-                  <ScaleIn className="bg-white p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-3xl font-bold text-emerald-600">
-                      {statsLoading ? "--" : statValues[item.key] ?? 0}
-                    </h3>
-                    <p className="text-gray-600">{item.label}</p>
-                  </ScaleIn>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          </FadeInUp>
+        <FadeInUp delay={0.2}>
+          <StaggerContainer className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+            {stats.map((item) => (
+              <StaggerItem key={item.label}>
+                <ScaleIn className="bg-white p-3 md:p-6 rounded-lg shadow-lg text-center">
+                  <h3 className="text-2xl md:text-3xl font-bold text-emerald-600">
+                    {statsLoading ? "--" : statValues[item.key] ?? 0}
+                  </h3>
+                  <p className="text-xs md:text-base text-gray-600">{item.label}</p>
+                </ScaleIn>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </FadeInUp>
 
         <FadeInUp delay={0.3}>
           {/* MUI Bar Chart analytics */}

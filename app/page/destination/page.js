@@ -19,10 +19,11 @@ const DEFAULT_FILTER_DATA = {
 
 export default function DestinationsPage() {
   const router = useRouter();
-  
+
   // -- STATE MANAGEMENT --
   const [selectedLocation, setSelectedLocation] = useState("All");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isRegionOpen, setIsRegionOpen] = useState(false); // New state for custom region
   const [activeFilters, setActiveFilters] = useState({
     months: [],
     features: [],
@@ -38,6 +39,7 @@ export default function DestinationsPage() {
   const headerRef = useRef(null);
   const cardsRef = useRef([]);
   const filterRef = useRef(null);
+  const regionFilterRef = useRef(null); // New ref
 
   // -- FETCH DATA --
   useEffect(() => {
@@ -45,10 +47,14 @@ export default function DestinationsPage() {
   }, []);
 
   // -- CLICK OUTSIDE TO CLOSE FILTER --
+  // -- CLICK OUTSIDE TO CLOSE FILTER --
   useEffect(() => {
     function handleClickOutside(event) {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setIsFilterOpen(false);
+      }
+      if (regionFilterRef.current && !regionFilterRef.current.contains(event.target)) {
+        setIsRegionOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -118,7 +124,7 @@ export default function DestinationsPage() {
     setActiveFilters(prev => {
       const current = prev[category];
       const isSelected = current.includes(value);
-      
+
       if (isSelected) {
         return { ...prev, [category]: current.filter(item => item !== value) };
       } else {
@@ -133,10 +139,10 @@ export default function DestinationsPage() {
 
   const filtered = destinations.filter((dest) => {
     const matchLocation = selectedLocation === "All" || dest.location.includes(selectedLocation);
-    const matchMonth = activeFilters.months.length === 0 || 
+    const matchMonth = activeFilters.months.length === 0 ||
       activeFilters.months.some(m => dest.date?.includes(m));
     const requiredTags = [...activeFilters.features, ...activeFilters.activities];
-    const matchTags = requiredTags.length === 0 || 
+    const matchTags = requiredTags.length === 0 ||
       requiredTags.every(tag => dest.tags?.includes(tag));
 
     return matchLocation && matchMonth && matchTags;
@@ -212,20 +218,18 @@ export default function DestinationsPage() {
   };
 
   const FilterCheckbox = ({ label, isChecked, onChange }) => (
-    <div 
+    <div
       onClick={onChange}
       className="flex items-center gap-3 cursor-pointer group py-1"
     >
-      <div className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-300 ${
-        isChecked 
-          ? "bg-orange-600 border-orange-600" 
-          : "border-white/20 bg-white/5 group-hover:border-white/40"
-      }`}>
+      <div className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-300 ${isChecked
+        ? "bg-orange-600 border-orange-600"
+        : "border-white/20 bg-white/5 group-hover:border-white/40"
+        }`}>
         {isChecked && <Check size={10} className="text-white" strokeWidth={4} />}
       </div>
-      <span className={`text-[11px] uppercase tracking-wider font-bold transition-colors ${
-        isChecked ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
-      }`}>
+      <span className={`text-[11px] uppercase tracking-wider font-bold transition-colors ${isChecked ? "text-white" : "text-zinc-500 group-hover:text-zinc-300"
+        }`}>
         {label}
       </span>
     </div>
@@ -268,38 +272,59 @@ export default function DestinationsPage() {
           </h1>
 
           {/* --- REDESIGNED COMPACT FILTER BAR --- */}
-          <div className="bg-white/1 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl max-w-fit mx-auto transition-all hover:bg-white/5 relative z-50">
+          <div className="bg-white/1 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl w-full max-w-[90%] md:max-w-fit mx-auto transition-all hover:bg-white/5 relative z-50">
 
-            {/* 1. Region Select */}
-            <div className="relative group px-6 py-2 w-full md:flex-1 md:min-w-[180px] border-b md:border-b-0 md:border-r border-white/5 transition-colors hover:bg-white/5 rounded-xl md:rounded-none md:first:rounded-l-full">
-              <div className="flex flex-col items-start">
-                <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
-                  Region
-                </label>
-                <div className="relative w-full flex items-center">
-                  <select
-                    value={selectedLocation}
-                    onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="bg-transparent text-sm font-medium text-white w-full outline-none appearance-none cursor-pointer font-sans py-0.5 pr-6"
-                  >
-                    {locations.map((loc) => (
-                      <option key={loc} value={loc} className="bg-zinc-900 text-white">
-                        {loc}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-0 pointer-events-none text-zinc-500 group-hover:text-white transition-colors">
-                    <ChevronDown size={12} />
+            {/* 1. CUSTOM REGION SELECT (NOW THEMED LIKE REFINE) */}
+            <div className="relative w-full md:flex-1 md:min-w-[200px]" ref={regionFilterRef}>
+              <div
+                onClick={() => setIsRegionOpen(!isRegionOpen)}
+                className={`relative cursor-pointer group px-6 py-3 md:py-2 w-full border-b md:border-b-0 md:border-r border-white/5 transition-colors hover:bg-white/5 rounded-xl md:rounded-none md:first:rounded-l-full ${isRegionOpen ? "bg-white/5" : ""}`}
+              >
+                <div className="flex flex-col items-start w-full">
+                  <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
+                    Region
+                  </label>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm font-medium text-white truncate pr-2">
+                      {selectedLocation}
+                    </span>
+                    <div className={`text-zinc-500 group-hover:text-white transition-all duration-300 ${isRegionOpen ? "rotate-180" : ""}`}>
+                      <ChevronDown size={12} />
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* REGION DROPDOWN PANEL */}
+              {isRegionOpen && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:top-full md:mt-4 md:left-0 md:w-[260px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-top-left z-[70]">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 md:hidden">
+                    <span className="text-sm font-black uppercase tracking-widest text-white">Select Region</span>
+                    <button onClick={() => setIsRegionOpen(false)} className="text-zinc-500 hover:text-white"><X size={14} /></button>
+                  </div>
+                  <div className="max-h-[50vh] overflow-y-auto custom-scrollbar flex flex-col gap-1">
+                    {locations.map((loc) => (
+                      <button
+                        key={loc}
+                        onClick={() => { setSelectedLocation(loc); setIsRegionOpen(false); }}
+                        className={`text-left px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${selectedLocation === loc
+                          ? "bg-orange-600 text-white shadow-lg"
+                          : "hover:bg-white/5 text-zinc-400 hover:text-white"
+                          }`}
+                      >
+                        {loc}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 2. ADVANCED FILTERS DROPDOWN TRIGGER */}
             <div ref={filterRef} className="relative w-full md:flex-1 md:min-w-[200px]">
-              <div 
+              <div
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`relative cursor-pointer group px-6 py-2 w-full transition-colors hover:bg-white/5 rounded-xl md:rounded-none ${isFilterOpen ? "bg-white/5" : ""}`}
+                className={`relative cursor-pointer group px-6 py-3 md:py-2 w-full transition-colors hover:bg-white/5 rounded-xl md:rounded-none ${isFilterOpen ? "bg-white/5" : ""}`}
               >
                 <div className="flex flex-col items-start">
                   <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
@@ -316,71 +341,70 @@ export default function DestinationsPage() {
                 </div>
               </div>
 
-              {/* --- THE DROP DOWN PANEL (UPDATED: OPENS UPWARDS) --- */}
+              {/* --- THE DROP DOWN PANEL (UPDATED: LIFTED FOR DISCOVER BUTTON) --- */}
               {isFilterOpen && (
-                <div className="absolute bottom-full left-0 mb-4 w-[280px] md:w-[320px] bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 shadow-[0_-15px_40px_-10px_rgba(0,0,0,0.8)] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-bottom-left">
-                  
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:translate-x-0 md:top-full md:mt-4 md:left-0 md:w-[400px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-top-left z-[70]">
+
                   {/* Header */}
-                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                  <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                        <span className="text-sm font-black uppercase tracking-widest">Filters</span>
+                      <span className="text-sm font-black uppercase tracking-widest text-white">Filters</span>
                     </div>
-                    {activeCount > 0 && (
+                    <div className="flex items-center gap-4">
+                      {activeCount > 0 && (
                         <button onClick={clearFilters} className="text-[9px] font-bold text-orange-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1">
-                            <X size={10} /> Clear
+                          <X size={10} /> Clear
                         </button>
-                    )}
+                      )}
+                      <button onClick={() => setIsFilterOpen(false)} className="md:hidden text-zinc-500 hover:text-white"><X size={14} /></button>
+                    </div>
                   </div>
 
-                  <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                    
+                  <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+
                     {/* Section: By Month */}
                     <div>
-                        {/* CHANGED: text-zinc-400 -> text-orange-500 */}
-                        <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Month</h4>
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                            {filterOptions.months.map(month => (
-                                <FilterCheckbox 
-                                    key={month} 
-                                    label={month} 
-                                    isChecked={activeFilters.months.includes(month)} 
-                                    onChange={() => toggleFilterOption('months', month)}
-                                />
-                            ))}
-                        </div>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Month</h4>
+                      <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
+                        {filterOptions.months.map(month => (
+                          <FilterCheckbox
+                            key={month}
+                            label={month.slice(0, 3)}
+                            isChecked={activeFilters.months.includes(month)}
+                            onChange={() => toggleFilterOption('months', month)}
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Section: By Feature */}
+                    {/* Section: By Feature (Grid for mobile width optim) */}
                     <div>
-                        {/* CHANGED: text-zinc-400 -> text-orange-500 */}
-                        <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Feature</h4>
-                        <div className="flex flex-col gap-1">
-                            {filterOptions.features.map(feature => (
-                                <FilterCheckbox 
-                                    key={feature} 
-                                    label={feature} 
-                                    isChecked={activeFilters.features.includes(feature)} 
-                                    onChange={() => toggleFilterOption('features', feature)}
-                                />
-                            ))}
-                        </div>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Feature</h4>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                        {filterOptions.features.map(feature => (
+                          <FilterCheckbox
+                            key={feature}
+                            label={feature}
+                            isChecked={activeFilters.features.includes(feature)}
+                            onChange={() => toggleFilterOption('features', feature)}
+                          />
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Section: By Activity */}
+                    {/* Section: By Activity (Grid for mobile width optim) */}
                     <div>
-                        {/* CHANGED: text-zinc-400 -> text-orange-500 */}
-                        <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Activity</h4>
-                        <div className="flex flex-col gap-1">
-                            {filterOptions.activities.map(activity => (
-                                <FilterCheckbox 
-                                    key={activity} 
-                                    label={activity} 
-                                    isChecked={activeFilters.activities.includes(activity)} 
-                                    onChange={() => toggleFilterOption('activities', activity)}
-                                />
-                            ))}
-                        </div>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Activity</h4>
+                      <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                        {filterOptions.activities.map(activity => (
+                          <FilterCheckbox
+                            key={activity}
+                            label={activity}
+                            isChecked={activeFilters.activities.includes(activity)}
+                            onChange={() => toggleFilterOption('activities', activity)}
+                          />
+                        ))}
+                      </div>
                     </div>
 
                   </div>
@@ -389,12 +413,12 @@ export default function DestinationsPage() {
             </div>
 
             {/* 3. Action Button */}
-            <button className="w-full md:w-auto bg-white text-black hover:bg-orange-600 hover:text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold uppercase text-[10px] tracking-widest transition-all duration-300 shadow-xl whitespace-nowrap">
+            <button className="w-full md:w-auto bg-white text-black hover:bg-orange-600 hover:text-white px-8 py-3.5 rounded-xl md:rounded-full font-bold uppercase text-[10px] tracking-widest transition-all duration-300 shadow-xl whitespace-nowrap mt-2 md:mt-0 relative z-[80]">
               Discover
             </button>
           </div>
-        </div>
-      </section>
+        </div >
+      </section >
 
       <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-32">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
@@ -410,45 +434,45 @@ export default function DestinationsPage() {
 
         {loading ? (
           <div className="h-96 flex items-center justify-center">
-                    <div className="w-24 h-px bg-white/10 relative overflow-hidden">
+            <div className="w-24 h-px bg-white/10 relative overflow-hidden">
               <div className="absolute inset-0 bg-orange-600 animate-loading-smooth" />
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
             {filtered.length > 0 ? (
-                filtered.map((dest, index) => (
+              filtered.map((dest, index) => (
                 <div key={dest._id} ref={(el) => (cardsRef.current[index] = el)} className="group relative will-change-transform">
-                    <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden bg-zinc-900 transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.3,1)] group-hover:scale-[0.98]">
+                  <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden bg-zinc-900 transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.3,1)] group-hover:scale-[0.98]">
                     <Image src={dest.image} alt={dest.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100" />
                     <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-80" />
                     <div className="absolute top-8 left-8 overflow-hidden rounded-full">
-                        <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black px-5 py-2 inline-block uppercase tracking-widest border border-white/20">{dest.tags[0]}</span>
+                      <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black px-5 py-2 inline-block uppercase tracking-widest border border-white/20">{dest.tags[0]}</span>
                     </div>
-                    </div>
-                    <div className="mt-8 px-4">
+                  </div>
+                  <div className="mt-8 px-4">
                     <div className="flex justify-between items-start mb-6">
-                        <div>
+                      <div>
                         <p className="text-orange-500 font-bold text-[10px] uppercase tracking-widest mb-2">{dest.location}</p>
                         <h3 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors group-hover:text-orange-500">{dest.name}</h3>
-                        </div>
-                        <div className="text-right">
+                      </div>
+                      <div className="text-right">
                         <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Est.</p>
                         <p className="text-2xl font-black">${dest.price || "2,400"}</p>
-                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                        <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dest.date}</p>
-                        <button onClick={() => router.push(`/page/destination/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
+                      <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dest.date}</p>
+                      <button onClick={() => router.push(`/page/destination/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
                     </div>
-                    </div>
+                  </div>
                 </div>
-                ))
+              ))
             ) : (
-                <div className="col-span-full py-20 text-center">
-                    <p className="text-2xl font-bold text-zinc-700">No destinations match your filters.</p>
-                    <button onClick={clearFilters} className="mt-4 text-orange-500 uppercase tracking-widest text-xs font-bold border-b border-orange-500 pb-1">Clear Filters</button>
-                </div>
+              <div className="col-span-full py-20 text-center">
+                <p className="text-2xl font-bold text-zinc-700">No destinations match your filters.</p>
+                <button onClick={clearFilters} className="mt-4 text-orange-500 uppercase tracking-widest text-xs font-bold border-b border-orange-500 pb-1">Clear Filters</button>
+              </div>
             )}
           </div>
         )}
@@ -490,6 +514,6 @@ export default function DestinationsPage() {
         }
       `}</style>
       <Footer />
-    </div>
+    </div >
   );
 }
