@@ -12,7 +12,24 @@ const heroSans = Oswald({
   weight: ["600", "700"],
 });
 
-
+const teamMembers = [
+  {
+    id: 1,
+    name: "Uzair Ahmed",
+    role: "Founder",
+    image: "/images/TL-1.jpg",
+    bio: "Uzair Ahmed is a professionally qualified accountant with a deep-rooted passion for travel, nature, and adventure. While his professional expertise lies in accounting and financial management, his true enthusiasm is found on mountain trails and in the outdoors.",
+    details: "With over 15 years of hiking experience, Uzair has explored a wide variety of terrains and landscapes. For the past 6 years, he has been actively organising and leading hiking trips in collaboration with different organisations, bringing together adventure enthusiasts for safe, well-planned, and memorable experiences. By combining his professional discipline with his love for hiking, Uzair ensures every journey is thoughtfully organised, safety-focused, and enriching."
+  },
+  {
+    id: 2,
+    name: "Mustafa Simsek",
+    role: "Co-Founder",
+    image: "/images/TL-2.jpg",
+    bio: "Mustafa Simsek is a professionally trained lawyer with a lifelong passion for mountains, hiking, and mountaineering. His journey into the outdoors began at a very young age in Turkey, where he developed a strong connection with high-altitude environments and challenging terrain.",
+    details: "One of the defining milestones of his early mountaineering career was successfully climbing Mount Ararat, the highest peak in Turkey. Over the years, Mustafa has gone on to summit numerous peaks around the world. To formalise his expertise, he obtained a professional hiking guide permit, enabling him to lead groups with a strong focus on safety, route planning, and responsible outdoor practices. Mustafa brings a global perspective, deep mountaineering experience, and genuine passion for exploration."
+  }
+];
 
 export default function AboutPage() {
   const containerRef = useRef(null);
@@ -77,7 +94,6 @@ export default function AboutPage() {
         </motion.div>
 
         {/* Hero Background */}
-        {/* Hero Background */}
         <motion.div style={{ scale: heroScale }} className="absolute inset-0 z-0">
           <video
             autoPlay
@@ -109,7 +125,7 @@ export default function AboutPage() {
       </section>
 
       {/* 2. MISSION SECTION (EDITORIAL LAYOUT) */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-40">
+      <section className="relative z-10 max-w-7xl mx-auto px-6 py-10">
         <div className="grid md:grid-cols-2 gap-20 items-center">
           <motion.div
             initial={{ opacity: 0, x: -60 }}
@@ -154,7 +170,7 @@ export default function AboutPage() {
       </section>
 
       {/* 3. CORE VALUES (HORIZONTAL CARDS) */}
-      <section className="bg-zinc-950/50 py-32 border-y border-white/5">
+      <section className="bg-zinc-950/50 py-12 border-y border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
             <h2 className="text-5xl text-center md:text-left mx-auto md:mx-0 md:ml-[20px] font-black uppercase tracking-tighter">
@@ -179,38 +195,47 @@ export default function AboutPage() {
       </section>
 
       {/* 4. TEAM SECTION (MODERN GRID) */}
-      <section className="max-w-7xl mx-auto px-6 py-40">
-        <div className="text-center mb-24">
+      <section className="max-w-7xl mx-auto px-6 py-10">
+        <div className="text-center mb-10">
           <span className="text-orange-500 font-bold text-xs uppercase tracking-[0.4em]">The Experts</span>
           <h2 className="text-6xl font-black uppercase tracking-tighter mt-4">Meet Our Team</h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-12">
-          {[1, 2, 3].map((member, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+          {teamMembers.map((member, idx) => (
             <motion.div
-              key={member}
+              key={member.id}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.8 }}
-              className="group"
+              className="group text-left"
             >
-              <div className="relative h-[450px] rounded-[2.5rem] overflow-hidden mb-8 bg-zinc-900 shadow-xl">
+              <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden mb-8 bg-zinc-900 shadow-xl border border-white/5">
                 <Image
-                  src={`/images/person-${member}.avif`}
-                  alt="Team Member"
+                  src={member.image}
+                  alt={member.name}
                   fill
                   className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent opacity-80" />
               </div>
-              <h3 className="text-2xl font-bold uppercase tracking-tighter group-hover:text-orange-500 transition-colors">
-                Explorer {member}
-              </h3>
-              <p className="text-orange-600 text-[10px] font-black uppercase tracking-widest mt-1">Lead Trekker</p>
-              <p className="text-zinc-500 text-sm mt-4 leading-relaxed">
-                Dedicated to creating memorable outdoor adventures and pushing the boundaries of exploration.
-              </p>
+
+              <div className="space-y-4 px-4">
+                <div>
+                  <h3 className="text-3xl font-black uppercase tracking-tighter text-white group-hover:text-orange-500 transition-colors">
+                    {member.name}
+                  </h3>
+                  <p className="text-orange-600 text-xs font-black uppercase tracking-[0.2em] mt-2">
+                    {member.role}
+                  </p>
+                </div>
+
+                <div className="space-y-4 text-zinc-400 text-sm leading-relaxed font-light">
+                  <p>{member.bio}</p>
+                  <p className="hidden md:block text-zinc-500">{member.details}</p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
