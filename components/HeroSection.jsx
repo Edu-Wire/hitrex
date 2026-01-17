@@ -242,10 +242,9 @@ function HeroCards() {
 
   const { scrollY } = useScroll();
 
-  // Mobile Scroll Transforms: "Come from bottom dead"
-  // Maps scroll: Arrives faster (by 250px scroll) and starts slightly closer (400px) so it's seen "before"
-  const mobileY = useTransform(scrollY, [0, 250], [400, 0]);
-  const mobileOpacity = useTransform(scrollY, [0, 150], [0, 1]);
+  // Mobile Scroll Transforms: Fast reveal (0-120px) without spring physics for better performance
+  const mobileY = useTransform(scrollY, [0, 120], [100, 0]);
+  const mobileOpacity = useTransform(scrollY, [0, 60], [0, 1]);
 
   // Detect mobile screen
   useEffect(() => {
@@ -285,7 +284,7 @@ function HeroCards() {
       } : undefined} // Disable animate on mobile to let style take over
 
       // MOBILE: mapped directly to scroll position - Enforcing rotate: 0
-      style={isMobile ? { y: mobileY, opacity: mobileOpacity, rotate: 0 } : {}}
+      style={isMobile ? { y: mobileY, opacity: mobileOpacity, rotate: 0, willChange: "transform, opacity" } : {}}
 
       transition={{
         duration: 0.9,
@@ -293,8 +292,8 @@ function HeroCards() {
       }}
       className="w-full lg:w-[420px] flex flex-col gap-4 pointer-events-auto"
     >
-      {/* Main Glass Card */}
-      <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
+      {/* Main Glass Card - Optimized Blur */}
+      <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
           <motion.div
             key={idx}

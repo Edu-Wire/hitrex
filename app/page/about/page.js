@@ -216,14 +216,14 @@ export default function AboutPage() {
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                  className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent opacity-80" />
               </div>
 
               <div className="space-y-4 px-4">
                 <div>
-                  <h3 className="text-3xl font-black uppercase tracking-tighter text-white group-hover:text-orange-500 transition-colors">
+                  <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
                     {member.name}
                   </h3>
                   <p className="text-orange-600 text-xs font-black uppercase tracking-[0.2em] mt-2">
