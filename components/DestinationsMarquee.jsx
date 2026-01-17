@@ -59,7 +59,7 @@ export default function DestinationsMarquee({ destinations }) {
       */}
             <div
                 ref={scrollRef}
-                className="flex gap-6 overflow-x-auto no-scrollbar py-4"
+                className="flex gap-6 overflow-x-auto no-scrollbar py-4 pl-4 sm:pl-0"
                 style={{
                     scrollBehavior: isPaused ? "smooth" : "auto", // Smooth when user scrolls, instant-ish when auto
                     WebkitOverflowScrolling: "touch", // Smooth momentum on iOS
