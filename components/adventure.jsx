@@ -113,7 +113,7 @@ export default function AdventureCard({
                     {/* Action Button */}
                     <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold uppercase text-xs tracking-widest py-3 rounded-lg flex items-center justify-between px-4 transition-colors">
                         <span>View Expedition</span>
-                        <FaArrowRight />
+                        <FaArrowRight />git statsj
                     </button>
                 </motion.div>
 
