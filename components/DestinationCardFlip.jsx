@@ -1,16 +1,23 @@
 "use client";
-import Link from "next/link";
+import React from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Oswald } from "next/font/google";
 import { FaMountain, FaRoute, FaClock } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const oswald = Oswald({ subsets: ["latin"] });
 
 export default function DestinationCardFlip({ dest, index }) {
+    const router = useRouter();
+
+    const handleCardClick = (e) => {
+        router.push(`/page/destination/${dest._id || dest.id}`);
+    };
+
     return (
         <div
-            className="group/card h-[480px] sm:h-[480px] lg:h-[520px] perspective-[1500px]"
+            onClick={handleCardClick}
+            className="group/card h-[480px] sm:h-[480px] lg:h-[520px] perspective-[1500px] cursor-pointer"
         >
             <div className="relative h-full w-full transition-transform duration-700 transform-3d group-hover/card:transform-[rotateY(180deg)]">
                 {/* FRONT */}
@@ -45,17 +52,16 @@ export default function DestinationCardFlip({ dest, index }) {
                         </p>
 
                         <div className="mt-6 space-y-3">
-                            <Info icon={<FaRoute />} label="Route" value="Scrambling" />
-                            <Info icon={<FaClock />} label="Duration" value="14–18 Days" />
+                            <Info icon={<FaRoute />} label="Level" value={dest.difficulty || "Moderate"} />
+                            <Info icon={<FaClock />} label="Duration" value={dest.duration || "TBD"} />
                         </div>
                     </div>
 
-                    <Link
-                        href={`/page/destination/${dest._id || dest.id}`}
+                    <div
                         className="bg-emerald-600 hover:bg-emerald-500 transition text-white py-3 rounded-lg text-xs uppercase tracking-widest block text-center"
                     >
                         Initialize Booking
-                    </Link>
+                    </div>
                 </div>
             </div>
         </div>

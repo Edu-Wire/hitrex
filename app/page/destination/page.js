@@ -17,6 +17,9 @@ const DEFAULT_FILTER_DATA = {
   activities: ["City Tours", "Hiking", "Rural", "Walking", "Climbing"],
 };
 
+
+
+
 export default function DestinationsPage() {
   const router = useRouter();
 
@@ -63,9 +66,15 @@ export default function DestinationsPage() {
 
   const fetchDestinations = async () => {
     try {
-      const res = await fetch("/api/destinations");
+      setLoading(true);
+      const res = await fetch("/api/destinations", { cache: "no-store" });
       const data = await res.json();
-      const list = data.destinations || [];
+      let list = data.destinations || [];
+
+      if (list.length === 0) {
+        list = FALLBACK_DESTINATIONS;
+      }
+
       setDestinations(list);
 
       // Build dynamic filter options from API data
@@ -77,20 +86,22 @@ export default function DestinationsPage() {
 
       list.forEach((d) => {
         // Locations
-        d.location?.split("/").forEach((l) => locs.add(l.trim()));
+        if (d.location) {
+          d.location.split("/").forEach((l) => locs.add(l.trim()));
+        }
 
-        // Months: attempt to match any known month name in the date string
+        // Months
         const dateLower = (d.date || "").toLowerCase();
         monthNames.forEach((m) => {
           if (dateLower.includes(m.toLowerCase())) monthsSet.add(m);
         });
 
-        // Features: use included array first, fall back to tags if present
+        // Features
         (d.included || d.tags || []).forEach((f) => {
           if (typeof f === "string" && f.trim()) featureSet.add(f.trim());
         });
 
-        // Activities: use activities array, fall back to tags
+        // Activities
         (d.activities || d.tags || []).forEach((a) => {
           if (typeof a === "string" && a.trim()) activitySet.add(a.trim());
         });
@@ -114,6 +125,7 @@ export default function DestinationsPage() {
       }));
     } catch (e) {
       console.error(e);
+      setDestinations(FALLBACK_DESTINATIONS);
     } finally {
       setLoading(false);
     }
@@ -445,8 +457,11 @@ export default function DestinationsPage() {
                   <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden bg-zinc-900 transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.3,1)] group-hover:scale-[0.98]">
                     <Image src={dest.image} alt={dest.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100" />
                     <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-80" />
-                    <div className="absolute top-8 left-8 overflow-hidden rounded-full">
+                    <div className="absolute top-8 left-8 overflow-hidden rounded-full z-10">
                       <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black px-5 py-2 inline-block uppercase tracking-widest border border-white/20">{dest.tags[0]}</span>
+                    </div>
+                    <div className="absolute top-8 right-8 overflow-hidden rounded-full z-10">
+                      <span className="bg-orange-600/90 backdrop-blur-md text-white text-[10px] font-black px-5 py-2 inline-block uppercase tracking-widest shadow-xl">€{dest.price || "2,400"}</span>
                     </div>
                   </div>
                   <div className="mt-8 px-4">
@@ -456,8 +471,8 @@ export default function DestinationsPage() {
                         <h3 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors group-hover:text-orange-500">{dest.name}</h3>
                       </div>
                       <div className="text-right">
-                        <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Est.</p>
-                        <p className="text-2xl font-black">€{dest.price || "2,400"}</p>
+                        <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Duration</p>
+                        <p className="text-xl font-black">{dest.duration || "5 Days"}</p>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FiArrowUpRight, FiMap, FiCompass, FiActivity, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { Oswald } from "next/font/google";
-// import { motion, AnimatePresence } from "framer-motion";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 
@@ -12,7 +11,8 @@ const heroHeadline = Oswald({
   subsets: ["latin"],
 });
 
-const slides = [
+// Fallback slides
+const fallbackSlides = [
   {
     url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&auto=format&fit=crop",
     location: "Karakoram Range",
@@ -35,11 +35,32 @@ const slides = [
   },
 ];
 
+
 export default function HeroSection() {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const sectionRef = useRef(null);
   const [soundOn, setSoundOn] = useState(false);
+  const [slides, setSlides] = useState(fallbackSlides);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const res = await fetch("/api/hero-slides");
+        const data = await res.json();
+        if (data.success && data.slides?.length > 0) {
+          setSlides(data.slides);
+        }
+      } catch (err) {
+        console.error("Failed to fetch slides:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSlides();
+  }, []);
+
 
   useEffect(() => {
     const videoEl = videoRef.current;
@@ -58,7 +79,6 @@ export default function HeroSection() {
     };
   }, []);
 
-  // Intersection Observer for handling Autoplay/Pause on Playback Visibility
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -68,8 +88,6 @@ export default function HeroSection() {
           if (!audioEl) return;
 
           if (entry.isIntersecting) {
-            // Attempt to autoplay when visible
-            // Sync with video time if possible
             if (videoEl) {
               audioEl.currentTime = videoEl.currentTime;
             }
@@ -87,13 +105,12 @@ export default function HeroSection() {
                 });
             }
           } else {
-            // Pause when not visible
             audioEl.pause();
             setSoundOn(false);
           }
         });
       },
-      { threshold: 0.4 } // 40% visibility required to trigger
+      { threshold: 0.4 }
     );
 
     if (sectionRef.current) {
@@ -107,8 +124,6 @@ export default function HeroSection() {
     };
   }, []);
 
-
-
   const toggleSound = async () => {
     const audioEl = audioRef.current;
     const videoEl = videoRef.current;
@@ -121,7 +136,7 @@ export default function HeroSection() {
       } else {
         audioEl.currentTime = videoEl.currentTime;
         audioEl.volume = 0.18;
-        await audioEl.play(); // ✅ user interaction → allowed
+        await audioEl.play();
         setSoundOn(true);
       }
     } catch (err) {
@@ -133,7 +148,6 @@ export default function HeroSection() {
 
   return (
     <section ref={sectionRef} className="relative w-full min-h-screen overflow-hidden bg-zinc-950">
-      {/* Background Video with subtle zoom effect */}
       <motion.div
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
@@ -154,8 +168,6 @@ export default function HeroSection() {
             type="video/mp4"
           />
         </video>
-
-
         <audio
           ref={audioRef}
           src="/sound/bird-sound-249237.mp3"
@@ -164,10 +176,8 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Dynamic Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-black/40 to-transparent" />
 
-      {/* Sound toggle overlay */}
       <div className="absolute bottom-8 right-4 sm:bottom-12 sm:right-12 z-50">
         <button
           onClick={toggleSound}
@@ -178,8 +188,6 @@ export default function HeroSection() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-16 min-h-[90vh] pt-24 sm:pt-32 md:pt-40">
-
-        {/* Left copy */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -193,21 +201,20 @@ export default function HeroSection() {
             className="flex items-center gap-2 text-emerald-400 font-bold tracking-widest uppercase text-xs mb-4"
           >
             <FiCompass className="animate-spin-slow" />
-            Adventure Awaits
+            Hike Trek Explore
           </motion.div>
 
           <h1
-            className={`${heroHeadline.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
+            className={`${heroHeadline.className} text-4xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
           >
-            CONQUER
+            YOUR DOSE OF
             <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
-              THE UNKNOWN
+              UNTAMED ADVENTURES
             </span>
           </h1>
 
-
           <p className="text-base sm:text-lg text-gray-300 max-w-xl mb-8 sm:mb-10 font-light leading-relaxed">
-            From vertical ascents to hidden valley trails, HITREX provides the gear and the guides to push your limits.
+            From vertical ascents to remote valley trails, HITREX creates unforgettable experiences that stay with you long after the journey ends.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -215,84 +222,70 @@ export default function HeroSection() {
               href="/page/destination"
               className="group relative inline-flex items-center gap-3 text-base sm:text-lg font-bold text-black bg-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all hover:scale-105"
             >
-              Start Trekking
+              EXPLORE
               <FiArrowUpRight className="text-xl group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
-
-            {/* <button className="inline-flex items-center gap-3 text-white border border-white/20 hover:bg-white/10 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all">
-              Watch Expedition
-            </button> */}
           </div>
         </motion.div>
 
-        {/* Right glass cards */}
-        <HeroCards />
-      </div>
+        <HeroCards slides={slides} loading={loading} />
 
-      {/* Bottom decorative stats for 'Hiking' vibe */}
+      </div>
 
     </section>
   );
 }
 
-function HeroCards() {
+function HeroCards({ slides = [], loading }) {
+
   const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(false); // Init false for smoother entry
+  const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   const { scrollY } = useScroll();
-
-  // Mobile Scroll Transforms: Fast reveal (0-120px) without spring physics for better performance
   const mobileY = useTransform(scrollY, [0, 120], [100, 0]);
   const mobileOpacity = useTransform(scrollY, [0, 60], [0, 1]);
 
-  // Detect mobile screen
   useEffect(() => {
     const checkScreen = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < 1024);
     };
-
     checkScreen();
     window.addEventListener("resize", checkScreen);
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  // Desktop Visibility Logic
   useEffect(() => {
     if (!isMobile) {
-      setVisible(true); // always visible on desktop
+      setVisible(true);
     }
   }, [isMobile]);
 
-  // Image slider
   useEffect(() => {
+    if (slides.length <= 1) return;
     const id = setInterval(() => {
       setIdx((i) => (i + 1) % slides.length);
     }, 4500);
     return () => clearInterval(id);
-  }, []);
+  }, [slides]);
+
 
   return (
     <motion.div
       initial={false}
-      // DESKTOP: triggers based on 'visible' state
       animate={!isMobile ? {
         opacity: visible ? 1 : 0,
         y: visible ? 0 : 220,
         scale: visible ? 1 : 0.85,
         rotate: visible ? 0 : 6,
-      } : undefined} // Disable animate on mobile to let style take over
-
-      // MOBILE: mapped directly to scroll position - Enforcing rotate: 0
+      } : undefined}
       style={isMobile ? { y: mobileY, opacity: mobileOpacity, rotate: 0, willChange: "transform, opacity" } : {}}
-
       transition={{
         duration: 0.9,
         ease: [0.22, 1, 0.36, 1],
       }}
       className="w-full lg:w-[420px] flex flex-col gap-4 pointer-events-auto"
     >
-      {/* Main Glass Card - Optimized Blur */}
       <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-5 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-white/5">
           <motion.div
@@ -309,29 +302,38 @@ function HeroCards() {
             LIVE PEAK
           </span>
           <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-            {slides[idx].location}
+            {slides[idx]?.location || "Scanning..."}
           </span>
         </div>
 
-        <div className="relative h-72 rounded-3xl overflow-hidden mb-5">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 1.15 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slides[idx].url})` }}
-            />
-          </AnimatePresence>
+        <div className="relative h-72 rounded-3xl overflow-hidden mb-5 bg-zinc-900 flex items-center justify-center">
+          {loading ? (
+            <div className="animate-pulse w-full h-full bg-zinc-800" />
+          ) : slides.length > 0 ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 1.15 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${slides[idx]?.url})` }}
+              />
+            </AnimatePresence>
+          ) : (
+            <FiActivity className="text-zinc-700 text-4xl animate-pulse" />
+          )}
 
-          <div className="absolute bottom-5 left-5 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
-            <span className="text-white text-[11px] font-bold">
-              ALTITUDE: {slides[idx].elevation}
-            </span>
-          </div>
+          {!loading && slides.length > 0 && (
+            <div className="absolute bottom-5 left-5 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
+              <span className="text-white text-[11px] font-bold">
+                ALTITUDE: {slides[idx]?.elevation}
+              </span>
+            </div>
+          )}
         </div>
+
 
         <div className="grid grid-cols-2 gap-4">
           <button
@@ -351,4 +353,3 @@ function HeroCards() {
     </motion.div>
   );
 }
-

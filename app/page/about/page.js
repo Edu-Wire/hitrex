@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { gsap } from "gsap";
@@ -12,7 +12,7 @@ const heroSans = Oswald({
   weight: ["600", "700"],
 });
 
-const teamMembers = [
+const fallbackTeam = [
   {
     id: 1,
     name: "Uzair Ahmed",
@@ -31,9 +31,30 @@ const teamMembers = [
   }
 ];
 
+
 export default function AboutPage() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
+  const [teamMembers, setTeamMembers] = useState(fallbackTeam);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await fetch("/api/team-members");
+        const data = await res.json();
+        if (data.success && data.members?.length > 0) {
+          setTeamMembers(data.members);
+        }
+      } catch (err) {
+        console.error("Failed to fetch team members:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
+
 
   // Parallax for Hero
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 400]);
@@ -202,9 +223,13 @@ export default function AboutPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {teamMembers.map((member, idx) => (
+          {loading ? (
+            [1, 2].map((i) => (
+              <div key={i} className="h-[700px] rounded-[2.5rem] bg-zinc-900 animate-pulse" />
+            ))
+          ) : teamMembers.map((member, idx) => (
             <motion.div
-              key={member.id}
+              key={member._id || member.id || idx}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

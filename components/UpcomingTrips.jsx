@@ -11,7 +11,7 @@ import { Oswald } from "next/font/google";
 const oswald = Oswald({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function UpcomingTrips() {
-  const [trips, setTrips] = useState([]);
+  const [trips, setTrips] = useState(fallbackTrips);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,30 +21,23 @@ export default function UpcomingTrips() {
 
     const fetchTrips = async () => {
       try {
+        setLoading(true);
         const response = await fetch("/api/upcoming-trips", { cache: "no-store" });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch upcoming trips");
-        }
-
         const data = await response.json();
         const apiTrips = Array.isArray(data?.trips) ? data.trips : [];
 
         if (!isMounted) return;
 
-        if (apiTrips.length) {
+        if (apiTrips.length > 0) {
           setTrips(apiTrips);
-          setCurrent(0);
           setError(null);
         } else {
-          setTrips([]);
-          setError("No active expeditions found.");
+          setTrips(fallbackTrips);
         }
       } catch (err) {
         if (!isMounted) return;
         console.error(err);
-        setTrips([]);
-        setError("Unable to load expeditions.");
+        setTrips(fallbackTrips);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -75,8 +68,8 @@ export default function UpcomingTrips() {
     const depth = Math.min(offset, 3);
 
     return {
-      x: offset === 0 ? 0 : offset * (isMobile ? 15 : 40), // Less stagger on mobile
-      y: offset === 0 ? 0 : offset * (isMobile ? -8 : -15), // Less lift on mobile
+      x: offset === 0 ? 0 : offset * (isMobile ? 15 : 40),
+      y: offset === 0 ? 0 : offset * (isMobile ? -8 : -15),
       scale: 1 - offset * 0.05,
       rotate: offset === 0 ? 0 : offset * 2,
       opacity: offset === 0 ? 1 : 0.4 - offset * 0.1,
@@ -89,7 +82,6 @@ export default function UpcomingTrips() {
 
   return (
     <section className="relative py-10 sm:py-14 px-4 sm:px-6 overflow-hidden bg-zinc-950">
-      {/* Cinematic Background with Topo Pattern Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000"
@@ -104,7 +96,6 @@ export default function UpcomingTrips() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-[0.8fr_1.2fr] items-center gap-12 lg:gap-16">
 
-          {/* Left Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -115,19 +106,15 @@ export default function UpcomingTrips() {
               Next Deployment
             </div>
             <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-white uppercase leading-[0.9] tracking-tighter`}>
-              Live <br /> <span className="text-emerald-500">Expeditions</span>
+              UPCOMING <br /> <span className="text-emerald-500">TRIPS</span>
             </h2>
             <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
               Real-time upcoming departures. Our technical teams are currently prepping gear for these high-altitude routes.
             </p>
-            {error && (
-              <p className="text-amber-500 text-sm">{error}</p>
-            )}
             {loading && (
               <p className="text-zinc-500 text-xs">Refreshing itineraries...</p>
             )}
 
-            {/* Custom Navigation Bricks */}
             <div className="hidden sm:flex gap-4 pt-6">
               <button
                 onClick={handlePrev}
@@ -144,18 +131,18 @@ export default function UpcomingTrips() {
             </div>
           </motion.div>
 
-          {/* Right Card Stack */}
           <div className="relative min-h-[560px] sm:min-h-[600px] lg:h-[650px] w-full flex items-center justify-center lg:justify-start md:pl-12 lg:pl-20">
             <AnimatePresence mode="popLayout">
-              {Array.from({ length: visibleCount }).map((_, layerIdx) => {
+              {trips.length > 0 && Array.from({ length: visibleCount }).map((_, layerIdx) => {
                 const tripIndex = (current + layerIdx) % total;
                 const trip = trips[tripIndex];
+                if (!trip) return null;
                 const style = getCardStyle(layerIdx);
                 const isTop = layerIdx === 0;
 
                 return (
                   <motion.div
-                    key={`${trip.id}-${tripIndex}`}
+                    key={`${trip.id || trip._id}-${tripIndex}`}
                     initial={{ opacity: 0, scale: 0.8, x: 200 }}
                     animate={style}
                     exit={{ opacity: 0, scale: 1.1, x: -200, rotate: -10 }}
@@ -172,10 +159,9 @@ export default function UpcomingTrips() {
                   >
                     <div className={`relative h-[500px] sm:h-[550px] lg:h-[600px] rounded-[2rem] overflow-hidden border ${isTop ? 'border-emerald-500/50 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]' : 'border-white/10'} bg-zinc-900 flex flex-col`}>
 
-                      {/* Card Visual */}
                       <div className="relative h-44 sm:h-64 w-full flex-none">
                         <Image
-                          src={trip.image}
+                          src={trip.image || "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800"}
                           alt={trip.name}
                           fill
                           className={`object-cover ${!isTop && 'grayscale opacity-50'}`}
@@ -189,7 +175,6 @@ export default function UpcomingTrips() {
                         )}
                       </div>
 
-                      {/* Card Content */}
                       <div className="p-5 sm:p-8 space-y-2 sm:space-y-4 flex flex-col flex-1">
                         <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em]">
                           <FiMapPin /> {trip.location}
@@ -232,3 +217,24 @@ export default function UpcomingTrips() {
     </section>
   );
 }
+
+const fallbackTrips = [
+  {
+    id: "trip-1",
+    name: "Matterhorn Summit",
+    location: "Swiss Alps",
+    date: "Aug 2024",
+    duration: "6 Days",
+    image: "https://images.unsplash.com/photo-1502926535242-4382295d8338?w=800",
+    description: "A technical ascent of the mountain of mountains. Requires high level of fitness and previous alpine experience."
+  },
+  {
+    id: "trip-2",
+    name: "Everest Base Camp",
+    location: "Khumbu Region",
+    date: "Sep 2024",
+    duration: "14 Days",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
+    description: "The classic trek to the foot of the world's highest peak. Incredible Sherpa culture and mountain vistas."
+  }
+];

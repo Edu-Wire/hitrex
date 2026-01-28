@@ -20,8 +20,8 @@ import {
   FaFirstAid,
   FaStar,
   FaUserCircle,
-  FaExclamationTriangle, // ✅ added
-  FaAngleRight,          // ✅ added
+  FaExclamationTriangle,
+  FaAngleRight,
 } from "react-icons/fa";
 
 
@@ -38,6 +38,10 @@ export default function Home() {
   const [destinations, setDestinations] = useState([]);
   const [destError, setDestError] = useState(null);
   const [destLoading, setDestLoading] = useState(true);
+  const [difficulties, setDifficulties] = useState([]);
+  const [diffLoading, setDiffLoading] = useState(true);
+  const [insights, setInsights] = useState([]);
+  const [insLoading, setInsLoading] = useState(true);
   const { data: session } = useSession();
 
   const [reviews, setReviews] = useState([]);
@@ -61,7 +65,6 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-
     const loadDestinations = async () => {
       try {
         const res = await fetch("/api/destinations", {
@@ -73,18 +76,18 @@ export default function Home() {
         const apiDestinations = Array.isArray(data?.destinations)
           ? data.destinations
           : [];
-        if (!controller.signal.aborted && apiDestinations.length) {
-          setDestinations(apiDestinations);
+        if (!controller.signal.aborted && data.success && data.destinations?.length > 0) {
+          setDestinations(data.destinations);
           setDestError(null);
         } else if (!controller.signal.aborted) {
-          setDestinations([]);
-          setDestError("No active destinations found.");
+          setDestinations(fallbackDestinations);
+          setDestError(null);
         }
       } catch (err) {
         if (!controller.signal.aborted) {
           console.error(err);
-          setDestinations([]);
-          setDestError("Live destinations unavailable.");
+          setDestinations(fallbackDestinations);
+          setDestError(null);
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -99,7 +102,57 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const loadDifficulties = async () => {
+      try {
+        setDiffLoading(true);
+        const res = await fetch("/api/difficulty", { signal: controller.signal });
+        const data = await res.json();
+        if (!controller.signal.aborted && data.success && data.difficulties?.length > 0) {
+          setDifficulties(data.difficulties);
+        } else if (!controller.signal.aborted) {
+          // Fallback to JSON
+          setDifficulties(difficultyData);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setDifficulties(difficultyData);
+        }
+      } finally {
+        if (!controller.signal.aborted) setDiffLoading(false);
+      }
+    };
+    loadDifficulties();
+    return () => controller.abort();
+  }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadInsights = async () => {
+      try {
+        setInsLoading(true);
+        const res = await fetch("/api/insights", { signal: controller.signal });
+        const data = await res.json();
+        if (!controller.signal.aborted && data.success && data.insights?.length > 0) {
+          setInsights(data.insights);
+        } else if (!controller.signal.aborted) {
+          // Fallback to JSON
+          setInsights(insightData);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setInsights(insightData);
+        }
+      } finally {
+        if (!controller.signal.aborted) setInsLoading(false);
+      }
+    };
+    loadInsights();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+
+    const controller = new AbortController();
     const loadReviews = async () => {
       try {
         setLoadingReviews(true);
@@ -129,11 +182,10 @@ export default function Home() {
   }, []);
 
   const renderStars = (rating) => {
-    return Array.from({ length: 5 }).map((_, idx) => (
+    return [...Array(5)].map((_, i) => (
       <FaStar
-        key={idx}
-        className={`h-4 w-4 ${idx < rating ? "text-amber-400" : "text-zinc-600"
-          }`}
+        key={i}
+        className={`h-3 w-3 ${i < rating ? "text-amber-400" : "text-zinc-700"}`}
       />
     ));
   };
@@ -180,37 +232,38 @@ export default function Home() {
   const displayedReviews = reviews.slice(0, 3);
   const reviewWordCount = countWords(reviewForm.comment);
 
+  // Icon mapping for insights
+  const iconMap = {
+    FaCloudSun: <FaCloudSun />,
+    FaTools: <FaTools />,
+    FaFirstAid: <FaFirstAid />,
+  };
+
   return (
     <PageTransition>
       <main
         ref={containerRef}
         className="relative min-h-screen w-full bg-[#0a0a0a] overflow-hidden -mt-24 md:-mt-28"
       >
-        {/* ================= HERO ================= */}
         <HeroSection />
 
-        {/* ================= DESTINATIONS ================= */}
         <section
           id="destinations"
           className="relative w-full pt-18 sm:pt-12 lg:pt-10 pb-20 md:pb-18 lg:pb-12 bg-white rounded-t-[3rem] md:rounded-t-[4rem] mt-0 z-20 border-t border-zinc-200"
         >
-          {/* Header Grid: Balanced Design */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 md:mb-14">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
-
-              {/* Left Side: Massive Typography */}
               <div className="lg:col-span-7">
                 <motion.div style={{ y: y1 }}>
                   <h2
                     className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-zinc-900 uppercase leading-[0.9] tracking-tighter`}
                   >
-                    Prime <br />
-                    <span className="text-emerald-600">Terrains</span>
+                    UNTAMED <br />
+                    <span className="text-emerald-600">LANDSCAPS</span>
                   </h2>
                 </motion.div>
               </div>
 
-              {/* Right Side: Descriptive Panel (Fills Empty Space) */}
               <div className="lg:col-span-5 pb-2">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -221,14 +274,12 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                     <span className="text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
-                      Technical Intel
+                      Hidden wonders
                     </span>
                   </div>
 
                   <p className="text-zinc-600 text-lg md:text-xl leading-relaxed font-light">
-                    Analyzing high-altitude glacial lakes and hidden massifs across the
-                    Himalayan range. We provide verified data and exclusive access for explorers
-                    seeking raw, untamed nature in its purest form.
+                    Mapping high-altitude trails, glacier-fed lakes, and remote mountain passes across Europe’s most iconic ranges. We provide precision planning and professional guidance for explorers seeking raw alpine adventure.
                   </p>
 
                   <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-8">
@@ -245,7 +296,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Status Indicators */}
             {(destError || destLoading) && (
               <div className="mt-12 flex gap-6 items-center border-y border-zinc-100 py-4">
                 {destError && (
@@ -264,74 +314,83 @@ export default function Home() {
             )}
           </div>
 
-          {/* Cards Auto-Scroll Marquee (Hybrid: JS-driven + Manual) */}
           <DestinationsMarquee destinations={destinations} />
-
-
-          {/* Footer Action: Explore Catalog - Restored and Repositioned */}
-
         </section>
 
-        {/* ================= UPCOMING TRIPS ================= */}
         <section id="trips" className="bg-zinc-900  text-white">
           <UpcomingTrips />
         </section>
 
-        {/* ================= DIFFICULTY ================= */}
-        <section id="difficulty" className="relative py-24 sm:py-32 bg-white overflow-hidden">
-          {/* Decorative Topography Pattern */}
+        <section
+          id="difficulty"
+          className="relative py-24 sm:py-32 bg-white overflow-hidden"
+        >
           <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="w-full relative z-10 space-y-16">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="max-w-7xl mx-auto px-4 sm:px-6 w-full text-center space-y-6"
             >
-              <span className="text-emerald-600 text-sm tracking-[0.3em] uppercase block font-bold">
-                Technical Grading
-              </span>
-              <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-gray-900 leading-[0.9] tracking-tighter`}>
-                Measure Your <br /> Grit.
-              </h2>
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed max-w-xl">
-                Our trails are rated using the HITREX standard, analyzing vertical gain, oxygen levels, and technical demand.
-              </p>
-              <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100 max-w-sm">
-                <FaExclamationTriangle className="text-amber-500" />
-                <p className="text-xs text-amber-800 font-medium">Always check local weather warnings before departure.</p>
+              <div className="inline-block">
+                <span className="text-emerald-600 text-sm tracking-[0.5em] uppercase block font-bold mb-4">
+                  Protocol 04 // Technical Grading
+                </span>
+                <h2 className={`${oswald.className} text-6xl sm:text-7xl lg:text-8xl font-black text-zinc-900 leading-tight tracking-tighter uppercase`}>
+                  Measure <span className="text-emerald-600">Your Grit.</span>
+                </h2>
               </div>
+
+              <p className="text-zinc-500 text-base sm:text-xl font-light leading-relaxed max-w-2xl mx-auto">
+                Hitrex expeditions are strictly classified by technical intensity. <br className="hidden md:block" />
+                Cross-reference your skill level before initiation.
+              </p>
             </motion.div>
 
-            <div className="space-y-4">
-              {difficultyData.map((item, idx) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  viewport={{ once: true }}
-                  className={`group relative flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${item.color}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <span className={`h-3 w-3 mt-2 rounded-full ${item.dot} shadow-lg`} />
-                    <div>
-                      <h4 className={`${oswald.className} text-xl uppercase font-bold text-zinc-900`}>{item.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1 max-w-xs">{item.text}</p>
+            <div className="relative w-full">
+              <div
+                className="flex gap-8 px-4 sm:px-[10vw] overflow-x-auto no-scrollbar pb-12 cursor-grab active:cursor-grabbing"
+              >
+                {difficulties.map((item, idx) => (
+                  <div
+                    key={item._id || idx}
+                    className={`flex-shrink-0 w-[350px] sm:w-[450px] p-8 sm:p-10 rounded-[3rem] border-2 transition-all duration-500 hover:shadow-2xl ${item.color} bg-white flex flex-col justify-between h-[350px] sm:h-[400px] group`}
+                  >
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className={`w-12 h-12 rounded-2xl ${item.dot} opacity-20 flex items-center justify-center`}>
+                          <div className={`w-3 h-3 rounded-full ${item.dot} shadow-lg`} />
+                        </div>
+                        <span className="text-xs font-black tracking-widest text-zinc-400 uppercase">Class 0{idx + 1}</span>
+                      </div>
+
+                      <div>
+                        <h4 className={`${oswald.className} text-3xl sm:text-4xl uppercase font-black text-zinc-900 tracking-tight mb-4`}>
+                          {item.title.split(": ")[1] || item.title}
+                        </h4>
+                        <p className="text-sm text-zinc-500 leading-relaxed font-medium">
+                          {item.text}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-zinc-100 flex items-center justify-between">
+                      <span className="text-[10px] text-zinc-400 uppercase font-black tracking-widest">Threshold</span>
+                      <span className="text-sm font-black text-zinc-900">{item.stats}</span>
                     </div>
                   </div>
-                  <div className="text-right hidden sm:block">
-                    <span className="text-[10px] text-gray-400 block uppercase mb-1">Threshold</span>
-                    <span className="text-sm font-bold text-zinc-900">{item.stats}</span>
-                  </div>
-                </motion.div>
-              ))}
+                ))}
+
+              </div>
+
+              <div className="absolute inset-y-0 left-0 w-[5vw] bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+              <div className="absolute inset-y-0 right-0 w-[10vw] bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
             </div>
           </div>
         </section>
 
-        {/* ================= REVIEWS ================= */}
         <section id="reviews" className="bg-zinc-950 py-24 sm:py-32 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             <div className="space-y-6">
@@ -479,7 +538,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= INSIGHTS ================= */}
         <section id="insights" className="relative py-24 sm:py-32 bg-zinc-950 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
@@ -497,9 +555,13 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
-              {insightData.map((item, idx) => (
+              {insLoading ? (
+                [1, 2, 3].map((i) => (
+                  <div key={i} className="h-64 rounded-3xl bg-zinc-900 border border-zinc-800 animate-pulse" />
+                ))
+              ) : insights.map((item, idx) => (
                 <motion.div
-                  key={item.title}
+                  key={item._id || idx}
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.1 }}
@@ -508,7 +570,7 @@ export default function Home() {
                 >
                   <div>
                     <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-2xl mb-6 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-500">
-                      {item.icon}
+                      {iconMap[item.iconName] || item.icon || <FaCompass />}
                     </div>
                     <h4 className={`${oswald.className} text-xl sm:text-2xl uppercase font-bold mb-3`}>{item.title}</h4>
                     <p className="text-zinc-400 text-sm leading-relaxed">{item.text}</p>
@@ -530,50 +592,104 @@ export default function Home() {
 }
 
 
-
 /* ================= DATA ================= */
+
+/* ================= FALLBACK DATA ================= */
+
+const fallbackDestinations = [
+  {
+    id: "ebc",
+    name: "Everest Base Camp",
+    location: "Nepal",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
+    description: "The ultimate trekking pilgrimage. A high-altitude journey to the foot of the world's tallest peak.",
+    difficulty: "Difficult",
+    duration: "14 Days"
+  },
+  {
+    id: "pk",
+    name: "Pamir Knot",
+    location: "Tajikistan",
+    image: "https://images.unsplash.com/photo-1502926535242-4382295d8338?w=800",
+    description: "The roof of the world. Remote, rugged, and profoundly beautiful alpine terrain.",
+    difficulty: "Challenging",
+    duration: "18 Days"
+  },
+  {
+    id: "mb",
+    name: "Mont Blanc",
+    location: "France",
+    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
+    description: "European classic. Traverse three countries around the highest peak in the Alps.",
+    difficulty: "Moderate",
+    duration: "10 Days"
+  },
+  {
+    id: "at",
+    name: "Ararat",
+    location: "Turkey",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800",
+    description: "Climb the legendary peak. A volcanic journey into ancient history and high summits.",
+    difficulty: "Challenging",
+    duration: "7 Days"
+  }
+];
 
 const difficultyData = [
   {
     title: "Class 1: Casual",
     color: "border-green-500/20 bg-green-500/5",
     dot: "bg-green-500",
-    text: "Well-marked trails with flat terrain. Suitable for all fitness levels and families.",
-    stats: "0-200m Elevation"
+    text: "Perfect for beginners & families. Well-marked trails on flat or gently rolling terrain. These hikes require minimal physical effort and no technical skills. Suitable for first-time hikers, families, leisure walkers, and all basic fitness levels. What to expect: Easy pace, scenic routes, minimal elevation, and comfortable walking paths.",
+    stats: "Beginner Friendly",
   },
   {
-    title: "Class 3: Technical",
-    color: "border-yellow-500/20 bg-yellow-500/5",
-    dot: "bg-yellow-500",
-    text: "Scrambling required. Steep inclines with uneven surfaces. High fitness required.",
-    stats: "500-1200m Elevation"
+    title: "Class 2: Moderate",
+    color: "border-blue-500/20 bg-blue-500/5",
+    dot: "bg-blue-500",
+    text: "For active individuals & weekend hikers. Trails with more elevation gain and some uneven surfaces. A moderate level of fitness is required. Ideal for those who hike occasionally and want a bit of a challenge. What to expect: Steeper sections, longer distances, and diverse terrain.",
+    stats: "Fitness Level: Low/Mid",
   },
   {
-    title: "Class 5: Extreme",
+    title: "Class 3: Challenging",
+    color: "border-emerald-500/20 bg-emerald-500/5",
+    dot: "bg-emerald-500",
+    text: "For seasoned hikers. Expect significant elevation, rugged paths, and potentially long days on the trail. Requires good endurance and a steady foot. Recommended for regular hikers and outdoor enthusiasts. What to expect: Significant climbs, potentially remote areas, and varied weather conditions.",
+    stats: "Stamina Required",
+  },
+  {
+    title: "Class 4: Difficult",
+    color: "border-orange-500/20 bg-orange-500/5",
+    dot: "bg-orange-500",
+    text: "High-intensity treks for the experienced. Very steep climbs, technical sections, and extreme altitudes. Requires high endurance, mental grit, and preparation for unpredictable environments. Best for fit hikers and aspiring mountaineers. What to expect: Technical terrain, rapid altitude changes, and sustained effort.",
+    stats: "Extreme Preparedness",
+  },
+  {
+    title: "Class 5: Technical",
     color: "border-red-500/20 bg-red-500/5",
     dot: "bg-red-500",
-    text: "Vertical ascents and technical gear required. Only for certified mountaineers.",
-    stats: "2000m+ Vertical"
+    text: "The peak of adventure. Use of ropes, technical climbing gear, and high-altitude gear may be necessary. For professional explorers and highly skilled mountaineers. Extreme commitment and fitness required. What to expect: Mountaineering techniques, high risk, and rewarding summits.",
+    stats: "Expert ONLY",
   },
 ];
 
 const insightData = [
   {
     title: "Atmospheric Gear",
-    icon: <FaCloudSun />,
+    iconName: "FaCloudSun",
     color: "bg-zinc-900 border-zinc-800",
-    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour."
+    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour.",
   },
   {
     title: "Maintenance Kit",
-    icon: <FaTools />,
+    iconName: "FaTools",
     color: "bg-zinc-900 border-zinc-800",
-    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones."
+    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones.",
   },
   {
     title: "Wilderness First Aid",
-    icon: <FaFirstAid />,
+    iconName: "FaFirstAid",
     color: "bg-zinc-900 border-zinc-800",
-    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails."
+    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails.",
   },
 ];

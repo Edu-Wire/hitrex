@@ -16,10 +16,9 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 export default function BlogPage() {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(fallbackBlogs);
   const [loading, setLoading] = useState(true);
   const containerRef = useRef(null);
-  const titleRef = useRef(null);
   const { scrollYProgress } = useScroll();
 
   const yText = useTransform(scrollYProgress, [0, 0.2], [0, 200]);
@@ -30,7 +29,6 @@ export default function BlogPage() {
     gsap.registerPlugin(ScrollTrigger);
   }, []);
 
-  // GSAP Entry Animation for Heading (run on mount so it doesn't wait for fetch)
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.to(".char-inner", {
@@ -54,17 +52,22 @@ export default function BlogPage() {
 
   const fetchBlogs = async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/blogs");
       const data = await res.json();
-      setBlogs(data.blogs || []);
+      if (data.success && data.blogs?.length > 0) {
+        setBlogs(data.blogs);
+      } else {
+        setBlogs(fallbackBlogs);
+      }
     } catch (e) {
       console.error(e);
+      setBlogs(fallbackBlogs);
     } finally {
       setLoading(false);
     }
   };
 
-  // Helper to split text for character animation
   const splitText = (text) => {
     return text.split("").map((char, i) => (
       <span key={i} className="inline-block overflow-hidden pb-2 md:pb-4">
@@ -78,7 +81,6 @@ export default function BlogPage() {
   return (
     <div ref={containerRef} className="bg-[#050505] min-h-screen text-white selection:bg-orange-500 relative -mt-24">
 
-      {/* 1. ETHERIAL HERO SECTION */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: yText, opacity: opacityText }} className="relative z-20 text-center px-4">
           <div className="hero-subtext">
@@ -87,7 +89,6 @@ export default function BlogPage() {
             </span>
           </div>
 
-          {/* ANIMATED HEADING */}
           <h1 className="text-7xl md:text-[12vw] font-black tracking-tighter leading-none mb-6 flex justify-center">
             {splitText("CHRONICLES")}
           </h1>
@@ -99,7 +100,6 @@ export default function BlogPage() {
           </div>
         </motion.div>
 
-        {/* Hero Background */}
         <div className="absolute inset-0 z-0">
           <video
             autoPlay
@@ -115,7 +115,6 @@ export default function BlogPage() {
             />
           </video>
 
-          {/* Overlay for text readability */}
           <div className="absolute inset-0 from-transparent via-[#050505]/1000 to-[#050505]" />
         </div>
 
@@ -128,19 +127,17 @@ export default function BlogPage() {
         </motion.div>
       </section>
 
-      {/* 2. BLOG FEED */}
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-32">
-        {loading ? (
+        {loading && (
           <div className="h-96 flex items-center justify-center">
             <div className="w-12 h-12 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : (
-          <div className="space-y-40">
-            {blogs.map((blog, index) => (
-              <BlogRow key={blog._id || index} blog={blog} index={index} />
-            ))}
-          </div>
         )}
+        <div className="space-y-40">
+          {blogs.map((blog, index) => (
+            <BlogRow key={blog._id || index} blog={blog} index={index} />
+          ))}
+        </div>
       </main>
       <Footer />
     </div>
@@ -199,13 +196,29 @@ function BlogRow({ blog, index }) {
         <p className="text-zinc-400 leading-relaxed font-light text-lg">
           {blog.description}
         </p>
-
-
-        {/* <footer/> */}
       </div>
 
     </motion.div>
-
   );
-
 }
+
+const fallbackBlogs = [
+  {
+    title: "The Art of Himalayan Survival",
+    subtitle: "Technical Intel",
+    description: "Beyond the gear, it's a mental game. Understanding thermodynamics and altitude physiology is what separates a successful summit from a rescue operation.",
+    images: [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200",
+      "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800"
+    ]
+  },
+  {
+    title: "Alpine Light: Photography at 5000m",
+    subtitle: "Visual Diary",
+    description: "Capturing the blue hour in the Alps. Why mirrorless systems are revolutionizing high-altitude photography and how to manage batteries in sub-zero temps.",
+    images: [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200",
+      "https://images.unsplash.com/photo-1470252649358-96753a782901?w=800"
+    ]
+  }
+];
