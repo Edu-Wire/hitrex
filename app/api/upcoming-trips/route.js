@@ -15,6 +15,7 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get("limit");
+    const adminParam = searchParams.get("admin");
     const parsedLimit = limitParam ? parseInt(limitParam, 10) : null;
 
     // Debug: verify model shape when issues arise
@@ -27,16 +28,53 @@ export async function GET(request) {
       });
     }
 
-    const query = UpcomingTrip.find().sort({ createdAt: -1 });
+    // Fetch all trips and filter in JS for better handling of date range strings
+    const trips = await UpcomingTrip.find().sort({ createdAt: -1 }).lean();
+
+    // Helper function to parse date string (handles "Oct 15 - 19, 2025")
+    const parseTripDate = (dateStr) => {
+      if (!dateStr) return null;
+      try {
+        // Handle "Month DD - DD, YYYY" format by taking the first date
+        const cleanDate = dateStr.replace(/ - \d+,/, ",");
+        const date = new Date(cleanDate);
+        return isNaN(date.getTime()) ? null : date;
+      } catch {
+        return null;
+      }
+    };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let currentTrips = [];
+    let completedTrips = [];
+
+    trips.forEach(trip => {
+      const tripDate = parseTripDate(trip.date);
+      if (!tripDate || tripDate >= today) {
+        currentTrips.push(trip);
+      } else {
+        completedTrips.push(trip);
+      }
+    });
 
     if (parsedLimit && !Number.isNaN(parsedLimit)) {
-      query.limit(parsedLimit);
+      currentTrips = currentTrips.slice(0, parsedLimit);
     }
 
-    const trips = await query.lean();
+    // Only return completedTrips for admin view
+    if (!adminParam) {
+      completedTrips = [];
+    }
+
 
     return NextResponse.json(
-      { trips: Array.isArray(trips) ? trips : [] },
+      {
+        trips: Array.isArray(currentTrips) ? currentTrips : [],
+        completedTrips: Array.isArray(completedTrips) ? completedTrips : [],
+        totalCount: trips.length
+      },
       { status: 200 }
     );
   } catch (error) {
@@ -45,6 +83,7 @@ export async function GET(request) {
       {
         error: error.message || "Failed to fetch upcoming trips",
         trips: [],
+        completedTrips: [],
       },
       { status: 500 }
     );
@@ -54,7 +93,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-   
+
     await connectDB();
 
     const data = await request.json();

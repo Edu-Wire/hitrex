@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 
 export default function AdminBlogs() {
+  const t = useTranslations("Admin");
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
 
@@ -43,7 +45,7 @@ export default function AdminBlogs() {
       setBlogs(Array.isArray(data.blogs) ? data.blogs : []);
     } catch (error) {
       console.error("Error fetching blogs:", error);
-      toast.error("Failed to load blogs");
+      toast.error(t("loading_failed"));
     } finally {
       setDataLoading(false);
     }
@@ -86,11 +88,11 @@ export default function AdminBlogs() {
         setShowForm(false);
         fetchBlogs();
       } else {
-        toast.error(data.error || "Failed to create blog");
+        toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
       console.error("Error creating blog:", error);
-      toast.error("Something went wrong");
+      toast.error(t("save_error"));
     }
   };
 
@@ -110,7 +112,7 @@ export default function AdminBlogs() {
   if (loading || dataLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl font-medium">Loading...</div>
+        <div className="text-xl font-medium">{t("loading")}</div>
       </div>
     );
   }
@@ -121,10 +123,10 @@ export default function AdminBlogs() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Manage Blogs
+            {t("manage_blogs")}
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Total blogs: {totalBlogs}
+            {t("total_blogs")}: {totalBlogs}
           </p>
         </div>
 
@@ -132,25 +134,25 @@ export default function AdminBlogs() {
           onClick={() => setShowForm((prev) => !prev)}
           className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg transition"
         >
-          {showForm ? "Close Form" : "Add Blog"}
+          {showForm ? t("close_form") : t("add_blog")}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
         <div className="bg-white text-gray-900 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Add Blog</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("add_blog")}</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["id", "Blog ID"],
-                ["subtitle", "Subtitle"],
-                ["title", "Title"],
+                ["id", t("blog_id")],
+                ["subtitle", t("subtitle")],
+                ["title", t("title")],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} *
+                    {label} {t("required_field")}
                   </label>
                   <input
                     type="text"
@@ -166,7 +168,7 @@ export default function AdminBlogs() {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Images (comma separated) *
+                  {t("gallery_images")} {t("required_field")}
                 </label>
                 <input
                   type="text"
@@ -183,7 +185,7 @@ export default function AdminBlogs() {
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Description *
+                {t("description")} {t("required_field")}
               </label>
               <textarea
                 rows={3}
@@ -201,14 +203,14 @@ export default function AdminBlogs() {
                 type="submit"
                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-500 transition"
               >
-                Save Blog
+                {t("save_blog")}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
               >
-                Reset
+                {t("reset")}
               </button>
             </div>
           </form>
@@ -219,7 +221,7 @@ export default function AdminBlogs() {
       <section className="bg-white text-gray-900 rounded-lg shadow divide-y divide-gray-200">
         {blogs.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            No blogs yet. Add your first blog.
+            {t("no_blogs")}
           </div>
         )}
 

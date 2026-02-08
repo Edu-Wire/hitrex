@@ -11,9 +11,10 @@ import {
   Youtube,
   Send,
 } from "lucide-react";
-import Footer from "@/components/Footer";
+import { useTranslations } from "next-intl";
 
 export default function ContactPage() {
+  const t = useTranslations("ContactPage");
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0 },
@@ -46,7 +47,7 @@ export default function ContactPage() {
               transition={{ duration: 1 }}
               className="text-[#ff4d00] font-black uppercase text-[10px] md:text-xs mb-4 tracking-[0.5em]"
             >
-              Get In Touch
+              {t("get_in_touch")}
             </motion.p>
 
             <motion.h1
@@ -73,15 +74,15 @@ export default function ContactPage() {
             className="bg-[#0f0f0f] rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-10 md:p-14 border border-white/5"
           >
             <h2 className="text-3xl md:text-4xl font-black mb-8 uppercase italic tracking-tighter">
-              Ready for an <br />
-              <span className="text-[#ff4d00]">Adventure?</span>
+              {t("ready_for_adventure").split("?")[0]} ?<br />
+              <span className="text-[#ff4d00]">{t("ready_for_adventure").split("?")[1] || ""}</span>
             </h2>
 
             <form className="space-y-6">
               {[
-                { label: "Full Name", placeholder: "John Doe", type: "text" },
+                { label: t("full_name"), placeholder: "John Doe", type: "text" },
                 {
-                  label: "Email Address",
+                  label: t("email_address"),
                   placeholder: "john@example.com",
                   type: "email",
                 },
@@ -100,11 +101,11 @@ export default function ContactPage() {
 
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#ff4d00] ml-2">
-                  Message
+                  {t("message_label")}
                 </label>
                 <textarea
                   rows="4"
-                  placeholder="Tell us about your next trek..."
+                  placeholder={t("message_placeholder")}
                   className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-[#ff4d00] text-white placeholder:text-zinc-600 resize-none"
                 />
               </div>
@@ -114,7 +115,7 @@ export default function ContactPage() {
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-[#ff4d00] text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_#ff4d00]"
               >
-                Send Message <Send size={18} />
+                {t("send_message")} <Send size={18} />
               </motion.button>
             </form>
           </motion.div>
@@ -130,28 +131,28 @@ export default function ContactPage() {
           >
             <div className="space-y-4">
               <h2 className="text-4xl font-black uppercase italic tracking-tighter">
-                Information
+                {t("information")}
               </h2>
               <div className="h-1 w-20 bg-[#ff4d00]" />
               <p className="text-zinc-400 text-lg leading-relaxed max-w-sm">
-                Have questions about routes, gear, or difficulty? Our guides are ready to help.
+                {t("info_desc")}
               </p>
             </div>
 
             {[
               {
                 icon: MapPin,
-                label: "Base Camp",
+                label: t("base_camp"),
                 value: "Brussels, Belgium",
               },
               {
                 icon: Mail,
-                label: "Direct Line",
+                label: t("direct_line"),
                 value: "hitrextrips@gmail.com",
               },
               {
                 icon: Phone,
-                label: "Support",
+                label: t("support"),
                 value: "+32 400 000 000",
               },
             ].map(({ icon: Icon, label, value }) => (
@@ -173,7 +174,7 @@ export default function ContactPage() {
             {/* Socials */}
             <div className="pt-8">
               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-zinc-500">
-                Connect with the community
+                {t("connect_community")}
               </h3>
               <div className="flex gap-4">
                 {[Facebook, Twitter, Youtube].map((Icon, index) => (

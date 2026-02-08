@@ -1,26 +1,7 @@
-"use client";
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Footer from "@/components/Footer";
-import { ChevronDown, Check, X } from "lucide-react";
-
-// Default options (used as fallback if API data lacks values)
-const DEFAULT_FILTER_DATA = {
-  months: [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ],
-  features: ["Accommodation", "Breakfast", "Guide", "Transport", "Gear Included"],
-  activities: ["City Tours", "Hiking", "Rural", "Walking", "Climbing"],
-};
-
-
-
+import { useTranslations } from "next-intl";
 
 export default function DestinationsPage() {
+  const t = useTranslations("DestinationPage");
   const router = useRouter();
 
   // -- STATE MANAGEMENT --
@@ -277,9 +258,9 @@ export default function DestinationsPage() {
 
         <div className="relative z-10 text-center px-4 max-w-7xl">
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[9vw] font-black tracking-tighter mb-12 leading-[0.9] flex flex-col items-center max-w-[min(1100px,92vw)] mx-auto px-4">
-            <span className="flex">{splitText("BEYOND")}</span>
+            <span className="flex">{splitText(t("beyond_horizons").split(" ")[0])}</span>
             <span className="flex text-transparent stroke-text">
-              {splitText("HORIZONS")}
+              {splitText(t("beyond_horizons").split(" ")[1])}
             </span>
           </h1>
 
@@ -291,9 +272,12 @@ export default function DestinationsPage() {
       <main className="max-w-[1440px] mx-auto px-6 md:px-12 py-32">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
           <div className="space-y-4">
-            <p className="text-orange-500 font-bold text-xs tracking-[0.3em] uppercase">Selection / 2026</p>
+            <p className="text-orange-500 font-bold text-xs tracking-[0.3em] uppercase">{t("selection_2026")}</p>
             {/* CHANGED: Added text-orange-500 */}
-            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-orange-500">PREMIUM<br />ROUTES</h2>
+            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-orange-500">
+              {t("premium_routes").split(" ")[0]}<br />
+              {t("premium_routes").split(" ")[1]}
+            </h2>
           </div>
 
           <div className="bg-white/1 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl md:rounded-full flex flex-col md:flex-row items-center gap-1 shadow-2xl w-full max-w-[90%] md:max-w-fit mx-auto transition-all hover:bg-white/5 relative z-50">
@@ -306,7 +290,7 @@ export default function DestinationsPage() {
               >
                 <div className="flex flex-col items-start w-full">
                   <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
-                    Region
+                    {t("region")}
                   </label>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-sm font-medium text-white truncate pr-2">
@@ -323,7 +307,7 @@ export default function DestinationsPage() {
               {isRegionOpen && (
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-[95vw] md:absolute md:inset-auto md:bottom-full md:mb-4 md:left-0 md:w-[260px] bg-[#0a0a0a] md:bg-[#0a0a0a]/95 md:backdrop-blur-2xl border border-white/20 md:border-white/10 rounded-2xl p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] overflow-hidden animate-in fade-in slide-in-from-bottom-10 md:zoom-in-95 duration-200 origin-bottom md:origin-bottom-left z-[70]">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10 md:hidden">
-                    <span className="text-sm font-black uppercase tracking-widest text-white">Select Region</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-white">{t("select_region")}</span>
                     <button onClick={() => setIsRegionOpen(false)} className="text-zinc-500 hover:text-white"><X size={14} /></button>
                   </div>
                   <div className="max-h-[50vh] overflow-y-auto custom-scrollbar flex flex-col gap-1">
@@ -352,11 +336,11 @@ export default function DestinationsPage() {
               >
                 <div className="flex flex-col items-start">
                   <label className="text-[8px] uppercase tracking-[0.2em] text-orange-500 font-bold mb-0.5">
-                    Refine
+                    {t("refine")}
                   </label>
                   <div className="flex items-center justify-between w-full text-left">
                     <span className="text-sm font-medium text-white">
-                      {activeCount > 0 ? `${activeCount} Filters Active` : "Select Filters"}
+                      {activeCount > 0 ? `${activeCount} ${t("filters_active")}` : t("select_filters")}
                     </span>
                     <div className={`text-zinc-500 group-hover:text-white transition-all duration-300 ${isFilterOpen ? "rotate-180" : ""}`}>
                       <ChevronDown size={12} />
@@ -372,12 +356,12 @@ export default function DestinationsPage() {
                   {/* Header */}
                   <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-black uppercase tracking-widest text-white">Filters</span>
+                      <span className="text-sm font-black uppercase tracking-widest text-white">{t("filters")}</span>
                     </div>
                     <div className="flex items-center gap-4">
                       {activeCount > 0 && (
                         <button onClick={clearFilters} className="text-[9px] font-bold text-orange-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1">
-                          <X size={10} /> Clear
+                          <X size={10} /> {t("clear")}
                         </button>
                       )}
                       <button onClick={() => setIsFilterOpen(false)} className="md:hidden text-zinc-500 hover:text-white"><X size={14} /></button>
@@ -388,7 +372,7 @@ export default function DestinationsPage() {
 
                     {/* Section: By Month */}
                     <div>
-                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Month</h4>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">{t("filter_by_month")}</h4>
                       <div className="grid grid-cols-3 md:grid-cols-3 gap-2">
                         {filterOptions.months.map(month => (
                           <FilterCheckbox
@@ -403,7 +387,7 @@ export default function DestinationsPage() {
 
                     {/* Section: By Feature (Grid for mobile width optim) */}
                     <div>
-                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Feature</h4>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">{t("filter_by_feature")}</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         {filterOptions.features.map(feature => (
                           <FilterCheckbox
@@ -418,7 +402,7 @@ export default function DestinationsPage() {
 
                     {/* Section: By Activity (Grid for mobile width optim) */}
                     <div>
-                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">Filter By Activity</h4>
+                      <h4 className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-3">{t("filter_by_activity")}</h4>
                       <div className="grid grid-cols-2 gap-x-2 gap-y-1">
                         {filterOptions.activities.map(activity => (
                           <FilterCheckbox
@@ -449,19 +433,26 @@ export default function DestinationsPage() {
               <div className="absolute inset-0 bg-orange-600 animate-loading-smooth" />
             </div>
           </div>
+        ) : destinations.length === 0 ? (
+          <div className="col-span-full py-20 text-center">
+            <p className="text-2xl font-bold text-zinc-700 mb-4">{t("no_destinations")}</p>
+            <p className="text-zinc-500 mb-6">{t("no_destinations_desc")}</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
             {filtered.length > 0 ? (
               filtered.map((dest, index) => (
-                <div key={dest._id} ref={(el) => (cardsRef.current[index] = el)} className="group relative will-change-transform">
+                <div
+                  key={dest._id}
+                  ref={(el) => (cardsRef.current[index] = el)}
+                  onClick={() => router.push(`/page/destination/${dest._id}`)}
+                  className="group relative will-change-transform cursor-pointer"
+                >
                   <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden bg-zinc-900 transition-transform duration-700 ease-[cubic-bezier(0.2,1,0.3,1)] group-hover:scale-[0.98]">
                     <Image src={dest.image} alt={dest.name} fill className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000 scale-110 group-hover:scale-100" />
                     <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-80" />
                     <div className="absolute top-8 left-8 overflow-hidden rounded-full z-10">
                       <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-black px-5 py-2 inline-block uppercase tracking-widest border border-white/20">{dest.tags[0]}</span>
-                    </div>
-                    <div className="absolute top-8 right-8 overflow-hidden rounded-full z-10">
-                      <span className="bg-orange-600/90 backdrop-blur-md text-white text-[10px] font-black px-5 py-2 inline-block uppercase tracking-widest shadow-xl">€{dest.price || "2,400"}</span>
                     </div>
                   </div>
                   <div className="mt-8 px-4">
@@ -470,22 +461,35 @@ export default function DestinationsPage() {
                         <p className="text-orange-500 font-bold text-[10px] uppercase tracking-widest mb-2">{dest.location}</p>
                         <h3 className="text-4xl font-black tracking-tighter uppercase leading-none transition-colors group-hover:text-orange-500">{dest.name}</h3>
                       </div>
-                      <div className="text-right">
-                        <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">Duration</p>
-                        <p className="text-xl font-black">{dest.duration || "5 Days"}</p>
+                      <div className="text-right flex flex-col items-end">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] text-zinc-500 font-bold uppercase">{t("from_label")}</span>
+                          <span className="text-2xl font-black text-white">€{dest.offer > 0 ? Math.round(dest.price * (1 - dest.offer / 100)) : dest.price}</span>
+                          {dest.offer > 0 && (
+                            <>
+                              <span className="text-sm text-zinc-500 line-through">€{dest.price}</span>
+                              <span className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-2 py-1 rounded-md">-{dest.offer}%</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <p className="text-[9px] text-zinc-500 font-bold uppercase mb-1">{t("duration_label")}</p>
+                          <p className="text-xl font-black">{dest.duration || "5 Days"}</p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-6 border-t border-white/5">
                       <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{dest.date}</p>
-                      <button onClick={() => router.push(`/page/destination/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">View Details</button>
+                      <button onClick={() => router.push(`/page/destination/${dest._id}`)} className="text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-orange-500 transition-colors">{t("view_details")}</button>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
               <div className="col-span-full py-20 text-center">
-                <p className="text-2xl font-bold text-zinc-700">No destinations match your filters.</p>
-                <button onClick={clearFilters} className="mt-4 text-orange-500 uppercase tracking-widest text-xs font-bold border-b border-orange-500 pb-1">Clear Filters</button>
+                <p className="text-2xl font-bold text-zinc-700 mb-4">{t("no_match")}</p>
+                <p className="text-zinc-500 mb-6">{t("no_match_desc")}</p>
+                <button onClick={clearFilters} className="text-orange-500 uppercase tracking-widest text-xs font-bold border-b border-orange-500 pb-1">{t("clear_filters_btn")}</button>
               </div>
             )}
           </div>

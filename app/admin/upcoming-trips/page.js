@@ -3,10 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
+import DatePicker from "@/components/DatePicker";
+import React from "react";
+import { FaUtensils, FaBed, FaHiking, FaCamera, FaMapMarkedAlt, FaShieldAlt, FaBus, FaTicketAlt } from "react-icons/fa";
 
 export default function AdminUpcomingTrips() {
-  const { isAdmin, loading } = useAdminAuth();
+  const t = useTranslations("Admin");
+  const { isAdmin, loading: authLoading } = useAdminAuth();
   const router = useRouter();
 
   const [trips, setTrips] = useState([]);
@@ -21,31 +26,48 @@ export default function AdminUpcomingTrips() {
     duration: "",
     image: "",
     description: "",
+    pickupPoints: "",
   });
+
+  // Helper function to check if trip is completed
+  const isTripCompleted = (trip) => {
+    if (!trip.date) return false;
+    try {
+      const tripDate = new Date(trip.date.replace(/ - \d+,/, ","));
+      const today = new Date();
+      return tripDate < today;
+    } catch {
+      return false;
+    }
+  };
 
   /* 🔐 Redirect if not admin */
   useEffect(() => {
-    if (!loading && !isAdmin) {
-      router.push("/login"); // or /unauthorized
+    if (!authLoading && !isAdmin) {
+      router.push("/login");
     }
-  }, [loading, isAdmin, router]);
+  }, [authLoading, isAdmin, router]);
 
   /* 📦 Fetch trips */
   useEffect(() => {
-    if (!loading && isAdmin) {
+    if (!authLoading && isAdmin) {
       fetchTrips();
     }
-  }, [loading, isAdmin]);
+  }, [authLoading, isAdmin]);
 
   const fetchTrips = async () => {
     setDataLoading(true);
     try {
-      const res = await fetch("/api/upcoming-trips");
+      const res = await fetch("/api/upcoming-trips?admin=true");
       const data = await res.json();
-      setTrips(Array.isArray(data.trips) ? data.trips : []);
+      const allTrips = [
+        ...(Array.isArray(data.trips) ? data.trips : []),
+        ...(Array.isArray(data.completedTrips) ? data.completedTrips : [])
+      ];
+      setTrips(allTrips);
     } catch (error) {
       console.error("Error fetching trips:", error);
-      toast.error("Failed to load trips");
+      toast.error(t("loading_failed"));
     } finally {
       setDataLoading(false);
     }
@@ -82,11 +104,11 @@ export default function AdminUpcomingTrips() {
         setShowForm(false);
         fetchTrips();
       } else {
-        toast.error(data.error || "Failed to add trip");
+        toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
       console.error("Error creating trip:", error);
-      toast.error("Something went wrong");
+      toast.error(t("save_error"));
     }
   };
 
@@ -99,19 +121,20 @@ export default function AdminUpcomingTrips() {
       duration: "",
       image: "",
       description: "",
+      pickupPoints: "",
     });
   };
 
   const totalTrips = useMemo(() => trips.length, [trips]);
 
-  /* ⏳ Loading state */
-  if (loading || dataLoading) {
+  if (authLoading || dataLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl font-medium">Loading...</div>
+        <div className="text-xl font-medium">{t("loading")}</div>
       </div>
     );
   }
+
 
   return (
     <div className="space-y-6">
@@ -119,10 +142,10 @@ export default function AdminUpcomingTrips() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Manage Upcoming Trips
+            {t("manage_trips")}
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Total trips: {totalTrips}
+            {t("total_trips")}: {totalTrips}
           </p>
         </div>
 
@@ -130,32 +153,32 @@ export default function AdminUpcomingTrips() {
           onClick={() => setShowForm((prev) => !prev)}
           className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg transition"
         >
-          {showForm ? "Close Form" : "Add Upcoming Trip"}
+          {showForm ? t("close_form") : t("add_upcoming_trip")}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
         <div className="bg-white text-gray-900 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Add Upcoming Trip</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("add_upcoming_trip")}</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["id", "Trip ID"],
-                ["name", "Name"],
-                ["location", "Location"],
-                ["date", "Date (e.g. Oct 15 - 19, 2025)"],
-                ["duration", "Duration (e.g. 7 Days)"],
-                ["image", "Image URL"],
+                ["id", t("trip_id")],
+                ["name", t("name")],
+                ["location", t("location")],
+                ["duration", t("duration")],
+                ["image", t("image_url")],
+                ["pickupPoints", t("pickup_points")],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} *
+                    {label} {key !== "pickupPoints" ? t("required_field") : t("optional")}
                   </label>
                   <input
                     type="text"
-                    required
+                    required={key !== "pickupPoints"}
                     value={formData[key]}
                     onChange={(e) =>
                       setFormData({ ...formData, [key]: e.target.value })
@@ -164,11 +187,19 @@ export default function AdminUpcomingTrips() {
                   />
                 </div>
               ))}
+
+              <DatePicker
+                value={formData.date}
+                onChange={(value) => setFormData({ ...formData, date: value })}
+                label={t("date")}
+                required={true}
+              />
             </div>
+
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Description *
+                {t("description")} {t("required_field")}
               </label>
               <textarea
                 rows={3}
@@ -186,14 +217,14 @@ export default function AdminUpcomingTrips() {
                 type="submit"
                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-500 transition"
               >
-                Save Trip
+                {t("save_trip")}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
               >
-                Reset
+                {t("reset")}
               </button>
             </div>
           </form>
@@ -204,30 +235,54 @@ export default function AdminUpcomingTrips() {
       <section className="bg-white text-gray-900 rounded-lg shadow divide-y divide-gray-200">
         {trips.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            No upcoming trips yet.
+            {t("no_trips")}
           </div>
         )}
 
-        {trips.map((trip) => (
-          <div
-            key={trip._id || trip.id}
-            className="p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
-          >
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wide">
-                {trip.id}
-              </p>
-              <h3 className="text-lg font-semibold">{trip.name}</h3>
-              <p className="text-sm text-gray-600">
-                {trip.location} • {trip.date} • {trip.duration}
+        {trips.map((trip) => {
+          const completed = isTripCompleted(trip);
+          return (
+            <div
+              key={trip._id || trip.id}
+              className={`p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${completed ? 'bg-red-50 border-red-200' : 'bg-white'
+                }`}
+            >
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wide">
+                  {trip.id}
+                </p>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold">{trip.name}</h3>
+                  {completed && (
+                    <span className="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded-full ml-2">
+                      {t("completed")}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">
+                  {trip.location} • {trip.date} • {trip.duration} {trip.pickupPoints && `• ${t("pickup_points")}: ${trip.pickupPoints}`}
+                  {trip.offer ? (
+                    <React.Fragment>
+                      <span className="font-medium ml-2">{t("original_price")}:</span>
+                      <span className="line-through text-gray-400">${trip.price}</span>
+                      <span className="ml-2 font-medium text-green-600">
+                        ${Math.round(trip.price * (1 - trip.offer / 100))} ({trip.offer}% OFF)
+                      </span>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <span className="font-medium ml-2">{t("price")}:</span> ${trip.price}
+                    </React.Fragment>
+                  )}
+                </p>
+              </div>
+
+              <p className="text-sm text-gray-600 max-w-xl line-clamp-2">
+                {trip.description}
               </p>
             </div>
-
-            <p className="text-sm text-gray-600 max-w-xl line-clamp-2">
-              {trip.description}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </section>
     </div>
   );

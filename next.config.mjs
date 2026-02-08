@@ -2,10 +2,6 @@ import path from "path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Explicitly set root to silence Turbopack workspace-root warning
-  turbopack: {
-    root: path.join(process.cwd()),
-  },
   experimental: {
     // Disable lightningcss to avoid native binary requirement on Render
     optimizeCss: false,
@@ -21,4 +17,8 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./i18n.js');
+
+export default withNextIntl(nextConfig);

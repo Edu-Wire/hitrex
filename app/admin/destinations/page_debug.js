@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { useAdminAuth } from "@/lib/useAdminAuth";
-import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 import DatePicker from "@/components/DatePicker";
 import React from "react";
@@ -54,7 +53,6 @@ const PREDEFINED_ITEMS = {
 };
 
 export default function AdminDestinations() {
-  const t = useTranslations("Admin");
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
 
@@ -116,7 +114,7 @@ export default function AdminDestinations() {
       setDestinations(allDestinations);
     } catch (error) {
       console.error("Error fetching destinations:", error);
-      toast.error(t("loading_failed")); // I should add this key or use a generic one
+      toast.error("Failed to load destinations");
     } finally {
       setDataLoading(false);
     }
@@ -142,13 +140,13 @@ export default function AdminDestinations() {
       const selectedActivityItems = selectedActivities.map(id =>
         PREDEFINED_ITEMS.activities.find(item => item.id === id)?.label
       ).filter(Boolean);
-      const customActList = (customActivities || "").split(',').map(item => item.trim()).filter(Boolean);
-      const customIncList = (customIncluded || "").split(',').map(item => item.trim()).filter(Boolean);
-      const customExcList = (customExcluded || "").split(',').map(item => item.trim()).filter(Boolean);
+      const customActivityItems = customActivities.split(',').map(item => item.trim()).filter(Boolean);
+      const customIncludedItems = customIncluded.split(',').map(item => item.trim()).filter(Boolean);
+      const customExcludedItems = customExcluded.split(',').map(item => item.trim()).filter(Boolean);
 
-      const allIncluded = [...selectedIncludedItems, ...customIncList];
-      const allExcluded = [...selectedExcludedItems, ...customExcList];
-      const allActivities = [...selectedActivityItems, ...customActList];
+      const allIncluded = [...selectedIncludedItems, ...customIncludedItems];
+      const allExcluded = [...selectedExcludedItems, ...customExcludedItems];
+      const allActivities = [...selectedActivityItems, ...customActivityItems];
 
       const payload = {
         ...formData,
@@ -183,10 +181,10 @@ export default function AdminDestinations() {
         resetForm();
         fetchDestinations();
       } else {
-        toast.error(data.error || t("save_failed"));
+        toast.error(data.error || "Failed to save destination");
       }
     } catch (error) {
-      toast.error(t("save_error"));
+      toast.error("Error saving destination");
       console.error(error);
     }
   };
@@ -245,7 +243,7 @@ export default function AdminDestinations() {
 
 
   const handleDelete = async (id) => {
-    if (!confirm(t("delete_confirm"))) return;
+    if (!confirm("Are you sure you want to delete this destination?")) return;
 
     try {
       const res = await fetch(`/api/destinations/${id}`, {
@@ -258,10 +256,10 @@ export default function AdminDestinations() {
         toast.success(data.message);
         fetchDestinations();
       } else {
-        toast.error(data.error || t("delete_failed"));
+        toast.error(data.error || "Failed to delete destination");
       }
     } catch (error) {
-      toast.error(t("delete_error"));
+      toast.error("Error deleting destination");
       console.error(error);
     }
   };
@@ -293,7 +291,7 @@ export default function AdminDestinations() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">{t("loading")}</div>
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
@@ -301,7 +299,7 @@ export default function AdminDestinations() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t("manage_destinations")}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Manage Destinations</h1>
         <button
           onClick={() => {
             setShowForm(!showForm);
@@ -310,7 +308,7 @@ export default function AdminDestinations() {
           }}
           className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          {showForm ? t("cancel") : t("add_new_destination")}
+          {showForm ? "Cancel" : "Add New Destination"}
         </button>
       </div>
 
@@ -318,23 +316,23 @@ export default function AdminDestinations() {
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-lg mb-8 text-gray-900">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">
-            {editingId ? t("edit_destination") : t("add_new_destination")}
+            {editingId ? "Edit Destination" : "Add New Destination"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["name", t("name")],
-                ["location", t("location")],
-                ["duration", t("duration")],
-                ["image", t("image_url")],
-                ["offer", t("offer_percent")],
-                ["price", t("original_price")],
-                ["difficulty", t("difficulty")],
-                ["gallery", t("gallery_images")],
+                ["name", "Name"],
+                ["location", "Location"],
+                ["duration", "Duration (e.g. 7 Days)"],
+                ["image", "Image URL"],
+                ["offer", "Offer (%)"],
+                ["price", "Original Price ($)"],
+                ["difficulty", "Difficulty"],
+                ["gallery", "Gallery Images (comma separated)"],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} {key !== "offer" && key !== "gallery" ? t("required_field") : t("optional")}
+                    {label} {key !== "offer" && key !== "gallery" ? "*" : "(Optional)"}
                   </label>
                   {key === "difficulty" ? (
                     <select
@@ -365,12 +363,12 @@ export default function AdminDestinations() {
               <DatePicker
                 value={formData.date}
                 onChange={(value) => setFormData({ ...formData, date: value })}
-                label={t("date")}
+                label="Date"
                 required={true}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">{t("description")} {t("required_field")}</label>
+              <label className="block text-sm font-medium mb-1">Description *</label>
               <textarea
                 required
                 rows={3}
@@ -385,7 +383,7 @@ export default function AdminDestinations() {
             {/* New Fields Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">{t("activities_label")}</label>
+                <label className="block text-sm font-medium mb-1">Activities</label>
                 <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-3 bg-gray-50/50">
                   {PREDEFINED_ITEMS.activities.map((item) => (
                     <label key={item.id} className="flex items-center gap-2 cursor-pointer hover:bg-white p-1 rounded transition-colors group">
@@ -410,14 +408,14 @@ export default function AdminDestinations() {
                 </div>
                 <textarea
                   rows={2}
-                  placeholder={t("custom_activities_placeholder")}
+                  placeholder="Custom activities (comma separated)"
                   value={customActivities}
                   onChange={(e) => setCustomActivities(e.target.value)}
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t("included_items")}</label>
+                <label className="block text-sm font-medium mb-1">Included Items</label>
                 <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-3">
                   {PREDEFINED_ITEMS.included.map((item) => (
                     <label key={item.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
@@ -442,14 +440,14 @@ export default function AdminDestinations() {
                 </div>
                 <textarea
                   rows={2}
-                  placeholder={t("custom_included_placeholder")}
+                  placeholder="Custom included items (comma separated)"
                   value={customIncluded}
                   onChange={(e) => setCustomIncluded(e.target.value)}
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t("excluded_items")}</label>
+                <label className="block text-sm font-medium mb-1">Excluded Items</label>
                 <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-3">
                   {PREDEFINED_ITEMS.excluded.map((item) => (
                     <label key={item.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
@@ -474,17 +472,17 @@ export default function AdminDestinations() {
                 </div>
                 <textarea
                   rows={2}
-                  placeholder={t("custom_excluded_placeholder")}
+                  placeholder="Custom excluded items (comma separated)"
                   value={customExcluded}
                   onChange={(e) => setCustomExcluded(e.target.value)}
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
                 />
               </div>
               <div className="md:col-span-3">
-                <label className="block text-sm font-medium mb-1">{t("gallery_images")}</label>
+                <label className="block text-sm font-medium mb-1">Gallery Images (comma separated)</label>
                 <textarea
                   rows={2}
-                  placeholder={t("gallery_placeholder")}
+                  placeholder="https://image1.jpg, https://image2.jpg"
                   value={formData.gallery}
                   onChange={(e) =>
                     setFormData({ ...formData, gallery: e.target.value })
@@ -497,7 +495,7 @@ export default function AdminDestinations() {
               type="submit"
               className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
             >
-              {editingId ? t("update_destination") : t("create_destination")}
+              {editingId ? "Update Destination" : "Create Destination"}
             </button>
           </form>
         </div>
@@ -507,7 +505,7 @@ export default function AdminDestinations() {
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {destinations.length === 0 && (
           <div className="col-span-full text-center py-12">
-            <p className="text-gray-500 text-lg">{t("no_destinations")}</p>
+            <p className="text-gray-500 text-lg">No destinations yet. Add your first destination!</p>
           </div>
         )}
 
@@ -529,7 +527,7 @@ export default function AdminDestinations() {
                   <h3 className="text-xl font-bold">{dest.name}</h3>
                   {completed && (
                     <span className="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded-full">
-                      {t("completed")}
+                      Completed
                     </span>
                   )}
                 </div>
@@ -549,12 +547,12 @@ export default function AdminDestinations() {
                   {dest.description}
                 </p>
                 <div className="flex gap-2 text-sm text-gray-600">
-                  <span className="font-medium">{t("difficulty")}:</span> {dest.difficulty}
-                  <span className="ml-4 font-medium">{t("duration")}:</span> {dest.duration}
+                  <span className="font-medium">Difficulty:</span> {dest.difficulty}
+                  <span className="ml-4 font-medium">Duration:</span> {dest.duration}
                   <div className="ml-4">
                     {dest.offer ? (
                       <React.Fragment>
-                        <span className="font-medium">{t("original_price")}:</span>
+                        <span className="font-medium">Original Price:</span>
                         <span className="line-through text-gray-400">${dest.price}</span>
                         <span className="ml-2 font-medium text-green-600">
                           ${Math.round(dest.price * (1 - dest.offer / 100))} ({dest.offer}% OFF)
@@ -562,7 +560,7 @@ export default function AdminDestinations() {
                       </React.Fragment>
                     ) : (
                       <React.Fragment>
-                        <span className="font-medium">{t("price")}:</span> ${dest.price}
+                        <span className="font-medium">Price:</span> ${dest.price}
                       </React.Fragment>
                     )}
                   </div>
@@ -572,13 +570,13 @@ export default function AdminDestinations() {
                     onClick={() => handleEdit(dest)}
                     className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
                   >
-                    {t("edit")}
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDelete(dest._id)}
                     className="flex-1 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
                   >
-                    {t("delete")}
+                    Delete
                   </button>
                 </div>
               </div>
@@ -589,7 +587,7 @@ export default function AdminDestinations() {
 
       {destinations.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">{t("no_destinations")}</p>
+          <p className="text-gray-500 text-lg">No destinations found. Add your first destination!</p>
         </div>
       )}
     </div>

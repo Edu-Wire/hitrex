@@ -5,8 +5,10 @@ import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Navbar() {
+  const t = useTranslations("Navbar");
   const { data: session } = useSession();
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/admin");
@@ -22,11 +24,11 @@ export default function Navbar() {
   const [highlight, setHighlight] = useState({ width: 0, left: 0, opacity: 0 });
 
   const menuLinks = [
-    { href: "/", label: "Home" },
-    { href: "/page/activities", label: "Activities" },
-    { href: "/page/destination", label: "Destinations" },
-    { href: "/page/blog", label: "Journal" },
-    { href: "/page/about", label: "About" },
+    { href: "/", label: t("home") },
+    { href: "/page/activities", label: t("activities") },
+    { href: "/page/destination", label: t("destinations") },
+    { href: "/page/blog", label: t("journal") },
+    { href: "/page/about", label: t("about") },
   ];
 
   useEffect(() => {
@@ -142,7 +144,7 @@ export default function Navbar() {
                           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg>
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-white hidden sm:block">Profile</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-white hidden sm:block">{t("profile")}</span>
                       <svg className={`w-3.5 h-3.5 text-[#00c985] transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -151,15 +153,15 @@ export default function Navbar() {
                     {isProfileOpen && (
                       <div className="absolute right-0 mt-4 w-56 bg-[#0f0f0f]/95 border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-5 border-b border-white/5">
-                          <p className="text-[10px] font-bold text-[#00c985] uppercase tracking-widest mb-1">Authenticated</p>
+                          <p className="text-[10px] font-bold text-[#00c985] uppercase tracking-widest mb-1">{t("authenticated")}</p>
                           <p className="text-white font-bold truncate text-sm uppercase  tracking-tighter">{session.user?.name}</p>
                         </div>
                         <div className="p-2">
                           <Link href={session.user?.role === "admin" ? "/admin" : "/user/dashboard"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-[#00c985] transition-all">
-                            Dashboard
+                            {t("dashboard")}
                           </Link>
                           <button onClick={() => signOut()} className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all">
-                            Sign Out
+                            {t("sign_out")}
                           </button>
                         </div>
                       </div>
@@ -170,7 +172,7 @@ export default function Navbar() {
                     href="/login"
                     className="px-6 py-2.5 rounded-full border border-[#00c985] text-[#00c985] hover:bg-[#00c985] hover:text-black transition-all text-[11px] font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(0,201,133,0.2)]"
                   >
-                    Login
+                    {t("login")}
                   </Link>
                 )}
 
@@ -178,7 +180,7 @@ export default function Navbar() {
                   href="/page/destination"
                   className="bg-[#00c985] hover:bg-[#00e094] text-black px-7 py-2.5 rounded-full text-[12px] font-bold uppercase tracking-widest transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,201,133,0.3)]"
                 >
-                  Book Now
+                  {t("book_now")}
                 </Link>
               </div>
 
@@ -206,7 +208,7 @@ export default function Navbar() {
           </button>
 
           <div className="mt-8 flex flex-col space-y-6">
-            <p className="text-[10px] font-bold text-[#ff4d00] uppercase tracking-[0.3em] mb-2 border-b border-white/10 pb-2">Explore</p>
+            <p className="text-[10px] font-bold text-[#ff4d00] uppercase tracking-[0.3em] mb-2 border-b border-white/10 pb-2">{t("explore")}</p>
             {menuLinks.map((link) => (
               <Link
                 key={link.href}
@@ -222,7 +224,7 @@ export default function Navbar() {
 
           <div className="mt-auto pt-8">
             <Link href="/page/destination" onClick={() => setIsMenuOpen(false)} className="block w-full text-center border border-[#00c985] text-[#00c985] py-4 rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-[#00c985] hover:text-black mb-4 transition-all">
-              Book Now
+              {t("book_now")}
             </Link>
 
             <div className="border-t border-white/10 pt-6">
@@ -235,17 +237,17 @@ export default function Navbar() {
                     <div>
                       <p className="text-white text-xs font-bold uppercase tracking-wide">Hi, {session.user?.name?.split(" ")[0]}</p>
                       <Link href={session.user?.role === "admin" ? "/admin" : "/user/dashboard"} onClick={() => setIsMenuOpen(false)} className="text-[10px] text-[#00c985] font-bold uppercase tracking-widest hover:underline">
-                        Dashboard
+                        {t("dashboard")}
                       </Link>
                     </div>
                   </div>
                   <button onClick={() => signOut()} className="w-full py-3 rounded-xl bg-red-500/10 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500 hover:text-white transition-colors">
-                    Sign Out
+                    {t("sign_out")}
                   </button>
                 </div>
               ) : (
                 <Link href="/login" onClick={() => setIsMenuOpen(false)} className="block w-full text-center py-4 rounded-full bg-[#00c985] text-black text-[12px] font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(0,201,133,0.4)] hover:scale-105 transition-all duration-300">
-                  Login / Sign Up
+                  {t("login_signup")}
                 </Link>
               )}
             </div>

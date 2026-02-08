@@ -7,7 +7,10 @@ import Footer from "@/components/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
+import { useTranslations } from "next-intl";
+
 export default function TripsPage() {
+  const t = useTranslations("ActivitiesPage");
   const containerRef = useRef(null);
   const heroRef = useRef(null);
   const [error, setError] = useState(null);
@@ -49,7 +52,7 @@ export default function TripsPage() {
 
   // Hero animation and global scroll effects run immediately on mount
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    gsap.context(() => {
 
       // 1. Animate "OUR" from Top (Upwards) - SMOOTHED
       const charsUp = gsap.utils.toArray(".char-up");
@@ -112,15 +115,13 @@ export default function TripsPage() {
         opacity: 0,
       });
     }, containerRef);
-
-    return () => ctx.revert();
   }, []);
 
   // Section reveals wait for trips to load
   useEffect(() => {
     if (!trips.length) return;
 
-    const ctx = gsap.context(() => {
+    gsap.context(() => {
       const sections = gsap.utils.toArray(".trip-section");
       sections.forEach((section) => {
         const revealImages = section.querySelectorAll(".reveal-img");
@@ -153,8 +154,6 @@ export default function TripsPage() {
         );
       });
     }, containerRef);
-
-    return () => ctx.revert();
   }, [trips]);
 
   const splitText = (text, customClass) => {
@@ -191,23 +190,23 @@ export default function TripsPage() {
         <div className="relative z-10 text-center skew-elem">
           <h1 className="hero-title text-[12vw] font-black leading-none tracking-tighter flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <span className="flex overflow-hidden py-4">
-              {splitText("OUR", "char-up")}
+              {splitText(t("our_trips").split(" ")[0], "char-up")}
             </span>
             <span className="flex overflow-hidden text-transparent stroke-text py-4">
-              {splitText("TRIPS", "char-down")}
+              {splitText(t("our_trips").split(" ")[1], "char-down")}
             </span>
           </h1>
         </div>
 
         <div className="absolute bottom-20 left-12 hidden md:block text-xs font-mono text-gray-500 uppercase tracking-widest">
-          <p>Altitude: 4,500m</p>
-          <p>Weather: Clear</p>
+          <p>{t("altitude")}: 4,500m</p>
+          <p>{t("weather")}: {t("clear")}</p>
         </div>
       </section>
 
       <div className="relative z-20 space-y-40 pb-40">
         {loading && (
-          <p className="text-center text-xs text-gray-400">Loading activities...</p>
+          <p className="text-center text-xs text-gray-400">{t("loading")}</p>
         )}
         {trips.map((trip, index) => {
           const isEven = index % 2 === 0;

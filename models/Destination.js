@@ -38,6 +38,10 @@ const DestinationSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    offer: {
+      type: Number,
+      default: 0,
+    },
 
     duration: {
       type: String,

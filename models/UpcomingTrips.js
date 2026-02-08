@@ -36,6 +36,10 @@ const upcomingTripSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pickupPoints: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

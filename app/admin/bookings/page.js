@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 
 export default function AdminBookings() {
+  const t = useTranslations("Admin");
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
@@ -44,10 +46,10 @@ export default function AdminBookings() {
         toast.success(data.message);
         fetchBookings();
       } else {
-        toast.error(data.error || "Failed to update booking");
+        toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
-      toast.error("Error updating booking");
+      toast.error(t("save_error"));
       console.error(error);
     }
   };
@@ -66,16 +68,16 @@ export default function AdminBookings() {
         toast.success(data.message);
         fetchBookings();
       } else {
-        toast.error(data.error || "Failed to update payment status");
+        toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
-      toast.error("Error updating payment status");
+      toast.error(t("save_error"));
       console.error(error);
     }
   };
 
   const deleteBooking = async (id) => {
-    if (!confirm("Are you sure you want to delete this booking?")) return;
+    if (!confirm(t("delete_confirm"))) return;
 
     try {
       const res = await fetch(`/api/bookings/${id}`, {
@@ -88,10 +90,10 @@ export default function AdminBookings() {
         toast.success(data.message);
         fetchBookings();
       } else {
-        toast.error(data.error || "Failed to delete booking");
+        toast.error(data.error || t("delete_failed"));
       }
     } catch (error) {
-      toast.error("Error deleting booking");
+      toast.error(t("delete_error"));
       console.error(error);
     }
   };
@@ -132,7 +134,7 @@ export default function AdminBookings() {
   if (loading || status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="text-xl">{t("loading")}</div>
       </div>
     );
   }
@@ -140,166 +142,162 @@ export default function AdminBookings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Manage Bookings</h1>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
-                filter === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700"
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{t("manage_bookings")}</h1>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${filter === "all"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700"
               }`}
-            >
-              All ({bookings.length})
-            </button>
-            <button
-              onClick={() => setFilter("pending")}
-              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
-                filter === "pending"
-                  ? "bg-yellow-600 text-white"
-                  : "bg-white text-gray-700"
+          >
+            {t("all")} ({bookings.length})
+          </button>
+          <button
+            onClick={() => setFilter("pending")}
+            className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${filter === "pending"
+                ? "bg-yellow-600 text-white"
+                : "bg-white text-gray-700"
               }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilter("confirmed")}
-              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
-                filter === "confirmed"
-                  ? "bg-green-600 text-white"
-                  : "bg-white text-gray-700"
+          >
+            {t("pending")}
+          </button>
+          <button
+            onClick={() => setFilter("confirmed")}
+            className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${filter === "confirmed"
+                ? "bg-green-600 text-white"
+                : "bg-white text-gray-700"
               }`}
-            >
-              Confirmed
-            </button>
-            <button
-              onClick={() => setFilter("completed")}
-              className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${
-                filter === "completed"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700"
+          >
+            {t("confirmed")}
+          </button>
+          <button
+            onClick={() => setFilter("completed")}
+            className={`px-3 md:px-4 py-2 rounded-3xl text-sm ${filter === "completed"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700"
               }`}
-            >
-              Completed
-            </button>
-          </div>
+          >
+            {t("completed")}
+          </button>
+        </div>
+      </div>
+
+      {/* Bookings Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1000px]">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("booking_id")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("customer")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("stats_destinations")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("trek_date")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("people")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("amount")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("status")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("payment")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {t("actions")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredBookings.map((booking) => (
+                <tr key={booking._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    #{booking._id.slice(-6)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {booking.userName}
+                    </div>
+                    <div className="text-sm text-gray-500">{booking.userEmail}</div>
+                    <div className="text-sm text-gray-500">{booking.userPhone}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-gray-900">
+                      {booking.destination?.name || "N/A"}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {booking.destination?.location || "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {booking.trekDate}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {booking.numberOfPeople}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    ₹{booking.totalAmount}
+                  </td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={booking.status}
+                      onChange={(e) =>
+                        updateBookingStatus(booking._id, e.target.value)
+                      }
+                      className={`text-xs px-2 py-1 rounded ${getStatusColor(
+                        booking.status
+                      )}`}
+                    >
+                      <option value="pending">{t("pending")}</option>
+                      <option value="confirmed">{t("confirmed")}</option>
+                      <option value="completed">{t("completed")}</option>
+                      <option value="cancelled">{t("cancelled")}</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4">
+                    <select
+                      value={booking.paymentStatus}
+                      onChange={(e) =>
+                        updatePaymentStatus(booking._id, e.target.value)
+                      }
+                      className={`text-xs px-2 py-1 rounded ${getPaymentColor(
+                        booking.paymentStatus
+                      )}`}
+                    >
+                      <option value="pending">{t("pending")}</option>
+                      <option value="paid">{t("paid")}</option>
+                      <option value="refunded">{t("refunded")}</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => deleteBooking(booking._id)}
+                      className="text-red-600 hover:text-red-800 text-sm"
+                    >
+                      {t("delete")}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/* Bookings Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px]">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Booking ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Destination
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Trek Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    People
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Payment
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredBookings.map((booking) => (
-                  <tr key={booking._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      #{booking._id.slice(-6)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {booking.userName}
-                      </div>
-                      <div className="text-sm text-gray-500">{booking.userEmail}</div>
-                      <div className="text-sm text-gray-500">{booking.userPhone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {booking.destination?.name || "N/A"}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {booking.destination?.location || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {booking.trekDate}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {booking.numberOfPeople}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      ₹{booking.totalAmount}
-                    </td>
-                    <td className="px-6 py-4">
-                      <select
-                        value={booking.status}
-                        onChange={(e) =>
-                          updateBookingStatus(booking._id, e.target.value)
-                        }
-                        className={`text-xs px-2 py-1 rounded ${getStatusColor(
-                          booking.status
-                        )}`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4">
-                      <select
-                        value={booking.paymentStatus}
-                        onChange={(e) =>
-                          updatePaymentStatus(booking._id, e.target.value)
-                        }
-                        className={`text-xs px-2 py-1 rounded ${getPaymentColor(
-                          booking.paymentStatus
-                        )}`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="refunded">Refunded</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => deleteBooking(booking._id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {filteredBookings.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">{t("no_bookings_found")}</p>
           </div>
-
-          {filteredBookings.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No bookings found.</p>
-            </div>
-          )}
+        )}
       </div>
     </div>
   );

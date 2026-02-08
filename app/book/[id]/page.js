@@ -16,6 +16,7 @@ export default function BookDestination() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     userName: "",
+    userEmail: "",
     userPhone: "",
     numberOfPeople: 1,
     trekDate: "",
@@ -41,6 +42,7 @@ export default function BookDestination() {
         setFormData({
           ...formData,
           userName: session?.user?.name || "",
+          userEmail: session?.user?.email || "",
           trekDate: data.destination.date || "",
         });
       }
@@ -244,6 +246,20 @@ export default function BookDestination() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <label className="text-[#ff4d00] text-[10px] font-black uppercase ml-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.userEmail}
+                      onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                      className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-[#ff4d00] focus:bg-[#222] outline-none transition-all duration-300"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
                     <label className="text-[#ff4d00] text-[10px] font-black uppercase ml-1">Phone Number</label>
                     <input
                       type="tel"
@@ -254,9 +270,6 @@ export default function BookDestination() {
                       placeholder="+91 00000 00000"
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-[#ff4d00] text-[10px] font-black uppercase ml-1">No. of People</label>
                     <input
@@ -269,16 +282,17 @@ export default function BookDestination() {
                       className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-[#ff4d00] outline-none"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[#ff4d00] text-[10px] font-black uppercase ml-1">Trek Date</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.trekDate}
-                      onChange={(e) => setFormData({ ...formData, trekDate: e.target.value })}
-                      className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-[#ff4d00] outline-none"
-                    />
-                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[#ff4d00] text-[10px] font-black uppercase ml-1">Trek Date</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.trekDate}
+                    onChange={(e) => setFormData({ ...formData, trekDate: e.target.value })}
+                    className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-[#ff4d00] outline-none"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -317,7 +331,6 @@ export default function BookDestination() {
               </form>
             </div>
           </div>
-
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FiArrowUpRight, FiMap, FiCompass, FiActivity, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { Oswald } from "next/font/google";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 
 const heroHeadline = Oswald({
@@ -37,6 +38,7 @@ const fallbackSlides = [
 
 
 export default function HeroSection() {
+  const t = useTranslations("Hero");
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const sectionRef = useRef(null);
@@ -201,20 +203,20 @@ export default function HeroSection() {
             className="flex items-center gap-2 text-emerald-400 font-bold tracking-widest uppercase text-xs mb-4"
           >
             <FiCompass className="animate-spin-slow" />
-            Hike Trek Explore
+            {t("subtitle_icon")}
           </motion.div>
 
           <h1
             className={`${heroHeadline.className} text-4xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] text-white mb-6 uppercase tracking-tighter`}
           >
-            YOUR DOSE OF
+            {t("title_part1")}
             <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-400">
-              UNTAMED ADVENTURES
+              {t("title_part2")}
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-gray-300 max-w-xl mb-8 sm:mb-10 font-light leading-relaxed">
-            From vertical ascents to remote valley trails, HITREX creates unforgettable experiences that stay with you long after the journey ends.
+            {t("description")}
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -222,7 +224,7 @@ export default function HeroSection() {
               href="/page/destination"
               className="group relative inline-flex items-center gap-3 text-base sm:text-lg font-bold text-black bg-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-all hover:scale-105"
             >
-              EXPLORE
+              {t("explore_btn")}
               <FiArrowUpRight className="text-xl group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
           </div>
@@ -241,6 +243,7 @@ function HeroCards({ slides = [], loading }) {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const t = useTranslations("Hero");
 
   const { scrollY } = useScroll();
   const mobileY = useTransform(scrollY, [0, 120], [100, 0]);
@@ -299,10 +302,10 @@ function HeroCards({ slides = [], loading }) {
 
         <div className="flex justify-between items-center mb-6 mt-2">
           <span className="flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest">
-            LIVE PEAK
+            {t("live_peak")}
           </span>
           <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-            {slides[idx]?.location || "Scanning..."}
+            {slides[idx]?.location || t("scanning")}
           </span>
         </div>
 
@@ -328,7 +331,7 @@ function HeroCards({ slides = [], loading }) {
           {!loading && slides.length > 0 && (
             <div className="absolute bottom-5 left-5 bg-black/60 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
               <span className="text-white text-[11px] font-bold">
-                ALTITUDE: {slides[idx]?.elevation}
+                {t("altitude")}: {slides[idx]?.elevation}
               </span>
             </div>
           )}
@@ -340,13 +343,13 @@ function HeroCards({ slides = [], loading }) {
             onClick={() => document.getElementById("destinations")?.scrollIntoView({ behavior: "smooth" })}
             className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 py-4 rounded-2xl text-white text-xs font-bold border border-white/5"
           >
-            VIEW TRAILS
+            {t("view_trails")}
           </button>
           <Link
             href="/page/destination"
             className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl text-white text-xs font-bold shadow-lg"
           >
-            BOOK NOW
+            {t("book_now")}
           </Link>
         </div>
       </div>

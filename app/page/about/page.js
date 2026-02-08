@@ -32,7 +32,10 @@ const fallbackTeam = [
 ];
 
 
+import { useTranslations } from "next-intl";
+
 export default function AboutPage() {
+  const t = useTranslations("About");
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll();
   const [teamMembers, setTeamMembers] = useState(fallbackTeam);
@@ -101,14 +104,14 @@ export default function AboutPage() {
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: heroY }} className="relative z-20 text-center px-4">
           <span className="text-orange-500 font-bold tracking-[0.6em] uppercase text-[10px] mb-6 block opacity-80">
-            Our Legacy & Story
+            {t("legacy_story")}
           </span>
 
           <h1
             className={`${heroSans.className} text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[9vw] font-black tracking-tighter leading-[0.9] flex justify-center max-w-[min(1100px,92vw)] mx-auto px-4`}
 
           >
-            {splitText("WHO WE ARE")}
+            {splitText(t("who_we_are"))}
           </h1>
 
           <div className="hero-line h-px w-40 bg-orange-600 mx-auto mt-8 opacity-50" />
@@ -156,19 +159,16 @@ export default function AboutPage() {
             className="space-y-8"
           >
             <div>
-              <span className="text-orange-500 font-bold text-xs uppercase tracking-widest">01 / Purpose</span>
+              <span className="text-orange-500 font-bold text-xs uppercase tracking-widest">{t("mission_purpose")}</span>
               <h2 className="text-5xl md:text-6xl font-black tracking-tighter uppercase mt-4">
-                Our Mission
+                {t("mission_title")}
               </h2>
             </div>
             <p className="text-zinc-400 text-xl leading-relaxed font-light italic">
-              &ldquo;At Hitrex, we inspire individuals to embrace the outdoors through unforgettable
-              hiking and trekking experiences that challenge the body and nourish the soul.&rdquo;
+              &ldquo;{t("mission_quote")}&rdquo;
             </p>
             <p className="text-zinc-500 leading-relaxed">
-              We connect clients with nature’s most beautiful landscapes, fostering
-              appreciation for wellness, environment, and growth. Our journeys are designed
-              not just to reach a peak, but to discover the strength within.
+              {t("mission_desc")}
             </p>
           </motion.div>
 
@@ -195,21 +195,21 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
             <h2 className="text-5xl text-center md:text-left mx-auto md:mx-0 md:ml-[20px] font-black uppercase tracking-tighter">
-              Extraordinary<br />
-              <span className="text-orange-600">Values</span>
+              {t("extraordinary_values").split(" ")[0]}<br />
+              <span className="text-orange-600">{t("extraordinary_values").split(" ")[1]}</span>
             </h2>
 
-            <p className="max-w-sm text-zinc-500 text-sm">Guided by a commitment to the wild, safety, and the spirit of the global trekking community.</p>
+            <p className="max-w-sm text-zinc-500 text-sm">{t("values_desc")}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <ValueCard
-              title="Extraordinary Experiences"
-              desc="Every trek with us is a unique story — whether mountain trails or hidden wonders, we create experiences that last a lifetime. Our expert guides ensure every journey is safe and inspiring."
+              title={t("extra_experiences")}
+              desc={t("extra_experiences_desc")}
             />
             <ValueCard
-              title="Our Core Values"
-              desc="Adventure, sustainability, and community. We promote exploration with respect for nature and a commitment to safety and purpose-driven travel."
+              title={t("core_values")}
+              desc={t("core_values_desc")}
             />
           </div>
         </div>
@@ -218,8 +218,8 @@ export default function AboutPage() {
       {/* 4. TEAM SECTION (MODERN GRID) */}
       <section className="max-w-7xl mx-auto px-6 py-10">
         <div className="text-center mb-10">
-          <span className="text-orange-500 font-bold text-xs uppercase tracking-[0.4em]">The Experts</span>
-          <h2 className="text-6xl font-black uppercase tracking-tighter mt-4">Meet Our Team</h2>
+          <span className="text-orange-500 font-bold text-xs uppercase tracking-[0.4em]">{t("team_subtitle")}</span>
+          <h2 className="text-6xl font-black uppercase tracking-tighter mt-4">{t("team_title")}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">

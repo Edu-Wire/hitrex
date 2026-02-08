@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useTranslations } from "next-intl";
 
 const SIDEBAR_WIDTH = "w-56"; // 14rem
 const SIDEBAR_MARGIN = "md:ml-56";
 
 export default function AdminLayout({ children }) {
+  const t = useTranslations("Admin");
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -21,19 +23,19 @@ export default function AdminLayout({ children }) {
   }, [isAdmin, loading, router]);
 
   const navItems = [
-    { name: "Dashboard", path: "/admin" },
-    { name: "Destinations", path: "/admin/destinations" },
-    { name: "Upcoming Trips", path: "/admin/upcoming-trips" },
-    { name: "Blogs", path: "/admin/blogs" },
-    { name: "Activities", path: "/admin/activities" },
-    { name: "Bookings", path: "/admin/bookings" },
-    { name: "Users", path: "/admin/users" },
+    { name: t("stats_dashboard"), path: "/admin" },
+    { name: t("stats_destinations"), path: "/admin/destinations" },
+    { name: t("stats_upcoming_trips"), path: "/admin/upcoming-trips" },
+    { name: t("stats_blogs"), path: "/admin/blogs" },
+    { name: t("stats_activities"), path: "/admin/activities" },
+    { name: t("stats_bookings"), path: "/admin/bookings" },
+    { name: t("stats_users"), path: "/admin/users" },
   ];
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        {t("loading")}
       </div>
     );
   }
@@ -48,7 +50,7 @@ export default function AdminLayout({ children }) {
         transform transition-transform duration-200
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        <div className="p-4 font-bold border-b">Admin Panel</div>
+        <div className="p-4 font-bold border-b">{t("admin_panel")}</div>
 
         <nav className="p-3 space-y-1">
           {navItems.map((item) => {
@@ -59,10 +61,9 @@ export default function AdminLayout({ children }) {
                 href={item.path}
                 onClick={() => setSidebarOpen(false)}
                 className={`block px-4 py-2 rounded-lg text-sm transition
-                  ${
-                    active
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-700 hover:bg-blue-600 hover:text-white"
+                  ${active
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 hover:bg-blue-600 hover:text-white"
                   }
                 `}
               >
@@ -77,7 +78,7 @@ export default function AdminLayout({ children }) {
             onClick={() => router.push("/")}
             className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg"
           >
-            ← Back to Site
+            ← {t("back_to_site")}
           </button>
         </div>
       </aside>

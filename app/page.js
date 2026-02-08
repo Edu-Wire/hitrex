@@ -23,6 +23,7 @@ import {
   FaExclamationTriangle,
   FaAngleRight,
 } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 
 import HeroSection from "@/components/HeroSection";
@@ -34,6 +35,7 @@ const oswald = Oswald({ subsets: ["latin"] });
 
 
 export default function Home() {
+  const t = useTranslations("HomePage");
   const containerRef = useRef(null);
   const [destinations, setDestinations] = useState([]);
   const [destError, setDestError] = useState(null);
@@ -258,8 +260,8 @@ export default function Home() {
                   <h2
                     className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold text-zinc-900 uppercase leading-[0.9] tracking-tighter`}
                   >
-                    UNTAMED <br />
-                    <span className="text-emerald-600">LANDSCAPS</span>
+                    {t("title_line1")} <br />
+                    <span className="text-emerald-600">{t("title_line2")}</span>
                   </h2>
                 </motion.div>
               </div>
@@ -274,22 +276,22 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                     <span className="text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
-                      Hidden wonders
+                      {t("subtitle")}
                     </span>
                   </div>
 
                   <p className="text-zinc-600 text-lg md:text-xl leading-relaxed font-light">
-                    Mapping high-altitude trails, glacier-fed lakes, and remote mountain passes across Europe’s most iconic ranges. We provide precision planning and professional guidance for explorers seeking raw alpine adventure.
+                    {t("description")}
                   </p>
 
                   <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-8">
                     <div className="flex flex-col">
-                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">12+</span>
-                      <span className="text-[10px] uppercase text-zinc-400">Peak Zones</span>
+                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">{t("stats_peak")}</span>
+                      <span className="text-[10px] uppercase text-zinc-400">{t("stats_peak_label")}</span>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">100%</span>
-                      <span className="text-[10px] uppercase text-zinc-400">Verified Intel</span>
+                      <span className="text-3xl font-black text-zinc-900 tracking-tighter">{t("stats_intel")}</span>
+                      <span className="text-[10px] uppercase text-zinc-400">{t("stats_intel_label")}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -307,7 +309,7 @@ export default function Home() {
                 {destLoading && (
                   <div className="flex items-center gap-3 text-zinc-400">
                     <div className="w-4 h-4 border-2 border-zinc-200 border-t-emerald-500 rounded-full animate-spin" />
-                    <p className="text-[10px] uppercase tracking-[0.2em]">Syncing Archives...</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em]">{t("syncing")}</p>
                   </div>
                 )}
               </div>
@@ -336,16 +338,15 @@ export default function Home() {
             >
               <div className="inline-block">
                 <span className="text-emerald-600 text-sm tracking-[0.5em] uppercase block font-bold mb-4">
-                  Protocol 04 // Technical Grading
+                  {t("difficulty_protocol")}
                 </span>
                 <h2 className={`${oswald.className} text-6xl sm:text-7xl lg:text-8xl font-black text-zinc-900 leading-tight tracking-tighter uppercase`}>
-                  Measure <span className="text-emerald-600">Your Grit.</span>
+                  {t("difficulty_title")} <span className="text-emerald-600">{t("difficulty_title_span")}</span>
                 </h2>
               </div>
 
               <p className="text-zinc-500 text-base sm:text-xl font-light leading-relaxed max-w-2xl mx-auto">
-                Hitrex expeditions are strictly classified by technical intensity. <br className="hidden md:block" />
-                Cross-reference your skill level before initiation.
+                {t("difficulty_desc")}
               </p>
             </motion.div>
 
@@ -396,40 +397,53 @@ export default function Home() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <span className="text-emerald-500 text-sm uppercase font-bold tracking-widest">
-                  Community Pulse
+                  {t("community_pulse")}
                 </span>
                 <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter`}>
-                  Trail Voices
+                  {t("reviews_title")}
                 </h2>
                 <p className="text-zinc-400 text-base sm:text-lg leading-relaxed max-w-lg">
-                  Hear from trekkers who trusted HITREX. Share your story to guide the next explorer—login is required to keep submissions authentic.
+                  {t("reviews_desc")}
                 </p>
               </div>
 
               <form onSubmit={handleReviewSubmit} className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-semibold text-zinc-200">Your rating</label>
+                  <label className="text-sm font-semibold text-zinc-200">{t("your_rating")}</label>
                   <div className="flex items-center gap-2">
                     {[1, 2, 3, 4, 5].map((val) => (
                       <button
                         key={val}
                         type="button"
-                        onClick={() => setReviewForm((prev) => ({ ...prev, rating: val }))}
-                        className={`h-9 w-9 rounded-full border flex items-center justify-center transition ${reviewForm.rating >= val
-                          ? "bg-amber-500 border-amber-400 text-black"
-                          : "border-zinc-700 text-zinc-400 hover:border-amber-500/60"
-                          }`}
+                        onClick={() =>
+                          setReviewForm((prev) => ({ ...prev, rating: val }))
+                        }
+                        className="transition"
                       >
-                        {val}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill={reviewForm.rating >= val ? "#f59e0b" : "none"}
+                          stroke={reviewForm.rating >= val ? "#f59e0b" : "#71717a"}
+                          strokeWidth="2"
+                          className="h-7 w-7 cursor-pointer"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M11.48 3.499a.562.562 0 011.04 0l2.125 4.31a.563.563 0 00.424.308l4.754.691a.563.563 0 01.312.959l-3.44 3.352a.563.563 0 00-.162.498l.812 4.735a.563.563 0 01-.816.592l-4.25-2.234a.563.563 0 00-.524 0l-4.25 2.234a.562.562 0 01-.816-.592l.812-4.735a.562.562 0 00-.162-.498L4.89 10.067a.563.563 0 01.312-.959l4.754-.691a.563.563 0 00.424-.308l2.1-4.31z"
+                          />
+                        </svg>
                       </button>
                     ))}
+
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-zinc-200" htmlFor="review-comment">
-                      Experience
+                      {t("experience")}
                     </label>
                     <span className={`text-[11px] ${reviewWordCount > 100 ? "text-red-400" : "text-zinc-500"}`}>
                       {reviewWordCount}/100 words
@@ -438,7 +452,7 @@ export default function Home() {
                   <textarea
                     id="review-comment"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition min-h-[140px]"
-                    placeholder="What made your trek memorable?"
+                    placeholder={t("experience_placeholder")}
                     value={reviewForm.comment}
                     onChange={(e) =>
                       setReviewForm((prev) => ({ ...prev, comment: e.target.value }))
@@ -449,7 +463,7 @@ export default function Home() {
 
                 {!session && (
                   <p className="text-xs text-amber-400">
-                    Please login before posting a review.
+                    {t("login_to_review")}
                   </p>
                 )}
 
@@ -480,7 +494,7 @@ export default function Home() {
                     : "bg-emerald-500 hover:bg-emerald-400 text-black shadow-lg shadow-emerald-500/20"
                     }`}
                 >
-                  {submittingReview ? "Submitting..." : "Post Review"}
+                  {submittingReview ? "Submitting..." : t("post_review")}
                 </button>
               </form>
             </div>
@@ -488,9 +502,9 @@ export default function Home() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className={`${oswald.className} text-2xl uppercase font-bold`}>
-                  Recent Reviews
+                  {t("recent_reviews")}
                 </h3>
-                <span className="text-xs text-zinc-500">Showing up to 3</span>
+                <span className="text-xs text-zinc-500">{t("showing_reviews")}</span>
               </div>
 
               {loadingReviews ? (
@@ -532,7 +546,7 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-zinc-400">No reviews yet. Be the first to share your trek.</p>
+                <p className="text-sm text-zinc-400">{t("no_reviews")}</p>
               )}
             </div>
           </div>
@@ -543,14 +557,14 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
               <div className="space-y-4">
                 <span className="text-emerald-500 text-sm uppercase font-bold tracking-widest">
-                  Strategic Briefing
+                  {t("strategic_briefing")}
                 </span>
                 <h2 className={`${oswald.className} text-5xl sm:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tighter`}>
-                  Expedition Intel
+                  {t("insights_title")}
                 </h2>
               </div>
               <p className="text-zinc-400 max-w-xs text-base sm:text-lg leading-relaxed pb-2 border-b border-zinc-800">
-                Plan smarter with technical understanding and preparation tips from the HITREX lead explorers.
+                {t("insights_desc")}
               </p>
             </div>
 
@@ -577,7 +591,7 @@ export default function Home() {
                   </div>
 
                   <button className="mt-8 flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-widest group-hover:gap-4 transition-all">
-                    Full Protocol <FaAngleRight />
+                    {t("full_protocol")} <FaAngleRight />
                   </button>
                 </motion.div>
               ))}

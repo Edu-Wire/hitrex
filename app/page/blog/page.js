@@ -15,7 +15,10 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
+import { useTranslations } from "next-intl";
+
 export default function BlogPage() {
+  const t = useTranslations("BlogPage");
   const [blogs, setBlogs] = useState(fallbackBlogs);
   const [loading, setLoading] = useState(true);
   const containerRef = useRef(null);
@@ -85,17 +88,17 @@ export default function BlogPage() {
         <motion.div style={{ y: yText, opacity: opacityText }} className="relative z-20 text-center px-4">
           <div className="hero-subtext">
             <span className="text-orange-500 font-bold tracking-[0.5em] uppercase text-xs mb-4 block">
-              The Explorer&rsquo;s Journal
+              {t("explorers_journal")}
             </span>
           </div>
 
           <h1 className="text-7xl md:text-[12vw] font-black tracking-tighter leading-none mb-6 flex justify-center">
-            {splitText("CHRONICLES")}
+            {splitText(t("chronicles"))}
           </h1>
 
           <div className="hero-subtext">
             <p className="max-w-md mx-auto text-zinc-400 font-light text-lg italic">
-              &ldquo;Every trail has a story. Some are written in dirt, others in the soul.&rdquo;
+              &ldquo;{t("quote")}&rdquo;
             </p>
           </div>
         </motion.div>
@@ -145,6 +148,7 @@ export default function BlogPage() {
 }
 
 function BlogRow({ blog, index }) {
+  const t = useTranslations("BlogPage");
   const isEven = index % 2 === 0;
 
   return (
@@ -178,7 +182,7 @@ function BlogRow({ blog, index }) {
 
           <div className="absolute top-8 left-8 z-20">
             <span className="bg-orange-600/90 backdrop-blur-md text-white text-[10px] font-black px-4 py-1.5 uppercase tracking-tighter rounded-full">
-              Featured Story
+              {t("featured_story")}
             </span>
           </div>
         </div>

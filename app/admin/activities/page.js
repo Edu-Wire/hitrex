@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/lib/useAdminAuth";
+import { useTranslations } from "next-intl";
 import { toast } from "react-toastify";
 
 export default function AdminActivities() {
+  const t = useTranslations("Admin");
   const { isAdmin, loading } = useAdminAuth();
   const router = useRouter();
 
@@ -44,7 +46,7 @@ export default function AdminActivities() {
       setActivities(Array.isArray(data.activities) ? data.activities : []);
     } catch (error) {
       console.error("Error fetching activities:", error);
-      toast.error("Failed to load activities");
+      toast.error(t("loading_failed"));
     } finally {
       setDataLoading(false);
     }
@@ -88,11 +90,11 @@ export default function AdminActivities() {
         setShowForm(false);
         fetchActivities();
       } else {
-        toast.error(data.error || "Failed to create activity");
+        toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
       console.error("Error creating activity:", error);
-      toast.error("Something went wrong");
+      toast.error(t("save_error"));
     }
   };
 
@@ -113,7 +115,7 @@ export default function AdminActivities() {
   if (loading || dataLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl font-medium">Loading...</div>
+        <div className="text-xl font-medium">{t("loading")}</div>
       </div>
     );
   }
@@ -124,10 +126,10 @@ export default function AdminActivities() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Manage Activities
+            {t("manage_activities")}
           </h1>
           <p className="text-sm text-gray-600 mt-1">
-            Total activities: {totalActivities}
+            {t("total_activities")}: {totalActivities}
           </p>
         </div>
 
@@ -135,26 +137,26 @@ export default function AdminActivities() {
           onClick={() => setShowForm((prev) => !prev)}
           className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg transition"
         >
-          {showForm ? "Close Form" : "Add Activity"}
+          {showForm ? t("close_form") : t("add_activity")}
         </button>
       </div>
 
       {/* Form */}
       {showForm && (
         <div className="bg-white text-gray-900 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Add Activity</h2>
+          <h2 className="text-xl font-semibold mb-4">{t("add_activity")}</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                ["id", "Activity ID"],
-                ["title", "Title"],
-                ["subtitle", "Subtitle"],
-                ["coordinates", "Coordinates"],
+                ["id", t("activity_id")],
+                ["title", t("title")],
+                ["subtitle", t("subtitle")],
+                ["coordinates", t("coordinates")],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} *
+                    {label} {t("required_field")}
                   </label>
                   <input
                     type="text"
@@ -170,7 +172,7 @@ export default function AdminActivities() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium mb-1">
-                  Images (comma separated) *
+                  {t("gallery_images")} {t("required_field")}
                 </label>
                 <input
                   type="text"
@@ -187,7 +189,7 @@ export default function AdminActivities() {
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Description *
+                {t("description")} {t("required_field")}
               </label>
               <textarea
                 rows={3}
@@ -205,14 +207,14 @@ export default function AdminActivities() {
                 type="submit"
                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-500 transition"
               >
-                Save Activity
+                {t("save_activity")}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
                 className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
               >
-                Reset
+                {t("reset")}
               </button>
             </div>
           </form>
@@ -223,7 +225,7 @@ export default function AdminActivities() {
       <section className="bg-white text-gray-900 rounded-lg shadow divide-y divide-gray-200">
         {activities.length === 0 && (
           <div className="p-8 text-center text-gray-500">
-            No activities yet. Add your first activity.
+            {t("no_activities")}
           </div>
         )}
 
