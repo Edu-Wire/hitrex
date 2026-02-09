@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@swc/helpers": "^0.5.18",
     "@tailwindcss/postcss": "^4",
     "autoprefixer": "^10.4.21",
     "cross-env": "^7.0.3",
