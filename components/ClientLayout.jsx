@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -16,7 +16,7 @@ export default function ClientLayout({ children }) {
       {!hideNavbar && (
         <>
           <Navbar />
-          <LanguageSwitcher />
+
         </>
       )}
       <SmoothScroll>

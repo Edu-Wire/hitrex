@@ -34,16 +34,75 @@ import { PageTransition } from "@/components/animations";
 const oswald = Oswald({ subsets: ["latin"] });
 
 
+const difficultyData = [
+  {
+    title: "Class 1: Casual",
+    color: "border-green-500/20 bg-green-500/5",
+    dot: "bg-green-500",
+    text: "Perfect for beginners & families. Well-marked trails on flat or gently rolling terrain. These hikes require minimal physical effort and no technical skills. Suitable for first-time hikers, families, leisure walkers, and all basic fitness levels. What to expect: Easy pace, scenic routes, minimal elevation, and comfortable walking paths.",
+    stats: "Beginner Friendly",
+  },
+  {
+    title: "Class 2: Moderate",
+    color: "border-blue-500/20 bg-blue-500/5",
+    dot: "bg-blue-500",
+    text: "For active individuals & weekend hikers. Trails with more elevation gain and some uneven surfaces. A moderate level of fitness is required. Ideal for those who hike occasionally and want a bit of a challenge. What to expect: Steeper sections, longer distances, and diverse terrain.",
+    stats: "Fitness Level: Low/Mid",
+  },
+  {
+    title: "Class 3: Challenging",
+    color: "border-emerald-500/20 bg-emerald-500/5",
+    dot: "bg-emerald-500",
+    text: "For seasoned hikers. Expect significant elevation, rugged paths, and potentially long days on the trail. Requires good endurance and a steady foot. Recommended for regular hikers and outdoor enthusiasts. What to expect: Significant climbs, potentially remote areas, and varied weather conditions.",
+    stats: "Stamina Required",
+  },
+  {
+    title: "Class 4: Difficult",
+    color: "border-orange-500/20 bg-orange-500/5",
+    dot: "bg-orange-500",
+    text: "High-intensity treks for the experienced. Very steep climbs, technical sections, and extreme altitudes. Requires high endurance, mental grit, and preparation for unpredictable environments. Best for fit hikers and aspiring mountaineers. What to expect: Technical terrain, rapid altitude changes, and sustained effort.",
+    stats: "Extreme Preparedness",
+  },
+  {
+    title: "Class 5: Technical",
+    color: "border-red-500/20 bg-red-500/5",
+    dot: "bg-red-500",
+    text: "The peak of adventure. Use of ropes, technical climbing gear, and high-altitude gear may be necessary. For professional explorers and highly skilled mountaineers. Extreme commitment and fitness required. What to expect: Mountaineering techniques, high risk, and rewarding summits.",
+    stats: "Expert ONLY",
+  },
+];
+
+const insightData = [
+  {
+    title: "Atmospheric Gear",
+    iconName: "FaCloudSun",
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour.",
+  },
+  {
+    title: "Maintenance Kit",
+    iconName: "FaTools",
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones.",
+  },
+  {
+    title: "Wilderness First Aid",
+    iconName: "FaFirstAid",
+    color: "bg-zinc-900 border-zinc-800",
+    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails.",
+  },
+];
+
 export default function Home() {
   const t = useTranslations("HomePage");
   const containerRef = useRef(null);
   const [destinations, setDestinations] = useState([]);
   const [destError, setDestError] = useState(null);
   const [destLoading, setDestLoading] = useState(true);
-  const [difficulties, setDifficulties] = useState([]);
-  const [diffLoading, setDiffLoading] = useState(true);
-  const [insights, setInsights] = useState([]);
-  const [insLoading, setInsLoading] = useState(true);
+  const [difficulties, setDifficulties] = useState(difficultyData); // Use hardcoded data
+  const [diffLoading, setDiffLoading] = useState(false); // No loading
+  const [insights, setInsights] = useState(insightData); // Use hardcoded data
+  const [insLoading, setInsLoading] = useState(false); // No loading
   const { data: session } = useSession();
 
   const [reviews, setReviews] = useState([]);
@@ -82,14 +141,13 @@ export default function Home() {
           setDestinations(data.destinations);
           setDestError(null);
         } else if (!controller.signal.aborted) {
-          setDestinations(fallbackDestinations);
-          setDestError(null);
+          setDestinations([]);
         }
       } catch (err) {
         if (!controller.signal.aborted) {
           console.error(err);
-          setDestinations(fallbackDestinations);
-          setDestError(null);
+          setDestinations([]);
+          setDestError("Failed to load destinations.");
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -102,55 +160,9 @@ export default function Home() {
     return () => controller.abort();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const loadDifficulties = async () => {
-      try {
-        setDiffLoading(true);
-        const res = await fetch("/api/difficulty", { signal: controller.signal });
-        const data = await res.json();
-        if (!controller.signal.aborted && data.success && data.difficulties?.length > 0) {
-          setDifficulties(data.difficulties);
-        } else if (!controller.signal.aborted) {
-          // Fallback to JSON
-          setDifficulties(difficultyData);
-        }
-      } catch (err) {
-        if (!controller.signal.aborted) {
-          setDifficulties(difficultyData);
-        }
-      } finally {
-        if (!controller.signal.aborted) setDiffLoading(false);
-      }
-    };
-    loadDifficulties();
-    return () => controller.abort();
-  }, []);
+  // Removed useEffect for fetching difficulties
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const loadInsights = async () => {
-      try {
-        setInsLoading(true);
-        const res = await fetch("/api/insights", { signal: controller.signal });
-        const data = await res.json();
-        if (!controller.signal.aborted && data.success && data.insights?.length > 0) {
-          setInsights(data.insights);
-        } else if (!controller.signal.aborted) {
-          // Fallback to JSON
-          setInsights(insightData);
-        }
-      } catch (err) {
-        if (!controller.signal.aborted) {
-          setInsights(insightData);
-        }
-      } finally {
-        if (!controller.signal.aborted) setInsLoading(false);
-      }
-    };
-    loadInsights();
-    return () => controller.abort();
-  }, []);
+  // Removed useEffect for fetching insights
 
   useEffect(() => {
 
@@ -608,102 +620,5 @@ export default function Home() {
 
 /* ================= DATA ================= */
 
-/* ================= FALLBACK DATA ================= */
+/* ================= DATA ================= */
 
-const fallbackDestinations = [
-  {
-    id: "ebc",
-    name: "Everest Base Camp",
-    location: "Nepal",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
-    description: "The ultimate trekking pilgrimage. A high-altitude journey to the foot of the world's tallest peak.",
-    difficulty: "Difficult",
-    duration: "14 Days"
-  },
-  {
-    id: "pk",
-    name: "Pamir Knot",
-    location: "Tajikistan",
-    image: "https://images.unsplash.com/photo-1502926535242-4382295d8338?w=800",
-    description: "The roof of the world. Remote, rugged, and profoundly beautiful alpine terrain.",
-    difficulty: "Challenging",
-    duration: "18 Days"
-  },
-  {
-    id: "mb",
-    name: "Mont Blanc",
-    location: "France",
-    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
-    description: "European classic. Traverse three countries around the highest peak in the Alps.",
-    difficulty: "Moderate",
-    duration: "10 Days"
-  },
-  {
-    id: "at",
-    name: "Ararat",
-    location: "Turkey",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800",
-    description: "Climb the legendary peak. A volcanic journey into ancient history and high summits.",
-    difficulty: "Challenging",
-    duration: "7 Days"
-  }
-];
-
-const difficultyData = [
-  {
-    title: "Class 1: Casual",
-    color: "border-green-500/20 bg-green-500/5",
-    dot: "bg-green-500",
-    text: "Perfect for beginners & families. Well-marked trails on flat or gently rolling terrain. These hikes require minimal physical effort and no technical skills. Suitable for first-time hikers, families, leisure walkers, and all basic fitness levels. What to expect: Easy pace, scenic routes, minimal elevation, and comfortable walking paths.",
-    stats: "Beginner Friendly",
-  },
-  {
-    title: "Class 2: Moderate",
-    color: "border-blue-500/20 bg-blue-500/5",
-    dot: "bg-blue-500",
-    text: "For active individuals & weekend hikers. Trails with more elevation gain and some uneven surfaces. A moderate level of fitness is required. Ideal for those who hike occasionally and want a bit of a challenge. What to expect: Steeper sections, longer distances, and diverse terrain.",
-    stats: "Fitness Level: Low/Mid",
-  },
-  {
-    title: "Class 3: Challenging",
-    color: "border-emerald-500/20 bg-emerald-500/5",
-    dot: "bg-emerald-500",
-    text: "For seasoned hikers. Expect significant elevation, rugged paths, and potentially long days on the trail. Requires good endurance and a steady foot. Recommended for regular hikers and outdoor enthusiasts. What to expect: Significant climbs, potentially remote areas, and varied weather conditions.",
-    stats: "Stamina Required",
-  },
-  {
-    title: "Class 4: Difficult",
-    color: "border-orange-500/20 bg-orange-500/5",
-    dot: "bg-orange-500",
-    text: "High-intensity treks for the experienced. Very steep climbs, technical sections, and extreme altitudes. Requires high endurance, mental grit, and preparation for unpredictable environments. Best for fit hikers and aspiring mountaineers. What to expect: Technical terrain, rapid altitude changes, and sustained effort.",
-    stats: "Extreme Preparedness",
-  },
-  {
-    title: "Class 5: Technical",
-    color: "border-red-500/20 bg-red-500/5",
-    dot: "bg-red-500",
-    text: "The peak of adventure. Use of ropes, technical climbing gear, and high-altitude gear may be necessary. For professional explorers and highly skilled mountaineers. Extreme commitment and fitness required. What to expect: Mountaineering techniques, high risk, and rewarding summits.",
-    stats: "Expert ONLY",
-  },
-];
-
-const insightData = [
-  {
-    title: "Atmospheric Gear",
-    iconName: "FaCloudSun",
-    color: "bg-zinc-900 border-zinc-800",
-    text: "Layering systems are vital. High-altitude weather can shift 20°C in under an hour.",
-  },
-  {
-    title: "Maintenance Kit",
-    iconName: "FaTools",
-    color: "bg-zinc-900 border-zinc-800",
-    text: "Carry a multi-tool and repair tape for gear malfunctions in remote zones.",
-  },
-  {
-    title: "Wilderness First Aid",
-    iconName: "FaFirstAid",
-    color: "bg-zinc-900 border-zinc-800",
-    text: "Basic trauma and altitude sickness training is mandatory for Class 3+ trails.",
-  },
-];

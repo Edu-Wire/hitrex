@@ -15,37 +15,6 @@ const DEFAULT_FILTER_DATA = {
   activities: ["Relaxation", "Adventure", "Sightseeing", "Cultural"]
 };
 
-const FALLBACK_DESTINATIONS = [
-  {
-    _id: "1",
-    name: "Everest Base Camp",
-    location: "Nepal",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
-    description: "The ultimate trekking pilgrimage.",
-    price: 1500,
-    offer: 10,
-    duration: "14 Days",
-    date: "April 2026",
-    tags: ["Trekking", "High Altitude"],
-    included: ["Guide", "Meals"],
-    activities: ["Adventure"]
-  },
-  {
-    _id: "2",
-    name: "Annapurna Circuit",
-    location: "Nepal",
-    image: "https://images.unsplash.com/photo-1502926535242-4382295d8338?w=800",
-    description: "A classic trek around the Annapurna massif.",
-    price: 1200,
-    offer: 5,
-    duration: "18 Days",
-    date: "May 2026",
-    tags: ["Trekking", "Cultural"],
-    included: ["Permits", "Transport"],
-    activities: ["Sightseeing"]
-  }
-];
-
 export default function DestinationsPage() {
   const t = useTranslations("DestinationPage");
   const router = useRouter();
@@ -98,10 +67,6 @@ export default function DestinationsPage() {
       const data = await res.json();
       let list = data.destinations || [];
 
-      if (list.length === 0) {
-        list = FALLBACK_DESTINATIONS;
-      }
-
       setDestinations(list);
 
       // Build dynamic filter options from API data
@@ -152,7 +117,7 @@ export default function DestinationsPage() {
       }));
     } catch (e) {
       console.error(e);
-      setDestinations(FALLBACK_DESTINATIONS);
+      setDestinations([]);
     } finally {
       setLoading(false);
     }
