@@ -1,4 +1,50 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { Check, ChevronDown, X } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Footer from "@/components/Footer";
+
+const DEFAULT_FILTER_DATA = {
+  months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  features: ["Trekking", "Climbing", "Hiking", "Camping", "Expedition"],
+  activities: ["Relaxation", "Adventure", "Sightseeing", "Cultural"]
+};
+
+const FALLBACK_DESTINATIONS = [
+  {
+    _id: "1",
+    name: "Everest Base Camp",
+    location: "Nepal",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800",
+    description: "The ultimate trekking pilgrimage.",
+    price: 1500,
+    offer: 10,
+    duration: "14 Days",
+    date: "April 2026",
+    tags: ["Trekking", "High Altitude"],
+    included: ["Guide", "Meals"],
+    activities: ["Adventure"]
+  },
+  {
+    _id: "2",
+    name: "Annapurna Circuit",
+    location: "Nepal",
+    image: "https://images.unsplash.com/photo-1502926535242-4382295d8338?w=800",
+    description: "A classic trek around the Annapurna massif.",
+    price: 1200,
+    offer: 5,
+    duration: "18 Days",
+    date: "May 2026",
+    tags: ["Trekking", "Cultural"],
+    included: ["Permits", "Transport"],
+    activities: ["Sightseeing"]
+  }
+];
 
 export default function DestinationsPage() {
   const t = useTranslations("DestinationPage");
