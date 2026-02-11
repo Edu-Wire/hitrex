@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 
 // MongoDB Atlas connection string from environment variables
 // Using SRV connection for better reliability and automatic server discovery
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://eduwireinfo:TP6fseKwMQCTfwGH@cluster0.4t1nynz.mongodb.net/Trekking-adventure";
+const MONGODB_URI = process.env.MONGODB_URI
 
 // Define flexible schemas for database operations
 // Using strict: false allows reading any document structure
@@ -53,7 +53,7 @@ async function checkDatabase() {
 
         // Get sample data for verification
         console.log("\n🔍 Verifying data structure...");
-        
+
         // Get one sample trip to check data integrity
         const trips = await UpcomingTrip.find().limit(1).lean();
         console.log("📋 Sample Trip Data:");
@@ -66,7 +66,7 @@ async function checkDatabase() {
 
         console.log("\n✅ Database check completed successfully!");
         process.exit(0);
-        
+
     } catch (error) {
         console.error("\n❌ Database check failed:");
         console.error("Error details:", error.message);
