@@ -1,0 +1,15 @@
+Connecting...
+Connected to MongoDB
+Found 3 trips.
+Trip: High Fens Autumn Expedition (high-fens-autumn-2026)
+  Price: undefined (Type: undefined)
+  Offer: undefined (Type: undefined)
+---
+Trip: Bruges Winter Lights Getaway (bruges-winter-lights-2026)
+  Price: undefined (Type: undefined)
+  Offer: undefined (Type: undefined)
+---
+Trip: Ardennes Spring Forest (ardennes-spring-escape-2026)
+  Price: undefined (Type: undefined)
+  Offer: undefined (Type: undefined)
+---

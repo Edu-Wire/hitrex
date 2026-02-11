@@ -73,6 +73,47 @@ export default function AdminUpcomingTrips() {
     }
   };
 
+  /* 🗑️ Delete trip */
+  const handleDelete = async (id) => {
+    if (!confirm(t("delete_confirm") || "Are you sure?")) return;
+
+    try {
+      const res = await fetch(`/api/upcoming-trips?id=${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(data.message);
+        fetchTrips();
+      } else {
+        toast.error(data.error);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Delete failed");
+    }
+  };
+
+  /* ✏️ Edit trip */
+  const handleEdit = (trip) => {
+    setFormData({
+      _id: trip._id,
+      id: trip.id,
+      name: trip.name,
+      location: trip.location,
+      date: trip.date,
+      duration: trip.duration,
+      image: trip.image,
+      description: trip.description,
+      pickupPoints: trip.pickupPoints || "",
+      price: trip.price !== undefined && trip.price !== null ? trip.price : "",
+      offer: trip.offer !== undefined && trip.offer !== null ? trip.offer : "",
+    });
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -90,16 +131,25 @@ export default function AdminUpcomingTrips() {
     }
 
     try {
+      const isEdit = !!formData._id;
+
+      // Prepare data for submission, handling numbers correctly
+      const submissionData = {
+        ...formData,
+        price: formData.price === "" ? undefined : Number(formData.price),
+        offer: formData.offer === "" ? undefined : Number(formData.offer),
+      };
+
       const res = await fetch("/api/upcoming-trips", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(data.message || "Trip added successfully");
+        toast.success(data.message || (isEdit ? "Trip updated" : "Trip added"));
         resetForm();
         setShowForm(false);
         fetchTrips();
@@ -107,7 +157,7 @@ export default function AdminUpcomingTrips() {
         toast.error(data.error || t("save_failed"));
       }
     } catch (error) {
-      console.error("Error creating trip:", error);
+      console.error("Error saving trip:", error);
       toast.error(t("save_error"));
     }
   };
@@ -122,6 +172,8 @@ export default function AdminUpcomingTrips() {
       image: "",
       description: "",
       pickupPoints: "",
+      price: "",
+      offer: "",
     });
   };
 
@@ -169,22 +221,64 @@ export default function AdminUpcomingTrips() {
                 ["name", t("name")],
                 ["location", t("location")],
                 ["duration", t("duration")],
+                ["price", t("price") || "Price"],
+                ["offer", t("offer") || "Offer (%)"],
                 ["image", t("image_url")],
                 ["pickupPoints", t("pickup_points")],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} {key !== "pickupPoints" ? t("required_field") : t("optional")}
+                    {key === "image" ? "Upload Image" : label} {key !== "pickupPoints" && key !== "price" && key !== "offer" ? t("required_field") : t("optional")}
                   </label>
-                  <input
-                    type="text"
-                    required={key !== "pickupPoints"}
-                    value={formData[key]}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [key]: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  {key === "image" ? (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+
+                          const uploadFormData = new FormData();
+                          uploadFormData.append("file", file);
+
+                          try {
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              body: uploadFormData,
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              setFormData(prev => ({ ...prev, image: data.url }));
+                              toast.success("Image uploaded successfully");
+                            } else {
+                              toast.error("Upload failed: " + data.error);
+                            }
+                          } catch (err) {
+                            console.error("Upload error:", err);
+                            toast.error("Upload error");
+                          }
+                        }}
+                        className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                      {formData.image && (
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500 mb-1">Preview:</p>
+                          <img src={formData.image} alt="Preview" className="h-20 w-auto rounded border" />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <input
+                      type={key === "price" || key === "offer" ? "number" : "text"}
+                      required={key !== "pickupPoints" && key !== "price" && key !== "offer"}
+                      value={formData[key]}
+                      onChange={(e) =>
+                        setFormData({ ...formData, [key]: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  )}
                 </div>
               ))}
 
@@ -277,9 +371,25 @@ export default function AdminUpcomingTrips() {
                 </p>
               </div>
 
-              <p className="text-sm text-gray-600 max-w-xl line-clamp-2">
-                {trip.description}
-              </p>
+              <div className="flex flex-col items-end gap-2">
+                <p className="text-sm text-gray-600 max-w-xl line-clamp-2">
+                  {trip.description}
+                </p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => handleEdit(trip)}
+                    className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(trip._id)}
+                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}

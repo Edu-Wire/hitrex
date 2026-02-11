@@ -334,7 +334,7 @@ export default function AdminDestinations() {
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="block text-sm font-medium mb-1">
-                    {label} {key !== "offer" && key !== "gallery" ? t("required_field") : t("optional")}
+                    {key === "image" ? t("upload_main_image") : label} {key !== "offer" && key !== "gallery" ? t("required_field") : t("optional")}
                   </label>
                   {key === "difficulty" ? (
                     <select
@@ -348,7 +348,45 @@ export default function AdminDestinations() {
                       <option value="Challenging">Challenging</option>
                       <option value="Difficult">Difficult</option>
                     </select>
-                  ) : (
+                  ) : key === "image" ? (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+
+                          const uploadFormData = new FormData();
+                          uploadFormData.append("file", file);
+
+                          try {
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              body: uploadFormData,
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              setFormData(prev => ({ ...prev, image: data.url }));
+                              toast.success("Image uploaded successfully");
+                            } else {
+                              toast.error(`Upload failed: ${data.error}`);
+                            }
+                          } catch (err) {
+                            console.error("Upload error:", err);
+                            toast.error("Error uploading image");
+                          }
+                        }}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      {formData.image && (
+                        <div className="mt-2 text-sm text-gray-500">
+                          Preview: <br />
+                          <img src={formData.image} alt="Main" className="h-20 w-auto rounded border mt-1" />
+                        </div>
+                      )}
+                    </div>
+                  ) : key === "gallery" ? null : (
                     <input
                       type={key === "offer" ? "number" : "text"}
                       required={key !== "offer" && key !== "gallery"}
@@ -482,15 +520,69 @@ export default function AdminDestinations() {
               </div>
               <div className="md:col-span-3">
                 <label className="block text-sm font-medium mb-1">{t("gallery_images")}</label>
-                <textarea
-                  rows={2}
-                  placeholder={t("gallery_placeholder")}
-                  value={formData.gallery}
-                  onChange={(e) =>
-                    setFormData({ ...formData, gallery: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length === 0) return;
+
+                        const newUrls = [];
+                        for (const file of files) {
+                          const uploadFormData = new FormData();
+                          uploadFormData.append("file", file);
+
+                          try {
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              body: uploadFormData,
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              newUrls.push(data.url);
+                            } else {
+                              toast.error(`Failed to upload ${file.name}: ${data.error}`);
+                            }
+                          } catch (err) {
+                            console.error("Upload error:", err);
+                            toast.error(`Error uploading ${file.name}`);
+                          }
+                        }
+
+                        if (newUrls.length > 0) {
+                          const currentImages = formData.gallery ? formData.gallery.split(",").map(s => s.trim()).filter(Boolean) : [];
+                          const updatedImages = [...currentImages, ...newUrls].join(", ");
+                          setFormData(prev => ({ ...prev, gallery: updatedImages }));
+                          toast.success(`${newUrls.length} image(s) uploaded`);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+                  {formData.gallery && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.gallery.split(",").map((imgUrl, idx) => (
+                        <div key={idx} className="relative group">
+                          <img src={imgUrl.trim()} alt="" className="h-20 w-20 object-cover rounded border" />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentImages = formData.gallery.split(",").map(s => s.trim()).filter(Boolean);
+                              const newImages = currentImages.filter((_, i) => i !== idx).join(", ");
+                              setFormData(prev => ({ ...prev, gallery: newImages }));
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <button

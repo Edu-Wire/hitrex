@@ -174,16 +174,69 @@ export default function AdminActivities() {
                 <label className="block text-sm font-medium mb-1">
                   {t("gallery_images")} {t("required_field")}
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.images}
-                  onChange={(e) =>
-                    setFormData({ ...formData, images: e.target.value })
-                  }
-                  placeholder="/img/1.avif, /img/2.avif"
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length === 0) return;
+
+                        const newUrls = [];
+                        for (const file of files) {
+                          const uploadFormData = new FormData();
+                          uploadFormData.append("file", file);
+
+                          try {
+                            const res = await fetch("/api/upload", {
+                              method: "POST",
+                              body: uploadFormData,
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              newUrls.push(data.url);
+                            } else {
+                              toast.error(`Failed to upload ${file.name}: ${data.error}`);
+                            }
+                          } catch (err) {
+                            console.error("Upload error:", err);
+                            toast.error(`Error uploading ${file.name}`);
+                          }
+                        }
+
+                        if (newUrls.length > 0) {
+                          const currentImages = formData.images ? formData.images.split(",").map(s => s.trim()).filter(Boolean) : [];
+                          const updatedImages = [...currentImages, ...newUrls].join(", ");
+                          setFormData(prev => ({ ...prev, images: updatedImages }));
+                          toast.success(`${newUrls.length} image(s) uploaded`);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                    />
+                  </div>
+                  {formData.images && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.images.split(",").map((imgUrl, idx) => (
+                        <div key={idx} className="relative group">
+                          <img src={imgUrl.trim()} alt="" className="h-20 w-20 object-cover rounded border" />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentImages = formData.images.split(",").map(s => s.trim()).filter(Boolean);
+                              const newImages = currentImages.filter((_, i) => i !== idx).join(", ");
+                              setFormData(prev => ({ ...prev, images: newImages }));
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

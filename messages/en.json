@@ -51,7 +51,8 @@
         "departure": "Departure",
         "duration": "Duration",
         "pickup": "Pickup",
-        "reserve_btn": "Reserve Gear Spot"
+        "reserve_btn": "Reserve Gear Spot",
+        "from_label": "From"
     },
     "Navbar": {
         "home": "Home",

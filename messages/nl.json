@@ -51,7 +51,8 @@
         "departure": "Vertrek",
         "duration": "Duur",
         "pickup": "Ophalen",
-        "reserve_btn": "Reserveer Plek"
+        "reserve_btn": "Reserveer Plek",
+        "from_label": "Vanaf"
     },
     "Navbar": {
         "home": "Home",

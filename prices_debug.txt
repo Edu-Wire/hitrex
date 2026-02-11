@@ -1,0 +1,5 @@
+Connected.
+Count: 3
+Name: High Fens Autumn Expedition, ID: high-fens-autumn-2026, Price: undefined, Offer: undefined
+Name: Bruges Winter Lights Getaway, ID: bruges-winter-lights-2026, Price: undefined, Offer: undefined
+Name: Ardennes Spring Forest, ID: ardennes-spring-escape-2026, Price: 299, Offer: 10

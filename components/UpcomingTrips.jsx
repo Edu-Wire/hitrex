@@ -217,6 +217,19 @@ export default function UpcomingTrips() {
                               <p className="text-zinc-400 text-sm line-clamp-2 font-light leading-relaxed">
                                 {trip.description}
                               </p>
+
+                              {trip.price !== undefined && trip.price !== null && (
+                                <div className="flex items-center gap-2 pt-2">
+                                  <span className="text-[10px] text-zinc-500 font-bold uppercase">{t("from_label") || "From"}</span>
+                                  <span className="text-2xl font-black text-white">€{trip.offer > 0 ? Math.round(trip.price * (1 - trip.offer / 100)) : trip.price}</span>
+                                  {trip.offer > 0 && (
+                                    <>
+                                      <span className="text-sm text-zinc-500 line-through">€{trip.price}</span>
+                                      <span className="bg-emerald-500/10 text-emerald-500 text-[10px] font-black px-2 py-1 rounded-md">-{trip.offer}%</span>
+                                    </>
+                                  )}
+                                </div>
+                              )}
                               <div className="flex items-center gap-6 pt-2">
                                 <div className="flex flex-col">
                                   <span className="text-zinc-600 text-[10px] uppercase font-bold">{t("departure")}</span>

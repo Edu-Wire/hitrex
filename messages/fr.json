@@ -51,7 +51,8 @@
         "departure": "Départ",
         "duration": "Durée",
         "pickup": "Ramassage",
-        "reserve_btn": "Réserver une place"
+        "reserve_btn": "Réserver une place",
+        "from_label": "À partir de"
     },
     "Navbar": {
         "home": "Accueil",

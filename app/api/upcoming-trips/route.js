@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 // GET all upcoming trips (optionally limited)
+// Force rebuild to pick up schema changes
 export async function GET(request) {
   try {
     await connectDB();
@@ -108,6 +109,73 @@ export async function POST(request) {
     return NextResponse.json(
       { error: error.message || "Failed to create upcoming trip" },
       { status: 400 }
+    );
+  }
+}
+
+export async function PUT(request) {
+  try {
+    await connectDB();
+    const data = await request.json();
+    const { _id, ...updateData } = data;
+
+    if (!_id) {
+      return NextResponse.json(
+        { error: "Trip ID is required for update" },
+        { status: 400 }
+      );
+    }
+
+    const updatedTrip = await UpcomingTrip.findByIdAndUpdate(_id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedTrip) {
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Trip updated successfully", trip: updatedTrip },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Update trip error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to update trip" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    await connectDB();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Trip ID is required for deletion" },
+        { status: 400 }
+      );
+    }
+
+    const deletedTrip = await UpcomingTrip.findByIdAndDelete(id);
+
+    if (!deletedTrip) {
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Trip deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Delete trip error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to delete trip" },
+      { status: 500 }
     );
   }
 }

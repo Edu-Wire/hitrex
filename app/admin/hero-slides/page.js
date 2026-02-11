@@ -172,8 +172,8 @@ export default function HeroSlidesAdmin() {
 
             {message && (
               <div className={`p-3 rounded mb-4 ${message.includes("successfully")
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
                 }`}>
                 {message}
               </div>
@@ -182,16 +182,49 @@ export default function HeroSlidesAdmin() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("image_url")} {t("required_field")}
+                  {t("image_upload")} {t("required_field")}
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={formData.url}
-                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const formData = new FormData();
+                      formData.append("file", file);
+
+                      try {
+                        const res = await fetch("/api/upload", {
+                          method: "POST",
+                          body: formData,
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          setFormData(prev => ({ ...prev, url: data.url }));
+                        } else {
+                          alert("Upload failed: " + data.error);
+                        }
+                      } catch (err) {
+                        console.error("Upload error:", err);
+                        alert("Upload error");
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+                {formData.url && (
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500 mb-1">Preview:</p>
+                    <img src={formData.url} alt="Preview" className="h-20 w-auto rounded border" />
+                    <input
+                      type="hidden"
+                      value={formData.url}
+                      name="url"
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
