@@ -10,7 +10,12 @@ import { FaCompass, FaMountain, FaHiking, FaCampground, FaRoute } from "react-ic
 export default function SignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    surname: "",
+    gender: "",
+    street: "",
+    city: "",
+    country: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -41,7 +46,14 @@ export default function SignupPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: formData.name,
+          firstName: formData.firstName,
+          surname: formData.surname,
+          gender: formData.gender,
+          address: {
+            street: formData.street,
+            city: formData.city,
+            country: formData.country,
+          },
           email: formData.email,
           password: formData.password,
         }),
@@ -138,30 +150,127 @@ export default function SignupPage() {
                   </div>
                 )}
                 <StaggerContainer className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <StaggerItem>
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-100 mb-1">
+                          First Name
+                        </label>
+                        <input
+                          id="firstName"
+                          name="firstName"
+                          type="text"
+                          required
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="First Name"
+                        />
+                      </div>
+                    </StaggerItem>
+                    <StaggerItem>
+                      <div>
+                        <label htmlFor="surname" className="block text-sm font-medium text-gray-100 mb-1">
+                          Surname
+                        </label>
+                        <input
+                          id="surname"
+                          name="surname"
+                          type="text"
+                          required
+                          value={formData.surname}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="Surname"
+                        />
+                      </div>
+                    </StaggerItem>
+                  </div>
+
                   <StaggerItem>
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-100 mb-1">
-                        Full Name
+                      <label htmlFor="gender" className="block text-sm font-medium text-gray-100 mb-1">
+                        Gender
+                      </label>
+                      <select
+                        id="gender"
+                        name="gender"
+                        required
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                      >
+                        <option value="" className="bg-slate-900">Select Gender</option>
+                        <option value="Male" className="bg-slate-900">Male</option>
+                        <option value="Female" className="bg-slate-900">Female</option>
+                        <option value="Other" className="bg-slate-900">Other</option>
+                        <option value="Prefer not to say" className="bg-slate-900">Prefer not to say</option>
+                      </select>
+                    </div>
+                  </StaggerItem>
+
+                  <StaggerItem>
+                    <div>
+                      <label htmlFor="street" className="block text-sm font-medium text-gray-100 mb-1">
+                        Street / House Number
                       </label>
                       <input
-                        id="name"
-                        name="name"
+                        id="street"
+                        name="street"
                         type="text"
                         required
-                        value={formData.name}
+                        value={formData.street}
                         onChange={handleChange}
-                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
-                        placeholder="Full Name"
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                        placeholder="123 Trail Way"
                       />
                     </div>
                   </StaggerItem>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <StaggerItem>
+                      <div>
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-100 mb-1">
+                          City
+                        </label>
+                        <input
+                          id="city"
+                          name="city"
+                          type="text"
+                          required
+                          value={formData.city}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="City"
+                        />
+                      </div>
+                    </StaggerItem>
+                    <StaggerItem>
+                      <div>
+                        <label htmlFor="country" className="block text-sm font-medium text-gray-100 mb-1">
+                          Country
+                        </label>
+                        <input
+                          id="country"
+                          name="country"
+                          type="text"
+                          required
+                          value={formData.country}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="Country"
+                        />
+                      </div>
+                    </StaggerItem>
+                  </div>
+
                   <StaggerItem>
                     <div>
                       <label
                         htmlFor="email"
                         className="block text-sm font-medium text-gray-100 mb-1"
                       >
-                        Email address
+                        Email address (User ID)
                       </label>
                       <input
                         id="email"
@@ -170,60 +279,62 @@ export default function SignupPage() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
+                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
                         placeholder="you@example.com"
                       />
                     </div>
                   </StaggerItem>
-                  <StaggerItem>
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-100 mb-1"
-                      >
-                        Password
-                      </label>
-                      <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        required
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
-                        placeholder="Password (min 6 characters)"
-                      />
-                    </div>
-                  </StaggerItem>
-                  <StaggerItem>
-                    <div>
-                      <label
-                        htmlFor="confirmPassword"
-                        className="block text-sm font-medium text-gray-100 mb-1"
-                      >
-                        Confirm Password
-                      </label>
-                      <input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        required
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all"
-                        placeholder="Re-enter your password"
-                      />
-                    </div>
-                  </StaggerItem>
+                  <div className="grid grid-cols-2 gap-4">
+                    <StaggerItem>
+                      <div>
+                        <label
+                          htmlFor="password"
+                          className="block text-sm font-medium text-gray-100 mb-1"
+                        >
+                          Password
+                        </label>
+                        <input
+                          id="password"
+                          name="password"
+                          type="password"
+                          required
+                          value={formData.password}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="Min 6 chars"
+                        />
+                      </div>
+                    </StaggerItem>
+                    <StaggerItem>
+                      <div>
+                        <label
+                          htmlFor="confirmPassword"
+                          className="block text-sm font-medium text-gray-100 mb-1"
+                        >
+                          Confirm
+                        </label>
+                        <input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          required
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          className="appearance-none rounded-lg w-full px-3 py-2 border border-white/20 bg-white/10 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 transition-all font-light"
+                          placeholder="Re-enter"
+                        />
+                      </div>
+                    </StaggerItem>
+                  </div>
                 </StaggerContainer>
 
                 <FadeInUp delay={0.4}>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="group relative w-full flex justify-center py-2.5 px-4 text-sm font-semibold rounded-lg text-slate-900 bg-emerald-300 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-200 focus:ring-offset-slate-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 shadow-lg"
+                    className="group relative w-full flex justify-center py-2.5 px-4 text-sm font-bold rounded-lg text-slate-900 bg-emerald-300 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-200 focus:ring-offset-slate-900/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 shadow-lg uppercase"
                   >
-                    {loading ? "Creating account..." : "Sign up"}
+                    {loading ? "Creating account..." : "Create Account"}
                   </button>
                 </FadeInUp>
               </form>

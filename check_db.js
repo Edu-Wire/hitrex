@@ -7,9 +7,8 @@
 // Import required MongoDB/Mongoose library
 const mongoose = require('mongoose');
 
-// MongoDB Atlas connection string from environment variables
-// Using SRV connection for better reliability and automatic server discovery
-const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_URI = "mongodb+srv://eduwireinfo:TP6fseKwMQCTfwGH@cluster0.4t1nynz.mongodb.net/Trekking-adventure";
+
 
 // Define flexible schemas for database operations
 // Using strict: false allows reading any document structure
@@ -19,13 +18,8 @@ const UpcomingTripSchema = new mongoose.Schema({}, { strict: false });
 // Main database checking function
 async function checkDatabase() {
     try {
-        // Check if environment variable is set
-        if (!process.env.MONGODB_URI) {
-            console.log("⚠️  Warning: MONGODB_URI environment variable not found");
-            console.log("🔧 Using fallback connection string");
-        } else {
-            console.log("✅ MONGODB_URI environment variable loaded");
-        }
+        console.log("✅ Using hardcoded MONGODB_URI");
+
 
         // Connect to MongoDB Atlas
         console.log("🔗 Connecting to MongoDB Atlas...");

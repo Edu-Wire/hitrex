@@ -17,7 +17,7 @@ const fallbackTeam = [
     id: 1,
     name: "Uzair Ahmed",
     role: "Founder",
-    image: "/images/TL-1.jpg",
+    image: "/images/about/member1.png",
     bio: "Uzair Ahmed is a professionally qualified accountant with a deep-rooted passion for travel, nature, and adventure. While his professional expertise lies in accounting and financial management, his true enthusiasm is found on mountain trails and in the outdoors.",
     details: "With over 15 years of hiking experience, Uzair has explored a wide variety of terrains and landscapes. For the past 6 years, he has been actively organising and leading hiking trips in collaboration with different organisations, bringing together adventure enthusiasts for safe, well-planned, and memorable experiences. By combining his professional discipline with his love for hiking, Uzair ensures every journey is thoughtfully organised, safety-focused, and enriching."
   },
@@ -25,7 +25,7 @@ const fallbackTeam = [
     id: 2,
     name: "Mustafa Simsek",
     role: "Co-Founder",
-    image: "/images/TL-2.jpg",
+    image: "/images/about/member2.png",
     bio: "Mustafa Simsek is a professionally trained lawyer with a lifelong passion for mountains, hiking, and mountaineering. His journey into the outdoors began at a very young age in Turkey, where he developed a strong connection with high-altitude environments and challenging terrain.",
     details: "One of the defining milestones of his early mountaineering career was successfully climbing Mount Ararat, the highest peak in Turkey. Over the years, Mustafa has gone on to summit numerous peaks around the world. To formalise his expertise, he obtained a professional hiking guide permit, enabling him to lead groups with a strong focus on safety, route planning, and responsible outdoor practices. Mustafa brings a global perspective, deep mountaineering experience, and genuine passion for exploration."
   }
@@ -42,20 +42,21 @@ export default function AboutPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTeam = async () => {
-      try {
-        const res = await fetch("/api/team-members");
-        const data = await res.json();
-        if (data.success && data.members?.length > 0) {
-          setTeamMembers(data.members);
-        }
-      } catch (err) {
-        console.error("Failed to fetch team members:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTeam();
+    // const fetchTeam = async () => {
+    //   try {
+    //     const res = await fetch("/api/team-members");
+    //     const data = await res.json();
+    //     if (data.success && data.members?.length > 0) {
+    //       setTeamMembers(data.members);
+    //     }
+    //   } catch (err) {
+    //     console.error("Failed to fetch team members:", err);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // fetchTeam();
+    setLoading(false);
   }, []);
 
 
@@ -180,7 +181,7 @@ export default function AboutPage() {
             className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group"
           >
             <Image
-              src="/images/missio.avif"
+              src="/images/about/our mission.jpg"
               alt="Our Mission"
               fill
               className="object-cover transition-transform duration-1000 group-hover:scale-110"
@@ -234,14 +235,15 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.8 }}
-              className="group text-left"
+              className="group text-center"
             >
               <div className="relative h-[550px] rounded-[2.5rem] overflow-hidden mb-8 bg-zinc-900 shadow-xl border border-white/5">
                 <Image
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent opacity-80" />
               </div>

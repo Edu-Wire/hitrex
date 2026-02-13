@@ -40,11 +40,12 @@ export default function Footer() {
                   </p>
                 </div>
                 <div className="flex gap-3">
-                  {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                    <a key={i} href="#" className="text-emerald-400 hover:text-white transition-colors">
-                      <Icon className="w-4 h-4 lg:w-5 lg:h-5" />
-                    </a>
-                  ))}
+                  <a href="https://www.facebook.com/share/1C7vQge2NU/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-white transition-colors">
+                    <Facebook className="w-4 h-4 lg:w-5 lg:h-5" />
+                  </a>
+                  <a href="https://www.instagram.com/hitrextrip?igsh=aHB1cGZ1cnJvaHFr&utm_source=qr" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-white transition-colors">
+                    <Instagram className="w-4 h-4 lg:w-5 lg:h-5" />
+                  </a>
                 </div>
               </div>
             </FadeInUp>
@@ -87,17 +88,17 @@ export default function Footer() {
               </h4>
               <ul className="grid grid-cols-2 lg:grid-cols-1 gap-y-1.5 lg:gap-y-2 gap-x-2">
                 {[
-                  t("day_trips"),
-                  t("weekends"),
-                  t("camping"),
-                  t("groups"),
-                  t("rentals"),
-                  t("guides")
+                  { name: t("day_trips"), path: "/page/destination" },
+                  { name: t("weekends"), path: "/page/destination" },
+                  { name: t("camping"), path: "/page/activities" },
+                  { name: t("groups"), path: "/page/destination" },
+                  { name: t("rentals"), path: "/page/activities" },
+                  { name: t("guides"), path: "/page/about" }
                 ].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-emerald-200/60 hover:text-emerald-400 transition-colors font-medium block text-[11px] lg:text-sm">
-                      {item}
-                    </a>
+                  <li key={item.name}>
+                    <Link href={item.path} className="text-emerald-200/60 hover:text-emerald-400 transition-colors font-medium block text-[11px] lg:text-sm">
+                      {item.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -116,14 +117,14 @@ export default function Footer() {
                   <MapPin className="text-emerald-500 shrink-0 mt-0.5 w-3 h-3 lg:w-4 lg:h-4" />
                   <span className="text-emerald-200/60 text-[11px] lg:text-sm">{t("location")}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <a href="tel:+32400000000" className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
                   <Phone className="text-emerald-500 shrink-0 w-3 h-3 lg:w-4 lg:h-4" />
                   <span className="text-emerald-200/60 text-[11px] lg:text-sm">+32 400 00 00 00</span>
-                </div>
-                <div className="flex items-center gap-2">
+                </a>
+                <a href="mailto:info@hitrex.com" className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
                   <Mail className="text-emerald-500 shrink-0 w-3 h-3 lg:w-4 lg:h-4" />
                   <span className="text-emerald-200/60 text-[11px] lg:text-sm">info@hitrex.com</span>
-                </div>
+                </a>
               </div>
 
               {/* Compact Input */}

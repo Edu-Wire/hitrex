@@ -21,6 +21,7 @@ export default function BookDestination() {
     numberOfPeople: 1,
     trekDate: "",
     specialRequests: "",
+    agreedToTerms: false,
   });
 
   useEffect(() => {
@@ -55,6 +56,11 @@ export default function BookDestination() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.agreedToTerms) {
+      toast.error("Please agree to the Terms and Conditions to proceed");
+      return;
+    }
 
     const totalAmount = (destination.price || 5000) * formData.numberOfPeople;
 
@@ -304,6 +310,28 @@ export default function BookDestination() {
                     className="w-full bg-[#1a1a1a] border border-white/5 rounded-2xl p-4 text-white focus:ring-2 focus:ring-[#ff4d00] outline-none resize-none"
                     placeholder="Dietary or medical requirements?"
                   />
+                </div>
+
+                <div className="flex items-center space-x-3 py-4">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    required
+                    checked={formData.agreedToTerms}
+                    onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
+                    className="w-5 h-5 rounded border-white/10 bg-[#1a1a1a] text-[#ff4d00] focus:ring-[#ff4d00] transition-all cursor-pointer"
+                  />
+                  <label htmlFor="terms" className="text-xs text-gray-400 font-medium cursor-pointer">
+                    I agree to the{" "}
+                    <a
+                      href="/Document 8.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#ff4d00] font-black hover:underline underline-offset-4"
+                    >
+                      Terms and Conditions
+                    </a>
+                  </label>
                 </div>
 
                 <div className="pt-6 border-t border-white/10">
